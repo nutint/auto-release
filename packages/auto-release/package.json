@@ -1,0 +1,21 @@
+{
+  "name": "@repo/auto-release",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "test": "vitest --run --config vitest.config.unit.ts",
+    "test:integration": "vitest --run --config vitest.config.integration.ts",
+    "build": "tsc"
+  },
+  "exports": "./src/index.ts",
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "latest",
+    "vite": "^5.4.2",
+    "vitest": "^2.0.5"
+  },
+  "dependencies": {
+    "conventional-commits-parser": "^6.0.0",
+    "rxjs": "^7.8.1"
+  }
+}

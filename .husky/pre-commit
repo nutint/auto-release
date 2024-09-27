@@ -1,0 +1,2 @@
+pnpm turbo lint;
+gitleaks protect source . -v --staged;

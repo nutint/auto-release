@@ -1,0 +1,17 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",                           // Base directory for module resolution
+    "paths": {
+      "@/*": ["src/*"]                        // Alias '@' to 'src' directory
+    },
+    "target": "ES6",                          // Compile target
+    "module": "ESNext",                       // Use ESNext for module syntax
+    "moduleResolution": "node",               // Use Node's module resolution
+    "esModuleInterop": true,                  // Interop for CommonJS modules
+    "skipLibCheck": true,                     // Skip type checks for declaration files
+    "outDir": "dist"
+  },
+  "include": ["src/**/*.ts"],                 // Include all TypeScript files
+  "exclude": ["node_modules", "dist"]
+}
