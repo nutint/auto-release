@@ -10,7 +10,8 @@
     "moduleResolution": "node",               // Use Node's module resolution
     "esModuleInterop": true,                  // Interop for CommonJS modules
     "skipLibCheck": true,                     // Skip type checks for declaration files
-    "outDir": "dist"
+    "outDir": "dist",
+    "types": ["node"]
   },
   "include": ["src/**/*.ts"],                 // Include all TypeScript files
   "exclude": ["node_modules", "dist"]

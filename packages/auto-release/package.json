@@ -1,15 +1,20 @@
 {
   "name": "@repo/auto-release",
+  "version": "0.0.1",
+  "description": "A Toolkit to simplify release process",
+  "main": "bin/auto-release.js",
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
     "test": "vitest --run --config vitest.config.unit.ts",
     "test:integration": "vitest --run --config vitest.config.integration.ts",
-    "build": "tsc"
+    "build": "tsup src/index.ts --format cjs,esm --dts"
   },
   "exports": "./src/index.ts",
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.7.4",
+    "tsup": "^8.3.0",
     "typescript": "latest",
     "vite": "^5.4.2",
     "vitest": "^2.0.5"
