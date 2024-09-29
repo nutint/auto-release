@@ -12,7 +12,7 @@
   },
   "exports": "./src/index.ts",
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
+    "@nutint/typescript-config": "workspace:*",
     "@types/node": "^22.7.4",
     "tsup": "^8.3.0",
     "typescript": "latest",
