@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { parseCommit, streamGitLog } from "@/index.js";
 import { InvalidGitLogCommitFormat } from "@/git/git-log";
 import { parseConventionalMessage } from "@/conventional-commit-helper/conventional-commit-helper";
+import {parseCommit, streamGitLog} from "@/commit-parser/commit-parser";
 
 describe("commitParser", () => {
   describe("streamGitLog", () => {
