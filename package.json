@@ -27,7 +27,8 @@
   "pnpm": {
     "overrides": {
       "braces": "^3.0.3",
-      "micromatch": "^4.0.8"
+      "micromatch": "^4.0.8",
+      "rollup": "^4.22.4"
     }
   }
 }

@@ -19,7 +19,7 @@
     "@types/node": "^22.7.4",
     "tsup": "^8.3.0",
     "typescript": "latest",
-    "vite": "^5.4.2",
+    "vite": "^5.4.6",
     "vitest": "^2.0.5"
   },
   "dependencies": {
