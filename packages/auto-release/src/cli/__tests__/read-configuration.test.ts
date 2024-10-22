@@ -8,11 +8,13 @@ vi.mock("fs");
 
 describe("readConfiguration", () => {
   const mockedExistsFileSync = vi.spyOn(fs, "existsSync");
+  const mockedReadFileSync = vi.spyOn(fs, "readFileSync");
   const absolutePath = path.resolve(process.cwd(), defaultConfigurationFile);
 
   beforeEach(() => {
     vi.clearAllMocks();
     mockedExistsFileSync.mockReturnValue(true);
+    mockedReadFileSync.mockReturnValue(JSON.stringify({ foo: "bar" }));
   });
 
   it("should check file exists by absolute path", async () => {
@@ -26,6 +28,22 @@ describe("readConfiguration", () => {
 
     expect(() => readConfiguration(defaultConfigurationFile)).toThrow(
       new Error(`read configuration failed: ${absolutePath} does not exists`),
+    );
+  });
+
+  it("should readFileSync", () => {
+    readConfiguration(defaultConfigurationFile);
+
+    expect(mockedReadFileSync).toHaveBeenCalledWith(absolutePath, "utf-8");
+  });
+
+  it("should throw error when file content is not json format", () => {
+    mockedReadFileSync.mockReturnValue("nonJsonFormat");
+
+    expect(() => readConfiguration(defaultConfigurationFile)).toThrow(
+      new Error(
+        `read configuration failed: ${absolutePath} incorrect format: expect JSON`,
+      ),
     );
   });
 

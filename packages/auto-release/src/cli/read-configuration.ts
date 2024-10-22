@@ -8,5 +8,16 @@ export function readConfiguration(configFileName: string) {
       `read configuration failed: ${absolutePath} does not exists`,
     );
   }
-  return { foo: "bar" };
+  try {
+    const fileContent = fs.readFileSync(absolutePath, "utf-8");
+    const configuration = JSON.parse(fileContent);
+
+    return configuration;
+  } catch (e) {
+    if (e instanceof SyntaxError) {
+      throw new Error(
+        `read configuration failed: ${absolutePath} incorrect format: expect JSON`,
+      );
+    }
+  }
 }

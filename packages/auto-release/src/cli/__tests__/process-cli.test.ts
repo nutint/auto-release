@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { processCli } from "../process-cli";
 import * as ParseArguments from "@/cli/parse-arguments";
 import * as ReadConfiguration from "@/cli/read-configuration";
+import { Arguments } from "@/cli/parse-arguments";
 
 vi.mock("@/cli/parse-arguments");
 vi.mock("@/cli/read-configuration");
@@ -13,8 +14,9 @@ describe("processCli", () => {
     "readConfiguration",
   );
 
-  const parsedArguments = {
+  const parsedArguments: Arguments = {
     configFile: "auto-release.config.json",
+    logLevel: "error",
   };
 
   const configuration = {
