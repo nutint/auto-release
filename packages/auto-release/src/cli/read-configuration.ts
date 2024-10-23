@@ -1,7 +1,9 @@
 import fs from "fs";
 import path from "path";
+import { validateConfiguration } from "@/cli/validate-config";
+import { Configuration } from "@/cli/configuration";
 
-export function readConfiguration(configFileName: string) {
+export function readConfiguration(configFileName: string): Configuration {
   const absolutePath = path.resolve(process.cwd(), configFileName);
   if (!fs.existsSync(absolutePath)) {
     throw new Error(
@@ -11,7 +13,7 @@ export function readConfiguration(configFileName: string) {
   try {
     const fileContent = fs.readFileSync(absolutePath, "utf-8");
     const configuration = JSON.parse(fileContent);
-
+    validateConfiguration(configuration);
     return configuration;
   } catch (e) {
     if (e instanceof SyntaxError) {
@@ -19,5 +21,6 @@ export function readConfiguration(configFileName: string) {
         `read configuration failed: ${absolutePath} incorrect format: expect JSON`,
       );
     }
+    throw e;
   }
 }

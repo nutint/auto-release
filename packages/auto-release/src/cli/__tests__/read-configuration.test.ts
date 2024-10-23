@@ -3,18 +3,24 @@ import { readConfiguration } from "../read-configuration";
 import path from "path";
 import { defaultConfigurationFile } from "@/cli/parse-arguments";
 import fs from "fs";
+import * as ValidateConfig from "../validate-config";
 
 vi.mock("fs");
 
 describe("readConfiguration", () => {
   const mockedExistsFileSync = vi.spyOn(fs, "existsSync");
   const mockedReadFileSync = vi.spyOn(fs, "readFileSync");
+  const mockedValidateConfiguration = vi.spyOn(
+    ValidateConfig,
+    "validateConfiguration",
+  );
   const absolutePath = path.resolve(process.cwd(), defaultConfigurationFile);
+  const parsedConfiguration = { jiraBaseUrl: "bar" };
 
   beforeEach(() => {
     vi.clearAllMocks();
     mockedExistsFileSync.mockReturnValue(true);
-    mockedReadFileSync.mockReturnValue(JSON.stringify({ foo: "bar" }));
+    mockedReadFileSync.mockReturnValue(JSON.stringify(parsedConfiguration));
   });
 
   it("should check file exists by absolute path", async () => {
@@ -47,9 +53,17 @@ describe("readConfiguration", () => {
     );
   });
 
+  it("should validate configuration", () => {
+    readConfiguration(defaultConfigurationFile);
+
+    expect(mockedValidateConfiguration).toHaveBeenCalledWith(
+      parsedConfiguration,
+    );
+  });
+
   it("should return valid configuration file", () => {
     const actual = readConfiguration(defaultConfigurationFile);
 
-    expect(actual).toEqual({ foo: "bar" });
+    expect(actual).toEqual(parsedConfiguration);
   });
 });
