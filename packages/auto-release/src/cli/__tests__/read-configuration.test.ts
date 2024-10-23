@@ -15,7 +15,7 @@ describe("readConfiguration", () => {
     "validateConfiguration",
   );
   const absolutePath = path.resolve(process.cwd(), defaultConfigurationFile);
-  const parsedConfiguration = { jiraBaseUrl: "bar" };
+  const parsedConfiguration = { jiraBaseUrl: "https://myjira.jira.com" };
 
   beforeEach(() => {
     vi.clearAllMocks();
