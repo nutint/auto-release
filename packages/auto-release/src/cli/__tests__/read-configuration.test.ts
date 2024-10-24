@@ -12,7 +12,7 @@ describe("readConfiguration", () => {
   const mockedReadFileSync = vi.spyOn(fs, "readFileSync");
   const mockedValidateConfiguration = vi.spyOn(
     ValidateConfig,
-    "validateConfiguration",
+    "extractConfiguration",
   );
   const absolutePath = path.resolve(process.cwd(), defaultConfigurationFile);
   const parsedConfiguration = { jiraBaseUrl: "https://myjira.jira.com" };

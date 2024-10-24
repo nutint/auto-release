@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { validateConfiguration } from "@/cli/validate-config";
+import { extractConfiguration } from "@/cli/validate-config";
 import { Configuration } from "@/cli/configuration";
 
 export function readConfiguration(configFileName: string): Configuration {
@@ -13,8 +13,7 @@ export function readConfiguration(configFileName: string): Configuration {
   try {
     const fileContent = fs.readFileSync(absolutePath, "utf-8");
     const configuration = JSON.parse(fileContent);
-    validateConfiguration(configuration);
-    return configuration;
+    return extractConfiguration(configuration);
   } catch (e) {
     if (e instanceof SyntaxError) {
       throw new Error(
