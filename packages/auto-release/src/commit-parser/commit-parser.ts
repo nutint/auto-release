@@ -1,10 +1,18 @@
-import {GitCommitRange, InvalidGitLogCommitFormat} from "@/git/git-log";
-import {parseConventionalMessage} from "@/conventional-commit-helper/conventional-commit-helper";
-import {spawn} from "child_process";
+import { GitCommitRange, InvalidGitLogCommitFormat } from "@/git/git-log";
+import { parseConventionalMessage } from "@/conventional-commit-helper/conventional-commit-helper";
+import { spawn } from "child_process";
 import readline from "readline";
-import {bufferWhen, filter, firstValueFrom, fromEvent, map, takeUntil, toArray} from "rxjs";
+import {
+  bufferWhen,
+  filter,
+  firstValueFrom,
+  fromEvent,
+  map,
+  takeUntil,
+  toArray,
+} from "rxjs";
 
-export const streamGitLog = async ({start, end}: GitCommitRange) => {
+export const streamGitLog = async ({ start, end }: GitCommitRange) => {
   const range = start ? `${start}..${end}` : `${end}`;
   const gitLog = spawn("git", [
     "log",
@@ -30,7 +38,6 @@ export const streamGitLog = async ({start, end}: GitCommitRange) => {
       try {
         return parseCommit(gitLogString);
       } catch (e: unknown) {
-        console.log("WARN: ", e);
         if (e instanceof InvalidGitLogCommitFormat) {
           return undefined;
         } else throw e;

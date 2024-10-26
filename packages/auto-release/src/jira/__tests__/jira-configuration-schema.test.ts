@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { schema } from "../schema";
+import { jiraConfigurationSchema } from "../jira-configuration-schema";
 import { JiraConfiguration } from "@/jira/jira-configuration";
 
 describe("schema", () => {
@@ -15,7 +15,7 @@ describe("schema", () => {
     unvalidatedConfiguration: object,
   ): JiraConfiguration => {
     try {
-      return schema.parse(unvalidatedConfiguration);
+      return jiraConfigurationSchema.parse(unvalidatedConfiguration);
     } catch (e) {
       throw new Error("Invalid Jira configuration: missing host");
     }

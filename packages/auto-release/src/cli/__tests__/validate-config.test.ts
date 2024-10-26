@@ -8,8 +8,16 @@ describe("validate-config", () => {
       expect(() => extractConfiguration(config)).not.toThrow();
     });
 
-    it("should fail when jiraBaseUrl is not valid URL", () => {
-      const config = { jiraBaseUrl: "abc" };
+    it("should fail when jiraConfiguration is incorrect format", () => {
+      const config = { jiraConfiguration: "abc" };
+      expect(() => extractConfiguration(config)).toThrow(
+        new Error("Invalid configuration"),
+      );
+    });
+
+    it("should fail when version rule is incorrect format", () => {
+      const config = { versionRules: { incorrectFormat: true } };
+
       expect(() => extractConfiguration(config)).toThrow(
         new Error("Invalid configuration"),
       );

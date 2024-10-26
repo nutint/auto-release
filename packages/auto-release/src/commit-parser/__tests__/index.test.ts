@@ -10,7 +10,6 @@ describe("commitParser", () => {
       async () => {
         const end = "HEAD";
         const gitLogStream = await streamGitLog({ end });
-        console.log(gitLogStream);
       },
       { timeout: 99999 },
     );

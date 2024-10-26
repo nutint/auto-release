@@ -1,13 +1,14 @@
 import { z } from "zod";
-import { schema as jiraConfigurationSchema } from "@/jira/schema";
+import { jiraConfigurationSchema } from "@/jira/jira-configuration-schema";
 import { Configuration } from "@/cli/configuration";
+import { versionRulesSchema } from "@/version/version-rules-schema";
 
 export const extractConfiguration = (
   unvalidatedConfig: object,
 ): Configuration => {
   const schema = z.object({
-    jiraBaseUrl: z.string().url().optional(),
     jiraConfiguration: jiraConfigurationSchema.optional(),
+    versionRules: versionRulesSchema.optional(),
   });
 
   try {

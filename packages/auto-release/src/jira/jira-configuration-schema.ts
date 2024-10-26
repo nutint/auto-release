@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const schema = z.object({
+export const jiraConfigurationSchema = z.object({
   host: z.string().url(),
   authentication: z.object({
     email: z.string().email(),
