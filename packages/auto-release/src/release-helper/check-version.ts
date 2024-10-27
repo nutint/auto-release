@@ -1,8 +1,6 @@
 import { listFiles } from "@/release-helper/list-files";
-import {
-  createVersionHelper,
-  supportedVersionFiles,
-} from "@/release-helper/version-helper";
+import { supportedVersionFiles } from "@/release-helper/version-helper/version-helper";
+import { createVersionHelper } from "@/release-helper/version-helper/create-version-helper";
 
 type CheckVersionParams = {
   versionFile?: string;

@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { checkVersion } from "@/release-helper/check-version";
 import * as ListFile from "@/release-helper/list-files";
-import * as VersionHelper from "@/release-helper/version-helper";
+import * as CreateVersionHelper from "@/release-helper/version-helper/create-version-helper";
 
 describe("CheckVersion", () => {
   describe("checkVersion", () => {
     const mockedCreateVersionHelper = vi.spyOn(
-      VersionHelper,
+      CreateVersionHelper,
       "createVersionHelper",
     );
     const packageJsonVersion = {
@@ -20,6 +20,7 @@ describe("CheckVersion", () => {
       vi.clearAllMocks();
       mockedCreateVersionHelper.mockReturnValue({
         getVersion: () => packageJsonVersion,
+        versionFileType: "package.json",
       });
     });
 
@@ -69,6 +70,7 @@ describe("CheckVersion", () => {
       it("should create version helper when found support version file", async () => {
         mockedCreateVersionHelper.mockReturnValue({
           getVersion: () => autoDetectedPackageJsonVersion,
+          versionFileType: "package.json",
         });
         await checkVersion();
 
@@ -80,6 +82,7 @@ describe("CheckVersion", () => {
       it("should return version from auto detected packageJsonVersion", async () => {
         mockedCreateVersionHelper.mockReturnValue({
           getVersion: () => autoDetectedPackageJsonVersion,
+          versionFileType: "package.json",
         });
         const actual = await checkVersion();
 
