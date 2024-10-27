@@ -1,11 +1,12 @@
 import { listFiles } from "@/release-helper/list-files";
-import { createVersionHelper } from "@/release-helper/version-helper";
+import {
+  createVersionHelper,
+  supportedVersionFiles,
+} from "@/release-helper/version-helper";
 
 type CheckVersionParams = {
   versionFile?: string;
 };
-
-const supportedVersionFiles = ["package.json"];
 
 export const checkVersion = async (params: CheckVersionParams = {}) => {
   const { versionFile } = params;
