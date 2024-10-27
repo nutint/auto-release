@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { getGitLogs, streamGitLog } from "@/git/git-log";
-import { firstValueFrom, toArray } from "rxjs";
+import { getGitLogs, getGitLogsStream, streamGitLog } from "@/git/git-log";
+import { filter, firstValueFrom, lastValueFrom, map, toArray } from "rxjs";
 import { createLogConfig } from "@/release-helper/release-helper";
 
 describe("GitLog", () => {
@@ -27,8 +27,11 @@ describe("GitLog", () => {
 
   describe("getGitLogs", () => {
     it("should filter with scope", async () => {
-      const actual = await getGitLogs(createLogConfig({ scope: "id24" }));
+      const actual = await getGitLogs(
+        createLogConfig({ scope: "auto-release" }),
+      );
 
+      console.log(actual);
       expect(actual).toBeTruthy();
     });
 
@@ -36,6 +39,21 @@ describe("GitLog", () => {
       const actual = await getGitLogs(createLogConfig());
 
       expect(actual).toBeTruthy();
+    });
+  });
+
+  describe("getGitLogStream", () => {
+    it("should subscribe and get the message", async () => {
+      const $result = getGitLogsStream(
+        createLogConfig({ scope: "auto-release" }),
+      ).pipe(
+        map((commit) => commit.tags),
+        filter((tags) => tags.length > 0),
+        toArray(),
+      );
+
+      const result = await lastValueFrom($result);
+      console.log({ result });
     });
   });
 });
