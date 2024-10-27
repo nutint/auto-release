@@ -1,4 +1,8 @@
-import { GitCommitRange, InvalidGitLogCommitFormat } from "@/git/git-log";
+import {
+  GitCommitRange,
+  InvalidGitLogCommitFormat,
+  parseCommit,
+} from "@/git/git-log";
 import { parseConventionalMessage } from "@/conventional-commit-helper/conventional-commit-helper";
 import { spawn } from "child_process";
 import readline from "readline";
@@ -16,7 +20,8 @@ export const streamGitLog = async ({ start, end }: GitCommitRange) => {
   const range = start ? `${start}..${end}` : `${end}`;
   const gitLog = spawn("git", [
     "log",
-    `--pretty=format:%H%n%an%n%ad%n%s%n%b%n==END==`,
+    `--pretty=format:%H%n%an%n%ad%n%D%n%s%n%b%n==END==`,
+    `--decorate=short`,
     range,
   ]);
 
@@ -47,6 +52,7 @@ export const streamGitLog = async ({ start, end }: GitCommitRange) => {
   );
   return await firstValueFrom($changeLogArray);
 };
+
 export const parseCommit = (commitLogString: string) => {
   const lines = commitLogString.split("\n");
   const hash = lines[0];

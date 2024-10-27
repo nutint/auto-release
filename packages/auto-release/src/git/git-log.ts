@@ -27,9 +27,16 @@ export const parseCommit = (commitLogString: string) => {
   const hash = lines[0];
   const author = lines[1];
   const date = lines[2];
-  const message = lines.slice(3).join("\n").trim();
+  const tagsLine = lines[3];
+  const tags =
+    tagsLine === undefined
+      ? []
+      : tagsLine.startsWith("tag:")
+        ? tagsLine.split(", ").map((tag) => tag.replace("tag: ", ""))
+        : [];
+  const message = lines.slice(4).join("\n").trim();
 
-  if (lines.length < 4) {
+  if (lines.length < 5) {
     throw new InvalidGitLogCommitFormat("Empty commit message");
   }
 
@@ -38,6 +45,7 @@ export const parseCommit = (commitLogString: string) => {
     author,
     date,
     message,
+    tags,
   };
 };
 
@@ -46,6 +54,7 @@ export type ParsedCommit = {
   author: string;
   message: string;
   hash: string;
+  tags: string[];
 };
 
 export type MappedCommit<T> = ParsedCommit & { mapped: T };
@@ -58,7 +67,8 @@ export const streamGitLog = ({
   const range = start ? `${start}..${rangeEnd}` : rangeEnd;
   const gitLog = spawn("git", [
     "log",
-    `--pretty=format:%H%n%an%n%ad%n%s%n%b%n==END==`,
+    `--pretty=format:%H%n%an%n%ad%n%D%n%s%n%b%n==END==`,
+    `--decorate=short`,
     range,
   ]);
 
