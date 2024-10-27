@@ -100,11 +100,11 @@ export type GetLogConfig<T> = {
   predicate?: (mappedCommit: MappedCommit<T>) => boolean;
 };
 
-export const getGitLogs = async <T>(
+export const getGitLogsStream = <T>(
   getLogConfig: GetLogConfig<T>,
   gitCommitRange: GitCommitRange = {},
-): Promise<MappedCommit<T>[]> => {
-  const $result = streamGitLog(gitCommitRange).pipe(
+): Observable<MappedCommit<T>> => {
+  return streamGitLog(gitCommitRange).pipe(
     map((parsedCommit) => {
       return {
         ...parsedCommit,
@@ -112,6 +112,14 @@ export const getGitLogs = async <T>(
       };
     }),
     filter(getLogConfig.predicate ? getLogConfig.predicate : () => true),
+  );
+};
+
+export const getGitLogs = async <T>(
+  getLogConfig: GetLogConfig<T>,
+  gitCommitRange: GitCommitRange = {},
+): Promise<MappedCommit<T>[]> => {
+  const $result = getGitLogsStream(getLogConfig, gitCommitRange).pipe(
     toArray(),
   );
   return await firstValueFrom($result);
