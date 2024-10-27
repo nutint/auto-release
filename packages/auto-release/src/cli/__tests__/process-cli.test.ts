@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { processCli } from "../process-cli";
 import * as ParseArguments from "@/cli/parse-arguments";
 import * as ReadConfiguration from "@/cli/read-configuration";
+import * as ReleaseHelper from "@/release-helper/release-helper";
 import { Arguments } from "@/cli/parse-arguments";
 
 vi.mock("@/cli/parse-arguments");
@@ -12,6 +13,10 @@ describe("processCli", () => {
   const mockedReadConfiguration = vi.spyOn(
     ReadConfiguration,
     "readConfiguration",
+  );
+  const mockedExtractReleaseInformation = vi.spyOn(
+    ReleaseHelper,
+    "extractReleaseInformation",
   );
 
   const parsedArguments: Arguments = {
@@ -40,5 +45,11 @@ describe("processCli", () => {
     expect(mockedReadConfiguration).toHaveBeenCalledWith(
       parsedArguments.configFile,
     );
+  });
+
+  it("should extract release information", async () => {
+    await processCli([]);
+
+    expect(mockedExtractReleaseInformation).toHaveBeenCalled();
   });
 });
