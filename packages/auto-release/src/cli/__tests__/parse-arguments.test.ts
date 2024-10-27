@@ -4,6 +4,7 @@ import {
   defaultConfigurationFile,
   parseArguments,
   mapLogLevel,
+  CommandArgument,
 } from "../parse-arguments";
 
 describe("ParseArguments", () => {
@@ -11,6 +12,7 @@ describe("ParseArguments", () => {
     const defaultArgument: Arguments = {
       configFile: defaultConfigurationFile,
       logLevel: "error",
+      commands: [],
     };
 
     it("should return default configuration file when no argument", () => {
@@ -37,6 +39,15 @@ describe("ParseArguments", () => {
       expect(actual).toEqual({
         ...defaultArgument,
         logLevel: "warn",
+      });
+    });
+
+    it("should extract analyzing release command", () => {
+      const actual = parseArguments(["--analyze-release"]);
+
+      expect(actual).toEqual({
+        ...defaultArgument,
+        commands: [{ command: CommandArgument.AnalyzeRelease }],
       });
     });
   });

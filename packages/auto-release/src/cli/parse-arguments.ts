@@ -1,8 +1,16 @@
 export type LogLevel = "error" | "warn" | "info" | "debug";
 
+export const CommandArgument = {
+  AnalyzeRelease: "AnalyzeRelease",
+} as const;
+
+export type CommandArgument =
+  (typeof CommandArgument)[keyof typeof CommandArgument];
+
 export type Arguments = {
   configFile: string;
   logLevel: LogLevel;
+  commands: { command: CommandArgument }[];
 };
 
 export const defaultConfigurationFile = "auto-release.config.json";
@@ -16,12 +24,21 @@ export const parseArguments = (args: string[]): Arguments => {
     .find((arg) => arg.startsWith("--log-level=warn"))
     ?.split("--log-level=")[1];
 
+  const analyzeReleaseCommand = args.find((arg) =>
+    arg.startsWith("--analyze-release"),
+  );
+
   const logLevel =
     logLevelInput !== undefined ? mapLogLevel(logLevelInput) : undefined;
 
   return {
     configFile: argConfigurationFile ?? defaultConfigurationFile,
     logLevel: logLevel ?? "error",
+    commands: [
+      ...(analyzeReleaseCommand !== undefined
+        ? [{ command: CommandArgument.AnalyzeRelease }]
+        : []),
+    ],
   };
 };
 

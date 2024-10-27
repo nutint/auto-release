@@ -3,7 +3,7 @@ import { processCli } from "../process-cli";
 import * as ParseArguments from "@/cli/parse-arguments";
 import * as ReadConfiguration from "@/cli/read-configuration";
 import * as ReleaseHelper from "@/release-helper/release-helper";
-import { Arguments } from "@/cli/parse-arguments";
+import { Arguments, CommandArgument } from "@/cli/parse-arguments";
 
 vi.mock("@/cli/parse-arguments");
 vi.mock("@/cli/read-configuration");
@@ -22,6 +22,7 @@ describe("processCli", () => {
   const parsedArguments: Arguments = {
     configFile: "auto-release.config.json",
     logLevel: "error",
+    commands: [],
   };
 
   const configuration = {
@@ -47,9 +48,20 @@ describe("processCli", () => {
     );
   });
 
-  it("should extract release information", async () => {
-    await processCli([]);
+  it("should extract release information when user passed analyze release command", async () => {
+    mockedParseArguments.mockReturnValue({
+      ...parsedArguments,
+      commands: [{ command: CommandArgument.AnalyzeRelease }],
+    });
+
+    await processCli(["--analyze-release"]);
 
     expect(mockedExtractReleaseInformation).toHaveBeenCalled();
+  });
+
+  it("should not extract release information when user not pass analyze release command", async () => {
+    await processCli(["--analyze-release"]);
+
+    expect(mockedExtractReleaseInformation).not.toHaveBeenCalled();
   });
 });
