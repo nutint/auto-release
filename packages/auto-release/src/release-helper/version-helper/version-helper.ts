@@ -11,4 +11,7 @@ export class VersionHelperError extends Error {
 
 type SupportVersionFile = "package.json" | "build.sbt";
 
-export const supportedVersionFiles: SupportVersionFile[] = ["package.json"];
+export const supportedVersionFiles: SupportVersionFile[] = [
+  "package.json",
+  "build.sbt",
+];
