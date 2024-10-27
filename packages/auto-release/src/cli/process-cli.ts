@@ -10,7 +10,7 @@ export const processCli = async (args: string[]) => {
       (command) => command.command === CommandArgument.AnalyzeRelease,
     )
   ) {
-    const releaseInformation = extractReleaseInformation();
+    const releaseInformation = await extractReleaseInformation();
     console.log(releaseInformation);
   }
 };

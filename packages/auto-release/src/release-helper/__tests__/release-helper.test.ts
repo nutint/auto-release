@@ -13,17 +13,17 @@ describe("ReleaseHelper", () => {
 
     beforeEach(() => {
       vi.clearAllMocks();
-      mockedCheckCurrentVersion.mockReturnValue(currentVersion);
+      mockedCheckCurrentVersion.mockResolvedValue(currentVersion);
     });
 
-    it("should check current version", () => {
-      extractReleaseInformation();
+    it("should check current version", async () => {
+      await extractReleaseInformation();
 
       expect(mockedCheckCurrentVersion).toHaveBeenCalled();
     });
 
-    it("should return correct release information", () => {
-      const releaseInformation = extractReleaseInformation();
+    it("should return correct release information", async () => {
+      const releaseInformation = await extractReleaseInformation();
 
       expect(releaseInformation).toEqual({
         currentVersion: currentVersion.packageVersion,

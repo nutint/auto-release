@@ -26,8 +26,8 @@ export const createLogConfig = ({
   };
 };
 
-export const extractReleaseInformation = () => {
-  const { packageVersion, latestGitTag } = checkVersion();
+export const extractReleaseInformation = async () => {
+  const { packageVersion, latestGitTag } = await checkVersion();
   return {
     currentVersion: packageVersion,
     latestTagVersion: latestGitTag,
