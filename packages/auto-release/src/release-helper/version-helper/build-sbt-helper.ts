@@ -17,11 +17,6 @@ export const createBuildSbtHelper = (versionFile: string): IVersionHelper => {
 
   return {
     versionFileType: "build.sbt",
-    getVersion: () => {
-      return {
-        packageVersion: versionMatch[1] as string,
-        latestGitTag: "1.0.0",
-      };
-    },
+    getVersion: () => versionMatch[1] as string,
   };
 };

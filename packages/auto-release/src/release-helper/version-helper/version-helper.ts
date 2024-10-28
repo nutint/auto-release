@@ -1,5 +1,5 @@
 export type IVersionHelper = {
-  getVersion: () => { packageVersion: string; latestGitTag: string };
+  getVersion: () => string;
   versionFileType: SupportVersionFile;
 };
 

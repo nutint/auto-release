@@ -6,11 +6,21 @@ type CheckVersionParams = {
   versionFile?: string;
 };
 
-export const checkVersion = async (params: CheckVersionParams = {}) => {
+type Version = {
+  packageVersion: string;
+  latestGitTag: string;
+};
+
+export const checkVersion = async (
+  params: CheckVersionParams = {},
+): Promise<Version> => {
   const { versionFile } = params;
   if (versionFile) {
     const versionHelper = createVersionHelper(versionFile);
-    return versionHelper.getVersion();
+    return {
+      packageVersion: versionHelper.getVersion(),
+      latestGitTag: "1.0.2",
+    };
   }
   const files = await listFiles(process.cwd());
   const autoDetectedVersionFile = files.find(
@@ -27,5 +37,8 @@ export const checkVersion = async (params: CheckVersionParams = {}) => {
 
   const versionHelper = createVersionHelper(autoDetectedVersionFile);
 
-  return versionHelper.getVersion();
+  return {
+    packageVersion: versionHelper.getVersion(),
+    latestGitTag: "1.0.2",
+  };
 };

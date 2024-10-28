@@ -12,12 +12,7 @@ export const createPackageJsonHelper = (
     const { version } = JSON.parse(content);
     if (version) {
       return {
-        getVersion: () => {
-          return {
-            packageVersion: version,
-            latestGitTag: "1.0.1",
-          };
-        },
+        getVersion: () => version,
         versionFileType: "package.json",
       };
     }

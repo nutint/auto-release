@@ -38,6 +38,6 @@ describe("BuildSbtHelper", () => {
   it("should return correct packageVersion from build.sbt file", () => {
     const actual = createBuildSbtHelper(versionFile);
 
-    expect(actual.getVersion().packageVersion).toEqual("1.0.0");
+    expect(actual.getVersion()).toEqual("1.0.0");
   });
 });

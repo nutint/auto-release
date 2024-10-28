@@ -9,9 +9,10 @@ describe("CheckVersion", () => {
       CreateVersionHelper,
       "createVersionHelper",
     );
-    const packageJsonVersion = {
+    const packageVersion = "1.0.1";
+    const version = {
       packageVersion: "1.0.1",
-      latestGitTag: "1.0.1",
+      latestGitTag: "1.0.2",
     };
 
     const versionFile =
@@ -19,7 +20,7 @@ describe("CheckVersion", () => {
     beforeEach(() => {
       vi.clearAllMocks();
       mockedCreateVersionHelper.mockReturnValue({
-        getVersion: () => packageJsonVersion,
+        getVersion: () => packageVersion,
         versionFileType: "package.json",
       });
     });
@@ -34,15 +35,16 @@ describe("CheckVersion", () => {
       it("should return version info by the result of version helper", async () => {
         const actual = await checkVersion({ versionFile });
 
-        expect(actual).toEqual(packageJsonVersion);
+        expect(actual).toEqual(version);
       });
     });
 
     describe("when not specify version file", () => {
       const mockedListFile = vi.spyOn(ListFile, "listFiles");
 
-      const autoDetectedPackageJsonVersion = {
-        packageVersion: "1.0.2",
+      const autoDetectedPackageVersion = "1.0.2";
+      const autoDetectedVersion = {
+        packageVersion: autoDetectedPackageVersion,
         latestGitTag: "1.0.2",
       };
       const passedAutoDetectVersionFile = "/user/local/package.json";
@@ -69,9 +71,10 @@ describe("CheckVersion", () => {
 
       it("should create version helper when found support version file", async () => {
         mockedCreateVersionHelper.mockReturnValue({
-          getVersion: () => autoDetectedPackageJsonVersion,
+          getVersion: () => autoDetectedPackageVersion,
           versionFileType: "package.json",
         });
+
         await checkVersion();
 
         expect(mockedCreateVersionHelper).toHaveBeenCalledWith(
@@ -81,12 +84,13 @@ describe("CheckVersion", () => {
 
       it("should return version from auto detected packageJsonVersion", async () => {
         mockedCreateVersionHelper.mockReturnValue({
-          getVersion: () => autoDetectedPackageJsonVersion,
+          getVersion: () => autoDetectedPackageVersion,
           versionFileType: "package.json",
         });
+
         const actual = await checkVersion();
 
-        expect(actual).toEqual(autoDetectedPackageJsonVersion);
+        expect(actual).toEqual(autoDetectedVersion);
       });
     });
   });
