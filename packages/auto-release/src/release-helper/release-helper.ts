@@ -51,7 +51,7 @@ export const extractReleaseInformation = async (
 
 export type ReleaseInformation = {
   currentVersion: string;
-  latestTagVersion: string;
+  latestTagVersion?: string;
   nextVersion: string;
   changes: {
     minor: string[];

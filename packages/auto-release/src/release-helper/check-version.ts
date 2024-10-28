@@ -1,6 +1,7 @@
 import { listFiles } from "@/release-helper/list-files";
 import { supportedVersionFiles } from "@/release-helper/version-helper/version-helper";
 import { createVersionHelper } from "@/release-helper/version-helper/create-version-helper";
+import { getVersionInfoFromGitHistory } from "@/release-helper/version-helper/get-version-info-from-git-history";
 
 type CheckVersionParams = {
   versionFile?: string;
@@ -8,18 +9,22 @@ type CheckVersionParams = {
 
 type Version = {
   packageVersion: string;
-  latestGitTag: string;
+  latestGitTag?: string;
 };
 
 export const checkVersion = async (
   params: CheckVersionParams = {},
 ): Promise<Version> => {
   const { versionFile } = params;
+
+  const { latestStableTags } = await getVersionInfoFromGitHistory();
+  const latestGitTag = latestStableTags[latestStableTags.length - 1];
+
   if (versionFile) {
     const versionHelper = createVersionHelper(versionFile);
     return {
       packageVersion: versionHelper.getVersion(),
-      latestGitTag: "1.0.2",
+      latestGitTag,
     };
   }
   const files = await listFiles(process.cwd());
@@ -39,6 +44,6 @@ export const checkVersion = async (
 
   return {
     packageVersion: versionHelper.getVersion(),
-    latestGitTag: "1.0.2",
+    latestGitTag,
   };
 };

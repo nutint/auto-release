@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { checkVersion } from "@/release-helper/check-version";
 import * as ListFile from "@/release-helper/list-files";
 import * as CreateVersionHelper from "@/release-helper/version-helper/create-version-helper";
+import * as GetVersionInfoFromGitHistory from "@/release-helper/version-helper/get-version-info-from-git-history";
 
 describe("CheckVersion", () => {
   describe("checkVersion", () => {
@@ -9,10 +10,20 @@ describe("CheckVersion", () => {
       CreateVersionHelper,
       "createVersionHelper",
     );
+    const mockedGetVersionInfoFromGitHistory = vi.spyOn(
+      GetVersionInfoFromGitHistory,
+      "getVersionInfoFromGitHistory",
+    );
+
     const packageVersion = "1.0.1";
+    const latestGitTag = "1.0.0";
     const version = {
       packageVersion: "1.0.1",
-      latestGitTag: "1.0.2",
+      latestGitTag,
+    };
+    const versionInfoFromGitHistory = {
+      latestTags: ["1.0-1-beta"],
+      latestStableTags: [latestGitTag],
     };
 
     const versionFile =
@@ -23,6 +34,15 @@ describe("CheckVersion", () => {
         getVersion: () => packageVersion,
         versionFileType: "package.json",
       });
+      mockedGetVersionInfoFromGitHistory.mockResolvedValue(
+        versionInfoFromGitHistory,
+      );
+    });
+
+    it("should get version info from git history", async () => {
+      await checkVersion({ versionFile });
+
+      expect(mockedGetVersionInfoFromGitHistory).toHaveBeenCalled();
     });
 
     describe("when specify version file as package.json", () => {
@@ -32,10 +52,24 @@ describe("CheckVersion", () => {
         expect(mockedCreateVersionHelper).toHaveBeenCalledWith(versionFile);
       });
 
-      it("should return version info by the result of version helper", async () => {
+      it("should return version info by the result of version helper and latest stable tag", async () => {
         const actual = await checkVersion({ versionFile });
 
         expect(actual).toEqual(version);
+      });
+
+      it("should return version info without latest git tags when no latest stable tag", async () => {
+        mockedGetVersionInfoFromGitHistory.mockResolvedValue({
+          ...versionInfoFromGitHistory,
+          latestStableTags: [],
+        });
+
+        const actual = await checkVersion({ versionFile });
+
+        expect(actual).toEqual({
+          ...version,
+          latestGitTag: undefined,
+        });
       });
     });
 
@@ -45,7 +79,7 @@ describe("CheckVersion", () => {
       const autoDetectedPackageVersion = "1.0.2";
       const autoDetectedVersion = {
         packageVersion: autoDetectedPackageVersion,
-        latestGitTag: "1.0.2",
+        latestGitTag: latestGitTag,
       };
       const passedAutoDetectVersionFile = "/user/local/package.json";
 
