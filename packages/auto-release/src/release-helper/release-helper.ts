@@ -4,7 +4,7 @@ import {
   parseConventionalMessage,
 } from "@/conventional-commit-helper/conventional-commit-helper";
 import { checkVersion } from "@/release-helper/check-version";
-import { z } from "zod";
+import { VersionSourceConfiguration } from "@/release-helper/version-source-configuration";
 
 export type ConventionalLogConfigParams = {
   scope?: string;
@@ -26,14 +26,6 @@ export const createLogConfig = ({
     mapper,
   };
 };
-
-export type VersionSourceConfiguration = {
-  versionFile?: string;
-};
-
-export const versionSourceSchema = z.object({
-  versionFile: z.string().optional(),
-});
 
 export const extractReleaseInformation = async (
   versionSourceConfiguration: VersionSourceConfiguration = {},

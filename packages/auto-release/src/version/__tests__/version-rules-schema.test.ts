@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { versionRulesSchema } from "@/version/version-rules-schema";
+import { versionRulesSchema } from "@/version/version-rules-configuration";
 
 describe("VersionRuleSchema", () => {
   it("should fail when commit types is not valid", () => {

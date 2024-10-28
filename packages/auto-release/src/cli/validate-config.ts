@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { jiraConfigurationSchema } from "@/jira/jira-configuration-schema";
 import { Configuration } from "@/cli/configuration";
-import { versionRulesSchema } from "@/version/version-rules-schema";
-import { versionSourceSchema } from "@/release-helper/release-helper";
+import { versionRulesSchema } from "@/version/version-rules-configuration";
+import { versionSourceSchema } from "@/release-helper/version-source-configuration";
 
 export const extractConfiguration = (
   unvalidatedConfig: object,

@@ -1,6 +1,7 @@
 import { JiraConfiguration } from "@/jira/jira-configuration";
-import { VersionRulesConfiguration } from "@/version/version-rules-schema";
-import { VersionSourceConfiguration } from "@/release-helper/release-helper";
+import { VersionRulesConfiguration } from "@/version/version-rules-configuration";
+
+import { VersionSourceConfiguration } from "@/release-helper/version-source-configuration";
 
 export type Configuration = {
   jiraBaseUrl?: string;
