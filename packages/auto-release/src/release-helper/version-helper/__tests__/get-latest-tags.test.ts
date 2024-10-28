@@ -2,9 +2,9 @@ import { beforeEach, describe, it, vi, expect } from "vitest";
 import * as GitHelper from "@/git/git-helper";
 import { MappedCommit } from "@/git/git-log";
 import { from } from "rxjs";
-import { getLatestTags } from "../get-latest-tags";
+import { getVersionInfoFromGitHistory } from "../get-version-info-from-git-history";
 
-describe("GetLatestTags", () => {
+describe("getVersionInfoFromGitHistory", () => {
   const mockedGitHelper = vi.spyOn(GitHelper, "gitHelper");
   const mockedGitLogStream = vi.fn();
 
@@ -18,6 +18,7 @@ describe("GetLatestTags", () => {
   });
 
   const commits: MappedCommit<string>[] = [
+    createCommit(["1.0.2-beta"]),
     createCommit(["1.0.0"]),
     createCommit(["1.0.1"]),
     createCommit(["0.1.0"]),
@@ -36,14 +37,18 @@ describe("GetLatestTags", () => {
   });
 
   it("should return latest tags correctly", async () => {
-    const actual = await getLatestTags();
+    const actual = await getVersionInfoFromGitHistory();
 
-    expect(actual).toEqual([
-      "0.1.0-alpha",
-      "0.1.0-beta",
-      "0.1.0",
-      "1.0.0",
-      "1.0.1",
-    ]);
+    expect(actual).toEqual({
+      latestTags: [
+        "0.1.0-alpha",
+        "0.1.0-beta",
+        "0.1.0",
+        "1.0.0",
+        "1.0.1",
+        "1.0.2-beta",
+      ],
+      latestStableTags: ["0.1.0", "1.0.0", "1.0.1"],
+    });
   });
 });

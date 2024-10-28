@@ -3,7 +3,12 @@ import { createLogConfig } from "@/release-helper/release-helper";
 import { filter, lastValueFrom, mergeMap, toArray } from "rxjs";
 import * as semver from "semver";
 
-export const getLatestTags = async (): Promise<string[]> => {
+type VersionInfo = {
+  latestTags: string[];
+  latestStableTags: string[];
+};
+
+export const getVersionInfoFromGitHistory = async (): Promise<VersionInfo> => {
   const $result = gitHelper()
     .getLogStream(createLogConfig({ scope: "auto-release" }))
     .pipe(
@@ -12,5 +17,9 @@ export const getLatestTags = async (): Promise<string[]> => {
       toArray(),
     );
 
-  return (await lastValueFrom($result)).sort(semver.compare);
+  const latestTags = (await lastValueFrom($result)).sort(semver.compare);
+  return {
+    latestTags,
+    latestStableTags: latestTags.filter((tag) => !semver.prerelease(tag)),
+  };
 };
