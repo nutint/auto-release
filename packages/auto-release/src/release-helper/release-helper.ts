@@ -4,6 +4,7 @@ import {
   parseConventionalMessage,
 } from "@/conventional-commit-helper/conventional-commit-helper";
 import { checkVersion } from "@/release-helper/check-version";
+import { z } from "zod";
 
 export type ConventionalLogConfigParams = {
   scope?: string;
@@ -26,8 +27,20 @@ export const createLogConfig = ({
   };
 };
 
-export const extractReleaseInformation = async () => {
-  const { packageVersion, latestGitTag } = await checkVersion();
+export type VersionSourceConfiguration = {
+  versionFile?: string;
+};
+
+export const versionSourceSchema = z.object({
+  versionFile: z.string().optional(),
+});
+
+export const extractReleaseInformation = async (
+  versionSourceConfiguration: VersionSourceConfiguration = {},
+): Promise<ReleaseInformation> => {
+  const { packageVersion, latestGitTag } = await checkVersion(
+    versionSourceConfiguration,
+  );
   return {
     currentVersion: packageVersion,
     latestTagVersion: latestGitTag,
@@ -41,5 +54,20 @@ export const extractReleaseInformation = async () => {
       tickets: ["SCRUM-1", "SCRUM-2"],
       projectKey: "SCRUM",
     },
+  };
+};
+
+export type ReleaseInformation = {
+  currentVersion: string;
+  latestTagVersion: string;
+  nextVersion: string;
+  changes: {
+    minor: string[];
+    major: string[];
+    patch: string[];
+  };
+  jira: {
+    tickets: string[];
+    projectKey: string;
   };
 };

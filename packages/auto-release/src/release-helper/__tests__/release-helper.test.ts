@@ -19,7 +19,16 @@ describe("ReleaseHelper", () => {
     it("should check current version", async () => {
       await extractReleaseInformation();
 
-      expect(mockedCheckCurrentVersion).toHaveBeenCalled();
+      expect(mockedCheckCurrentVersion).toHaveBeenCalledWith({});
+    });
+
+    it("should accept versionSource as parameter", async () => {
+      const versionSourceConfiguration = { versionFile: "/abc/build.sbt" };
+      await extractReleaseInformation(versionSourceConfiguration);
+
+      expect(mockedCheckCurrentVersion).toHaveBeenCalledWith(
+        versionSourceConfiguration,
+      );
     });
 
     it("should return correct release information", async () => {

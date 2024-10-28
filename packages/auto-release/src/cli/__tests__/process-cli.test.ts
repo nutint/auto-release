@@ -4,6 +4,7 @@ import * as ParseArguments from "@/cli/parse-arguments";
 import * as ReadConfiguration from "@/cli/read-configuration";
 import * as ReleaseHelper from "@/release-helper/release-helper";
 import { Arguments, CommandArgument } from "@/cli/parse-arguments";
+import { ReleaseInformation } from "@/release-helper/release-helper";
 
 vi.mock("@/cli/parse-arguments");
 vi.mock("@/cli/read-configuration");
@@ -26,12 +27,20 @@ describe("processCli", () => {
   };
 
   const configuration = {
-    foo: "bar",
+    versionSource: {
+      versionFile: "/abc/build.sbt",
+    },
   };
+
+  const releaseInformation = {
+    foo: "bar",
+  } as unknown as ReleaseInformation;
 
   beforeEach(() => {
     vi.clearAllMocks();
     mockedParseArguments.mockReturnValue(parsedArguments);
+    mockedReadConfiguration.mockReturnValue(configuration);
+    mockedExtractReleaseInformation.mockResolvedValue(releaseInformation);
   });
 
   it("should parse arguments", async () => {
@@ -56,7 +65,9 @@ describe("processCli", () => {
 
     await processCli(["--analyze-release"]);
 
-    expect(mockedExtractReleaseInformation).toHaveBeenCalled();
+    expect(mockedExtractReleaseInformation).toHaveBeenCalledWith(
+      configuration.versionSource,
+    );
   });
 
   it("should not extract release information when user not pass analyze release command", async () => {

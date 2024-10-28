@@ -2,6 +2,7 @@ import { z } from "zod";
 import { jiraConfigurationSchema } from "@/jira/jira-configuration-schema";
 import { Configuration } from "@/cli/configuration";
 import { versionRulesSchema } from "@/version/version-rules-schema";
+import { versionSourceSchema } from "@/release-helper/release-helper";
 
 export const extractConfiguration = (
   unvalidatedConfig: object,
@@ -9,6 +10,7 @@ export const extractConfiguration = (
   const schema = z.object({
     jiraConfiguration: jiraConfigurationSchema.optional(),
     versionRules: versionRulesSchema.optional(),
+    versionSource: versionSourceSchema.optional(),
   });
 
   try {
