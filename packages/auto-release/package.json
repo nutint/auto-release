@@ -17,6 +17,7 @@
   "devDependencies": {
     "@nutint/typescript-config": "workspace:*",
     "@types/node": "^22.7.4",
+    "@types/semver": "^7.5.8",
     "tsup": "^8.3.0",
     "typescript": "latest",
     "vite": "^5.4.6",
@@ -26,6 +27,7 @@
     "conventional-commits-parser": "^6.0.0",
     "jira.js": "^4.0.2",
     "rxjs": "^7.8.1",
+    "semver": "^7.6.3",
     "zod": "^3.23.8"
   }
 }

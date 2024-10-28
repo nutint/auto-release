@@ -1,10 +1,10 @@
-# Release Helper
+# auto-release
 
 ![License](https://img.shields.io/github/license/nutint/auto-release)
 ![GitHub last commit](https://img.shields.io/github/last-commit/nutint/auto-release)
 ![GitHub issues](https://img.shields.io/github/issues/nutint/auto-release)
 
-Release Helper is a tool designed to simplify and automate the release process across different programming languages. It provides automated versioning, release notes generation, Git tagging, and Jira integration, making it easier to manage releases in projects of all sizes.
+auto-release is a tool designed to simplify and automate the release process across different programming languages. It provides automated versioning, release notes generation, Git tagging, and Jira integration, making it easier to manage releases in projects of all sizes.
 
 ## Features
 
@@ -18,7 +18,7 @@ Release Helper is a tool designed to simplify and automate the release process a
 
 ### 1. Using the CLI
 
-You can install the release helper as a global CLI tool using `npm`:
+You can install the auto-release as a global CLI tool using `npm`:
 
 ```bash
 npm install -g @nutint/auto-release
