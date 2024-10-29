@@ -5,5 +5,8 @@ export default defineConfig({
   ...viteConfig,
   test: {
     include: ["**/__tests__/*.test.ts"],
+    coverage: {
+      provider: "istanbul",
+    },
   },
 });
