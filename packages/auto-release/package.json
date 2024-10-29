@@ -6,6 +6,10 @@
   "bin": {
     "auto-release": "dist/index.js"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
