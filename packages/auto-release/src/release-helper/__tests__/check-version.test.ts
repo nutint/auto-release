@@ -127,5 +127,19 @@ describe("CheckVersion", () => {
         expect(actual).toEqual(autoDetectedVersion);
       });
     });
+
+    describe("when specify scope and gitTagPrefix", () => {
+      it("should getVersionInfoFromGitHistory with scope", async () => {
+        await checkVersion({
+          scope: "auto-release",
+          gitTagPrefix: "auto-release",
+        });
+
+        expect(mockedGetVersionInfoFromGitHistory).toHaveBeenCalledWith({
+          scope: "auto-release",
+          gitTagPrefix: "auto-release",
+        });
+      });
+    });
   });
 });

@@ -2,10 +2,7 @@ import { listFiles } from "@/release-helper/list-files";
 import { supportedVersionFiles } from "@/release-helper/version-helper/version-helper";
 import { createVersionHelper } from "@/release-helper/version-helper/create-version-helper";
 import { getVersionInfoFromGitHistory } from "@/release-helper/version-helper/get-version-info-from-git-history";
-
-type CheckVersionParams = {
-  versionFile?: string;
-};
+import { VersionSourceConfiguration } from "@/release-helper/version-source-configuration";
 
 type Version = {
   packageVersion: string;
@@ -13,11 +10,14 @@ type Version = {
 };
 
 export const checkVersion = async (
-  params: CheckVersionParams = {},
+  params: VersionSourceConfiguration = {},
 ): Promise<Version> => {
-  const { versionFile } = params;
+  const { versionFile, gitTagPrefix, scope } = params;
 
-  const { latestStableTags } = await getVersionInfoFromGitHistory();
+  const { latestStableTags } = await getVersionInfoFromGitHistory({
+    scope,
+    gitTagPrefix,
+  });
   const latestGitTag = latestStableTags[latestStableTags.length - 1];
 
   if (versionFile) {

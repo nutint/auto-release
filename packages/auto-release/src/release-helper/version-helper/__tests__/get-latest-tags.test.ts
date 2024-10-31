@@ -8,11 +8,11 @@ describe("getVersionInfoFromGitHistory", () => {
   const mockedGitHelper = vi.spyOn(GitHelper, "gitHelper");
   const mockedGitLogStream = vi.fn();
 
-  const createCommit = (tags: string[]) => ({
+  const createCommit = (tags: string[], scope: string = "auto-release") => ({
     hash: `e79826ae076eb568c33e45f4cc2ca84db8b02e37${tags.join("")}`,
     author: "dev",
     date: "Mon Oct 28 21:47:07 2024 +0700",
-    message: "feat(auto-release): extract latest version tag",
+    message: `feat(${scope}): extract latest version tag`,
     tags,
     mapped: "test",
   });
@@ -21,6 +21,9 @@ describe("getVersionInfoFromGitHistory", () => {
     createCommit(["1.0.2-beta"]),
     createCommit(["1.0.0"]),
     createCommit(["1.0.1"]),
+    createCommit(["auto-release@1.0.0"]),
+    createCommit(["auto-release@1.0.1"]),
+    createCommit(["auto-release@1.0.1-beta"]),
     createCommit(["0.1.0"]),
     createCommit(["0.1.0-alpha"]),
     createCommit(["0.1.0-beta"]),
@@ -37,7 +40,9 @@ describe("getVersionInfoFromGitHistory", () => {
   });
 
   it("should return latest tags correctly", async () => {
-    const actual = await getVersionInfoFromGitHistory();
+    const actual = await getVersionInfoFromGitHistory({
+      scope: "auto-release",
+    });
 
     expect(actual).toEqual({
       latestTags: [
@@ -49,6 +54,21 @@ describe("getVersionInfoFromGitHistory", () => {
         "1.0.2-beta",
       ],
       latestStableTags: ["0.1.0", "1.0.0", "1.0.1"],
+    });
+  });
+
+  it("should support gitTagPrefix", async () => {
+    const actual = await getVersionInfoFromGitHistory({
+      gitTagPrefix: "auto-release",
+    });
+
+    expect(actual).toEqual({
+      latestTags: [
+        "auto-release@1.0.0",
+        "auto-release@1.0.1-beta",
+        "auto-release@1.0.1",
+      ],
+      latestStableTags: ["auto-release@1.0.0", "auto-release@1.0.1"],
     });
   });
 });
