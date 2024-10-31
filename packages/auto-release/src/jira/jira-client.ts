@@ -30,6 +30,7 @@ export const JiraClient = (
           return undefined;
         }
       }
+      throw new Error("Get project failed");
     }
   },
   _client: jiraJsClient,

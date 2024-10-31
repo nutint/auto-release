@@ -2,10 +2,11 @@ import {
   getGitLogs,
   getGitLogsStream,
   GetLogConfig,
-  GitCommitRange,
   MappedCommit,
 } from "@/git/git-log";
 import { Observable } from "rxjs";
+
+import { GitCommitRange } from "@/git/stream-git-lines";
 
 type IGitHelper = {
   getLogs: <T>(

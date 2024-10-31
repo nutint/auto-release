@@ -27,7 +27,7 @@ export const checkVersion = async (
       latestGitTag,
     };
   }
-  const files = await listFiles(process.cwd());
+  const files = listFiles(process.cwd());
   const autoDetectedVersionFile = files.find(
     (file) =>
       supportedVersionFiles.find((supportedFile) =>

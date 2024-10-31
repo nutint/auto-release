@@ -85,7 +85,7 @@ describe("CheckVersion", () => {
 
       beforeEach(() => {
         vi.clearAllMocks();
-        mockedListFile.mockResolvedValue([passedAutoDetectVersionFile]);
+        mockedListFile.mockReturnValue([passedAutoDetectVersionFile]);
       });
       it("should list files with current working directory", async () => {
         await checkVersion();
@@ -94,7 +94,7 @@ describe("CheckVersion", () => {
       });
 
       it("should throw error when there is no support files in current working directory", async () => {
-        mockedListFile.mockResolvedValue([]);
+        mockedListFile.mockReturnValue([]);
 
         expect(() => checkVersion()).rejects.toEqual(
           new Error(

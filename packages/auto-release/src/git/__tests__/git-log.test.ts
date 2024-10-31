@@ -1,32 +1,96 @@
-import { describe, expect, it } from "vitest";
-import { InvalidGitLogCommitFormat, parseCommit } from "@/git/git-log";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { getGitLogs, getGitLogsStream, MappedCommit } from "@/git/git-log";
+import { createLogConfig } from "@/release-helper/release-helper";
+import * as StreamGitLog from "@/git/stream-git-log";
+import { from, lastValueFrom, toArray } from "rxjs";
+import { ConventionalCommit } from "@/conventional-commit-helper/conventional-commit-helper";
+import { ParsedCommit } from "@/git/stream-git-log";
 
 describe("GitLogs", () => {
-  describe("parseCommit", () => {
-    it("should throw invalid format error logged commit is empty string", async () => {
-      expect(() => parseCommit("")).toThrow(
-        new InvalidGitLogCommitFormat("Empty commit message"),
-      );
+  const mockedStreamGitLog = vi.spyOn(StreamGitLog, "streamGitLog");
+  const parsedCommit1: ParsedCommit = {
+    date: "abcdef",
+    author: "author",
+    message: "feat(auto-release): test",
+    hash: "abcdef",
+    tags: [],
+  };
+  const parsedCommit2: ParsedCommit = {
+    date: "abcdef",
+    author: "author",
+    message: "feat(something-else): test",
+    hash: "abcdef",
+    tags: [],
+  };
+
+  const mappedCommit1: MappedCommit<ConventionalCommit> = {
+    ...parsedCommit1,
+    mapped: {
+      body: undefined,
+      footer: undefined,
+      header: "feat(auto-release): test",
+      notes: [],
+      type: "feat",
+      scope: "auto-release",
+      subject: "test",
+    },
+  };
+
+  const mappedCommit2: MappedCommit<ConventionalCommit> = {
+    ...parsedCommit2,
+    mapped: {
+      body: undefined,
+      footer: undefined,
+      header: "feat(something-else): test",
+      notes: [],
+      type: "feat",
+      scope: "something-else",
+      subject: "test",
+    },
+  };
+  const parsedCommits = [parsedCommit1, parsedCommit2];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockedStreamGitLog.mockReturnValue(from(parsedCommits));
+  });
+
+  describe("getGitLogsStream", () => {
+    it("should call streamGitLogs with empty commit range if no commit range specified", () => {
+      getGitLogsStream(createLogConfig({ scope: "auto-release" }));
+
+      expect(mockedStreamGitLog).toHaveBeenCalledWith({});
     });
 
-    it("should return all properties", () => {
-      const message = "chore(repo): add pre-push";
-      const loggedCommit =
-        "c6f72d62b89f82c673a3cb74e67f88f6f6b058bd\n" +
-        "TestAuthor\n" +
-        "Sat Aug 24 13:08:46 2024 +0700\n" +
-        "tag: v1.0.1, tag: stable\n" +
-        message +
-        "\n";
-      const actual = parseCommit(loggedCommit);
+    it("should return filtered mapped commits", async () => {
+      const $actual = getGitLogsStream(
+        createLogConfig({ scope: "auto-release" }),
+      ).pipe(toArray());
 
-      expect(actual).toEqual({
-        hash: "c6f72d62b89f82c673a3cb74e67f88f6f6b058bd",
-        author: "TestAuthor",
-        date: "Sat Aug 24 13:08:46 2024 +0700",
-        message: "chore(repo): add pre-push",
-        tags: ["v1.0.1", "stable"],
-      });
+      const actual = await lastValueFrom($actual);
+
+      expect(actual).toEqual([mappedCommit1]);
+    });
+
+    it("should return all commits when no predicated provided", async () => {
+      const $actual = getGitLogsStream({
+        ...createLogConfig({ scope: "auto-release" }),
+        predicate: undefined,
+      }).pipe(toArray());
+
+      const actual = await lastValueFrom($actual);
+
+      expect(actual).toEqual([mappedCommit1, mappedCommit2]);
+    });
+  });
+
+  describe("getGitLogs", () => {
+    it("should return filtered commits as array", async () => {
+      const actual = await getGitLogs(
+        createLogConfig({ scope: "auto-release" }),
+      );
+
+      expect(actual).toEqual([mappedCommit1]);
     });
   });
 });

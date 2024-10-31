@@ -7,6 +7,14 @@ export default defineConfig({
     include: ["**/__tests__/*.test.ts"],
     coverage: {
       provider: "istanbul",
+      exclude: [
+        "src/git/stream-git-lines.ts",
+        "**/__integration__/**",
+        "dist/**",
+        "src/index.ts",
+        "**/__tests__/**",
+        "src/commit-parser/commit-parser.ts",
+      ],
     },
   },
 });

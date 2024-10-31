@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { InvalidGitLogCommitFormat } from "@/git/git-log";
 import { parseConventionalMessage } from "@/conventional-commit-helper/conventional-commit-helper";
+
+import { InvalidGitLogCommitFormat } from "@/commit-parser/parse-commit";
 
 describe("Parse", () => {
   describe("parseConventionalMessage", () => {

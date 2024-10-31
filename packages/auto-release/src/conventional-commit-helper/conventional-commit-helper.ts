@@ -1,6 +1,7 @@
-import { InvalidGitLogCommitFormat } from "@/git/git-log";
 // @ts-ignore
 import { CommitParser } from "conventional-commits-parser";
+
+import { InvalidGitLogCommitFormat } from "@/commit-parser/parse-commit";
 
 export type ConventionalCommit = {
   header: string;

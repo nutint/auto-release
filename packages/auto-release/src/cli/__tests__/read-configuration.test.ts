@@ -10,17 +10,19 @@ vi.mock("fs");
 describe("readConfiguration", () => {
   const mockedExistsFileSync = vi.spyOn(fs, "existsSync");
   const mockedReadFileSync = vi.spyOn(fs, "readFileSync");
-  const mockedValidateConfiguration = vi.spyOn(
+  const mockedExtractConfiguration = vi.spyOn(
     ValidateConfig,
     "extractConfiguration",
   );
   const absolutePath = path.resolve(process.cwd(), defaultConfigurationFile);
   const parsedConfiguration = { jiraBaseUrl: "https://myjira.jira.com" };
+  const configuration = {};
 
   beforeEach(() => {
     vi.clearAllMocks();
     mockedExistsFileSync.mockReturnValue(true);
     mockedReadFileSync.mockReturnValue(JSON.stringify(parsedConfiguration));
+    mockedExtractConfiguration.mockReturnValue(configuration);
   });
 
   it("should check file exists by absolute path", async () => {
@@ -53,10 +55,20 @@ describe("readConfiguration", () => {
     );
   });
 
+  it("should throw unhandled exception when other exception thrown", () => {
+    mockedExtractConfiguration.mockImplementation(() => {
+      throw new Error("Some error");
+    });
+
+    expect(() => readConfiguration(defaultConfigurationFile)).toThrow(
+      new Error("read configuration failed with unhandled exception"),
+    );
+  });
+
   it("should validate configuration", () => {
     readConfiguration(defaultConfigurationFile);
 
-    expect(mockedValidateConfiguration).toHaveBeenCalledWith(
+    expect(mockedExtractConfiguration).toHaveBeenCalledWith(
       parsedConfiguration,
     );
   });

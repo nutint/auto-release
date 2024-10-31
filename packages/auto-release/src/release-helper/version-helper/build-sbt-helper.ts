@@ -11,10 +11,6 @@ export const createBuildSbtHelper = (versionFile: string): IVersionHelper => {
     throw new VersionHelperError("invalid build.sbt file");
   }
 
-  if (versionMatch[1] === undefined) {
-    throw new VersionHelperError("invalid build.sbt file");
-  }
-
   return {
     versionFileType: "build.sbt",
     getVersion: () => versionMatch[1] as string,

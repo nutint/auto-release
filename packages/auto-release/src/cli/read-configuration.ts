@@ -20,6 +20,6 @@ export function readConfiguration(configFileName: string): Configuration {
         `read configuration failed: ${absolutePath} incorrect format: expect JSON`,
       );
     }
-    throw e;
+    throw new Error("read configuration failed with unhandled exception");
   }
 }

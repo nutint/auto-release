@@ -33,6 +33,26 @@ describe("JiraClient", () => {
       expect(actual).toBeUndefined();
     });
 
+    it("should throw error when non 404 error happen", async () => {
+      jiraJsClient.projects.getProject.mockRejectedValue(
+        new HttpException("Request failed with status code 500", 500),
+      );
+
+      await expect(() => jiraClient.getProject(projectKey)).rejects.toEqual(
+        new Error("Get project failed"),
+      );
+    });
+
+    it("should throw error when other exception thrown", async () => {
+      jiraJsClient.projects.getProject.mockRejectedValue(
+        new Error("Other exception"),
+      );
+
+      await expect(() => jiraClient.getProject(projectKey)).rejects.toEqual(
+        new Error("Get project failed"),
+      );
+    });
+
     it("should return project info when project is exists", async () => {
       const actual = await jiraClient.getProject(projectKey);
 

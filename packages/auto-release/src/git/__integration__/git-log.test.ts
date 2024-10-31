@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { getGitLogs, getGitLogsStream, streamGitLog } from "@/git/git-log";
-import { filter, firstValueFrom, lastValueFrom, map, toArray } from "rxjs";
+import { getGitLogs, getGitLogsStream } from "@/git/git-log";
+import { firstValueFrom, lastValueFrom, toArray } from "rxjs";
 import { createLogConfig } from "@/release-helper/release-helper";
+import { streamGitLog } from "@/git/stream-git-log";
 
 describe("GitLog", () => {
   describe("streamGitLog", () => {
@@ -46,11 +47,7 @@ describe("GitLog", () => {
     it("should subscribe and get the message", async () => {
       const $result = getGitLogsStream(
         createLogConfig({ scope: "auto-release" }),
-      ).pipe(
-        map((commit) => commit.tags),
-        filter((tags) => tags.length > 0),
-        toArray(),
-      );
+      ).pipe(toArray());
 
       const result = await lastValueFrom($result);
       console.log({ result });

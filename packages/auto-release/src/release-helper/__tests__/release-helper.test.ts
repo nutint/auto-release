@@ -1,6 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { extractReleaseInformation } from "@/release-helper/release-helper";
+import {
+  createLogConfig,
+  extractReleaseInformation,
+} from "@/release-helper/release-helper";
 import * as CheckVersion from "../check-version";
+import { MappedCommit } from "@/git/git-log";
+import { ConventionalCommit } from "@/conventional-commit-helper/conventional-commit-helper";
+import { fail } from "node:assert";
 
 describe("ReleaseHelper", () => {
   describe("extractReleaseInformation", () => {
@@ -48,6 +54,27 @@ describe("ReleaseHelper", () => {
           projectKey: "SCRUM",
         },
       });
+    });
+  });
+
+  describe("createLogConfig", () => {
+    it("should return predicate when provide scope", () => {
+      const { predicate } = createLogConfig({ scope: "auto-release" });
+
+      if (!predicate) {
+        fail();
+      }
+      expect(
+        predicate({
+          mapped: { scope: "auto-release" },
+        } as MappedCommit<ConventionalCommit>),
+      ).toBeTruthy();
+    });
+
+    it("should not return predicate when not provide scope", () => {
+      const { predicate } = createLogConfig();
+
+      expect(predicate).toBeUndefined();
     });
   });
 });
