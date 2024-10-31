@@ -1,6 +1,6 @@
 # auto-release
 
-![License](https://img.shields.io/github/license/nutint/auto-release)
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/nutint/auto-release)
 ![GitHub issues](https://img.shields.io/github/issues/nutint/auto-release)
 ![Coverage](https://codecov.io/gh/nutint/auto-release/branch/main/graph/badge.svg)
