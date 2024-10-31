@@ -14,7 +14,7 @@
   "scripts": {
     "dev": "tsc --watch",
     "test": "vitest --run --config vitest.config.unit.ts",
-    "test:coverage": "vitest run --config vitest.config.unit.ts --coverage",
+    "test:ci": "vitest run --config vitest.config.unit.ts --coverage",
     "test:integration": "vitest --run --config vitest.config.integration.ts",
     "build": "tsup src/index.ts --format cjs,esm --dts"
   },

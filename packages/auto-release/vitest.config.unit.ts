@@ -15,6 +15,7 @@ export default defineConfig({
         "**/__tests__/**",
         "src/commit-parser/commit-parser.ts",
       ],
+      reporter: ["text", "json", "lcov"],
     },
   },
 });
