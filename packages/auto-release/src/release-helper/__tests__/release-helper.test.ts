@@ -11,15 +11,30 @@ import { fail } from "node:assert";
 describe("ReleaseHelper", () => {
   describe("extractReleaseInformation", () => {
     const mockedCheckCurrentVersion = vi.spyOn(CheckVersion, "checkVersion");
+    const mockedProcessVersionFromGitHistory = vi.spyOn(
+      CheckVersion,
+      "processVersionFromGitHistory",
+    );
 
-    const currentVersion = {
-      packageVersion: "1.0.0",
-      latestGitTag: "1.0.0",
-    };
+    const latestGitTag = "1.0.0";
+    const packageVersion = "1.0.0";
 
     beforeEach(() => {
       vi.clearAllMocks();
-      mockedCheckCurrentVersion.mockResolvedValue(currentVersion);
+      mockedCheckCurrentVersion.mockResolvedValue(packageVersion);
+      mockedProcessVersionFromGitHistory.mockResolvedValue(latestGitTag);
+    });
+
+    it("should processVersionFromGitHistory with gitTagPrefix and Scope", async () => {
+      const gitTagPrefixAndScope = {
+        gitTagPrefix: "auto-release",
+        scope: "auto-release",
+      };
+      await extractReleaseInformation(gitTagPrefixAndScope);
+
+      expect(mockedProcessVersionFromGitHistory).toHaveBeenCalledWith(
+        gitTagPrefixAndScope,
+      );
     });
 
     it("should check current version", async () => {
@@ -41,8 +56,8 @@ describe("ReleaseHelper", () => {
       const releaseInformation = await extractReleaseInformation();
 
       expect(releaseInformation).toEqual({
-        currentVersion: currentVersion.packageVersion,
-        latestTagVersion: currentVersion.latestGitTag,
+        currentVersion: packageVersion,
+        latestTagVersion: latestGitTag,
         nextVersion: "1.0.1",
         changes: {
           minor: [],

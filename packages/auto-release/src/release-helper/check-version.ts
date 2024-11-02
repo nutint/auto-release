@@ -4,28 +4,29 @@ import { createVersionHelper } from "@/release-helper/version-helper/create-vers
 import { getVersionInfoFromGitHistory } from "@/release-helper/version-helper/get-version-info-from-git-history";
 import { VersionSourceConfiguration } from "@/release-helper/version-source-configuration";
 
-type Version = {
-  packageVersion: string;
-  latestGitTag?: string;
+type ProcessVersionParams = {
+  gitTagPrefix?: string;
+  scope?: string;
 };
 
-export const checkVersion = async (
-  params: VersionSourceConfiguration = {},
-): Promise<Version> => {
-  const { versionFile, gitTagPrefix, scope } = params;
-
+export const processVersionFromGitHistory = async ({
+  gitTagPrefix,
+  scope,
+}: ProcessVersionParams) => {
   const { latestStableTags } = await getVersionInfoFromGitHistory({
     scope,
     gitTagPrefix,
   });
-  const latestGitTag = latestStableTags[latestStableTags.length - 1];
+  return latestStableTags[latestStableTags.length - 1];
+};
+
+export const checkVersion = async (
+  params: VersionSourceConfiguration = {},
+): Promise<string> => {
+  const { versionFile } = params;
 
   if (versionFile) {
-    const versionHelper = createVersionHelper(versionFile);
-    return {
-      packageVersion: versionHelper.getVersion(),
-      latestGitTag,
-    };
+    return createVersionHelper(versionFile).getVersion();
   }
   const files = listFiles(process.cwd());
   const autoDetectedVersionFile = files.find(
@@ -40,10 +41,5 @@ export const checkVersion = async (
     );
   }
 
-  const versionHelper = createVersionHelper(autoDetectedVersionFile);
-
-  return {
-    packageVersion: versionHelper.getVersion(),
-    latestGitTag,
-  };
+  return createVersionHelper(autoDetectedVersionFile).getVersion();
 };

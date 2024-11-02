@@ -134,6 +134,7 @@ describe("JiraProjectClient", () => {
 
     it("should return version information", async () => {
       const createdVersion = await createVersion(input);
+
       expect(createdVersion).toEqual({
         url: versionUrl,
         id: versionId,

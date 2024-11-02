@@ -3,7 +3,10 @@ import {
   ConventionalCommit,
   parseConventionalMessage,
 } from "@/conventional-commit-helper/conventional-commit-helper";
-import { checkVersion } from "@/release-helper/check-version";
+import {
+  checkVersion,
+  processVersionFromGitHistory,
+} from "@/release-helper/check-version";
 import { VersionSourceConfiguration } from "@/release-helper/version-source-configuration";
 
 export type ConventionalLogConfigParams = {
@@ -30,9 +33,12 @@ export const createLogConfig = ({
 export const extractReleaseInformation = async (
   versionSourceConfiguration: VersionSourceConfiguration = {},
 ): Promise<ReleaseInformation> => {
-  const { packageVersion, latestGitTag } = await checkVersion(
-    versionSourceConfiguration,
-  );
+  const { gitTagPrefix, scope } = versionSourceConfiguration;
+  const latestGitTag = await processVersionFromGitHistory({
+    gitTagPrefix,
+    scope,
+  });
+  const packageVersion = await checkVersion(versionSourceConfiguration);
   return {
     currentVersion: packageVersion,
     latestTagVersion: latestGitTag,
