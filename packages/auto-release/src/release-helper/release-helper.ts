@@ -49,7 +49,7 @@ export const extractReleaseInformation = async (
       patch: [],
     },
     jira: {
-      tickets: ["SCRUM-1", "SCRUM-2"],
+      issues: ["SCRUM-1", "SCRUM-2"],
       projectKey: "SCRUM",
     },
   };
@@ -65,7 +65,7 @@ export type ReleaseInformation = {
     patch: string[];
   };
   jira: {
-    tickets: string[];
+    issues: string[];
     projectKey: string;
   };
 };

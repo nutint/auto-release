@@ -69,7 +69,7 @@ describe("ReleaseHelper", () => {
           patch: [],
         },
         jira: {
-          tickets: ["SCRUM-1", "SCRUM-2"],
+          issues: ["SCRUM-1", "SCRUM-2"],
           projectKey: "SCRUM",
         },
       });
