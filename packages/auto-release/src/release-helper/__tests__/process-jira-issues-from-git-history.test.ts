@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { extractJiraIssues } from "@/release-helper/process-jira-issues-from-git-history";
+import {
+  extractJiraIssue,
+  extractJiraIssues,
+} from "@/release-helper/process-jira-issues-from-git-history";
 
 describe("ProcessJiraIssuesFromGitHistory", () => {
   describe("extractJiraIssues", () => {
@@ -50,6 +53,58 @@ describe("ProcessJiraIssuesFromGitHistory", () => {
       expect(actual.stringWithoutIssues()).toEqual(
         "this is a string with relevant jira issue ,",
       );
+    });
+  });
+
+  describe("extractJiraIssue", () => {
+    const projectKey = "SCRUM";
+
+    describe("contains issueId", () => {
+      const stringWithNoIssueId = "do something";
+      const inputString = `SCRUM-1 ${stringWithNoIssueId}`;
+      it("should extract issueId", () => {
+        const actual = extractJiraIssue(inputString, projectKey);
+
+        expect(actual.issueId).toEqual("SCRUM-1");
+      });
+
+      it("should get string without issues with replaced issueId", () => {
+        const actual = extractJiraIssue(inputString, projectKey);
+
+        expect(actual.issueIdRemoved).toEqual(stringWithNoIssueId);
+      });
+    });
+
+    describe("contains projectKey with no digit", () => {
+      it("should return only stringWithoutIssue when nothing after hyphen(-)", () => {
+        const inputString = "SCRUM- do something";
+
+        const actual = extractJiraIssue(inputString, projectKey);
+
+        expect(actual.issueIdRemoved).toEqual(inputString);
+      });
+
+      it("should return only stringWithoutIssue", () => {
+        const inputString = "SCRUM-abc do something";
+
+        const actual = extractJiraIssue(inputString, projectKey);
+
+        expect(actual.issueIdRemoved).toEqual(inputString);
+      });
+    });
+
+    describe("valid issue Id format but not the same as project key", () => {
+      it("should return issueId as undefined", () => {
+        const actual = extractJiraIssue("OTHER-1 do something", projectKey);
+
+        expect(actual.issueId).toBeUndefined();
+      });
+
+      it("should return stringWithoutIssue as inputString", () => {
+        const actual = extractJiraIssue("OTHER-1 do something", projectKey);
+
+        expect(actual.issueIdRemoved).toEqual("OTHER-1 do something");
+      });
     });
   });
 });
