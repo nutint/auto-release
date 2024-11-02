@@ -3,16 +3,20 @@ import {
   createLogConfig,
   extractReleaseInformation,
 } from "@/release-helper/release-helper";
-import * as CheckVersion from "../check-version";
+import * as CheckVersion from "../process-version-from-version-file";
+import * as ProcessVersionFromGitHistory from "../process-version-from-git-history";
 import { MappedCommit } from "@/git/git-log";
 import { ConventionalCommit } from "@/conventional-commit-helper/conventional-commit-helper";
 import { fail } from "node:assert";
 
 describe("ReleaseHelper", () => {
   describe("extractReleaseInformation", () => {
-    const mockedCheckCurrentVersion = vi.spyOn(CheckVersion, "checkVersion");
-    const mockedProcessVersionFromGitHistory = vi.spyOn(
+    const mockedCheckCurrentVersion = vi.spyOn(
       CheckVersion,
+      "processVersionFromVersionFile",
+    );
+    const mockedProcessVersionFromGitHistory = vi.spyOn(
+      ProcessVersionFromGitHistory,
       "processVersionFromGitHistory",
     );
 

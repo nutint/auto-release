@@ -1,26 +1,9 @@
 import { listFiles } from "@/release-helper/list-files";
 import { supportedVersionFiles } from "@/release-helper/version-helper/version-helper";
 import { createVersionHelper } from "@/release-helper/version-helper/create-version-helper";
-import { getVersionInfoFromGitHistory } from "@/release-helper/version-helper/get-version-info-from-git-history";
 import { VersionSourceConfiguration } from "@/release-helper/version-source-configuration";
 
-type ProcessVersionParams = {
-  gitTagPrefix?: string;
-  scope?: string;
-};
-
-export const processVersionFromGitHistory = async ({
-  gitTagPrefix,
-  scope,
-}: ProcessVersionParams) => {
-  const { latestStableTags } = await getVersionInfoFromGitHistory({
-    scope,
-    gitTagPrefix,
-  });
-  return latestStableTags[latestStableTags.length - 1];
-};
-
-export const checkVersion = async (
+export const processVersionFromVersionFile = async (
   params: VersionSourceConfiguration = {},
 ): Promise<string> => {
   const { versionFile } = params;

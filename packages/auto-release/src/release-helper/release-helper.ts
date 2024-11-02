@@ -3,11 +3,9 @@ import {
   ConventionalCommit,
   parseConventionalMessage,
 } from "@/conventional-commit-helper/conventional-commit-helper";
-import {
-  checkVersion,
-  processVersionFromGitHistory,
-} from "@/release-helper/check-version";
+import { processVersionFromVersionFile } from "@/release-helper/process-version-from-version-file";
 import { VersionSourceConfiguration } from "@/release-helper/version-source-configuration";
+import { processVersionFromGitHistory } from "@/release-helper/process-version-from-git-history";
 
 export type ConventionalLogConfigParams = {
   scope?: string;
@@ -38,7 +36,9 @@ export const extractReleaseInformation = async (
     gitTagPrefix,
     scope,
   });
-  const packageVersion = await checkVersion(versionSourceConfiguration);
+  const packageVersion = await processVersionFromVersionFile(
+    versionSourceConfiguration,
+  );
   return {
     currentVersion: packageVersion,
     latestTagVersion: latestGitTag,
