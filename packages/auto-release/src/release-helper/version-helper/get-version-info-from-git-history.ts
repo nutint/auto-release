@@ -1,39 +1,26 @@
-import { gitHelper } from "@/git/git-helper";
-import { createLogConfig } from "@/release-helper/release-helper";
-import {
-  filter,
-  lastValueFrom,
-  map,
-  mergeMap,
-  Observable,
-  toArray,
-} from "rxjs";
+import { filter, map, mergeMap, Observable, toArray } from "rxjs";
 import * as semver from "semver";
 import { MappedCommit } from "@/git/git-log";
 import { ConventionalCommit } from "@/conventional-commit-helper/conventional-commit-helper";
 
-type VersionInfo = {
+export type VersionInfo = {
   latestTags: string[];
   latestStableTags: string[];
 };
 
-type GetVersionParams = {
-  scope?: string;
-  gitTagPrefix?: string;
-};
-
-const extractValidTags =
+export const $extractTags =
   (gitTagPrefix?: string) =>
   (
-    source: Observable<MappedCommit<ConventionalCommit>>,
-  ): Observable<VersionInfo> =>
-    source.pipe(
+    $conventionalCommits: Observable<MappedCommit<ConventionalCommit>>,
+  ): Observable<VersionInfo> => {
+    const prefixString = `${gitTagPrefix}@`;
+    return $conventionalCommits.pipe(
       mergeMap((commit) => commit.tags),
       filter((tag) =>
-        gitTagPrefix !== undefined ? tag.startsWith(`${gitTagPrefix}@`) : true,
+        gitTagPrefix !== undefined ? tag.startsWith(prefixString) : true,
       ),
       map((tag) =>
-        gitTagPrefix !== undefined ? tag.replace(`${gitTagPrefix}@`, "") : tag,
+        gitTagPrefix !== undefined ? tag.replace(prefixString, "") : tag,
       ),
       filter((tag) => semver.valid(tag) !== null),
       toArray(),
@@ -51,14 +38,4 @@ const extractValidTags =
         };
       }),
     );
-
-export const getVersionInfoFromGitHistory = async ({
-  scope,
-  gitTagPrefix,
-}: GetVersionParams): Promise<VersionInfo> => {
-  const $result = gitHelper()
-    .getLogStream(createLogConfig({ scope }))
-    .pipe(extractValidTags(gitTagPrefix));
-
-  return await lastValueFrom($result);
-};
+  };
