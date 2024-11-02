@@ -38,6 +38,7 @@ export const extractReleaseInformation = async (
   const { latestGitTag, jiraIssues } = await processVersionFromGitHistory({
     gitTagPrefix,
     scope,
+    jiraProjectKey: "SCRUM",
   });
   const packageVersion = await processVersionFromVersionFile(
     versionSourceConfiguration,

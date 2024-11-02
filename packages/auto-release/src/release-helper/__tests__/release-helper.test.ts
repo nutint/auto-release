@@ -36,6 +36,7 @@ describe("ReleaseHelper", () => {
       const gitTagPrefixAndScope = {
         gitTagPrefix: "auto-release",
         scope: "auto-release",
+        jiraProjectKey: "SCRUM",
       };
       await extractReleaseInformation(gitTagPrefixAndScope);
 

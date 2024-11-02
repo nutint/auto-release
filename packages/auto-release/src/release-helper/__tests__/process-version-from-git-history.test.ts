@@ -114,8 +114,16 @@ describe("ProcessVersionFromGitHistory", () => {
       expect(actual.latestGitTag).toEqual("1.0.1");
     });
 
-    it("should return jiraIssues", async () => {
+    it("should return empty jiraIssues when no project key specified", async () => {
       const actual = await processVersionFromGitHistory({});
+
+      expect(actual.jiraIssues).toEqual([]);
+    });
+
+    it("should return jiraIssues", async () => {
+      const actual = await processVersionFromGitHistory({
+        jiraProjectKey: "SCRUM",
+      });
 
       expect(actual.jiraIssues).toEqual(expectedJiraIssues);
     });

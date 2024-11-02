@@ -12,11 +12,13 @@ import {
 type ProcessVersionParams = {
   gitTagPrefix?: string;
   scope?: string;
+  jiraProjectKey?: string;
 };
 
 export const processVersionFromGitHistory = async ({
   gitTagPrefix,
   scope,
+  jiraProjectKey,
 }: ProcessVersionParams) => {
   const $conventionalCommits = gitHelper()
     .getLogStream(createLogConfig({ scope }))
@@ -26,13 +28,24 @@ export const processVersionFromGitHistory = async ({
     $processVersionFromGitHistory({ gitTagPrefix }),
   );
 
-  const $jiraIssues = $conventionalCommits.pipe(
-    $processJiraIssuesFromGitHistory("SCRUM"),
-  );
+  const result = {
+    latestGitTag: await lastValueFrom($version),
+  };
+
+  if (jiraProjectKey) {
+    const $jiraIssues = $conventionalCommits.pipe(
+      $processJiraIssuesFromGitHistory("SCRUM"),
+    );
+
+    return {
+      ...result,
+      jiraIssues: await lastValueFrom($jiraIssues),
+    };
+  }
 
   return {
-    latestGitTag: await lastValueFrom($version),
-    jiraIssues: await lastValueFrom($jiraIssues),
+    ...result,
+    jiraIssues: [],
   };
 };
 
