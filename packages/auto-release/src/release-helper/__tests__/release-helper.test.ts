@@ -26,7 +26,10 @@ describe("ReleaseHelper", () => {
     beforeEach(() => {
       vi.clearAllMocks();
       mockedCheckCurrentVersion.mockResolvedValue(packageVersion);
-      mockedProcessVersionFromGitHistory.mockResolvedValue(latestGitTag);
+      mockedProcessVersionFromGitHistory.mockResolvedValue({
+        latestGitTag,
+        jiraIssues: [],
+      });
     });
 
     it("should processVersionFromGitHistory with gitTagPrefix and Scope", async () => {
@@ -69,7 +72,7 @@ describe("ReleaseHelper", () => {
           patch: [],
         },
         jira: {
-          issues: ["SCRUM-1", "SCRUM-2"],
+          issues: [],
           projectKey: "SCRUM",
         },
       });

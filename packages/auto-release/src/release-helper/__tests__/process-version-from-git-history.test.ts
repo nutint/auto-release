@@ -57,6 +57,30 @@ describe("ProcessVersionFromGitHistory", () => {
     ...commitsWithNoJiraIssues,
   ];
 
+  const projectKey = "SCRUM";
+  const expectedJiraIssues = [
+    {
+      issueId: "SCRUM-1",
+      commits: scrum1Commits.map((commit) => ({
+        ...commit,
+        jira: extractJiraIssue(commit.mapped.subject, projectKey),
+      })),
+    },
+    {
+      issueId: "SCRUM-2",
+      commits: scrum2Commits.map((commit) => ({
+        ...commit,
+        jira: extractJiraIssue(commit.mapped.subject, projectKey),
+      })),
+    },
+    {
+      commits: commitsWithNoJiraIssues.map((commit) => ({
+        ...commit,
+        jira: extractJiraIssue(commit.mapped.subject, projectKey),
+      })),
+    },
+  ];
+
   describe("processVersionFromGitHistory", () => {
     const mockedGitHelper = vi.spyOn(GitHelper, "gitHelper");
     const mockedGetLogStream = vi.fn();
@@ -87,7 +111,13 @@ describe("ProcessVersionFromGitHistory", () => {
     it("should return latest tag when has latest stable tags", async () => {
       const actual = await processVersionFromGitHistory({});
 
-      expect(actual).toEqual("1.0.1");
+      expect(actual.latestGitTag).toEqual("1.0.1");
+    });
+
+    it("should return jiraIssues", async () => {
+      const actual = await processVersionFromGitHistory({});
+
+      expect(actual.jiraIssues).toEqual(expectedJiraIssues);
     });
   });
 
@@ -104,34 +134,12 @@ describe("ProcessVersionFromGitHistory", () => {
 
   describe("$processJiraIssuesFromGitHistory", () => {
     it("should get Jira issues as array", async () => {
-      const projectKey = "SCRUM";
       const actual = await executeRx(
         commits,
         $processJiraIssuesFromGitHistory(projectKey),
       );
 
-      expect(actual).toEqual([
-        {
-          issueId: "SCRUM-1",
-          commits: scrum1Commits.map((commit) => ({
-            ...commit,
-            jira: extractJiraIssue(commit.mapped.subject, projectKey),
-          })),
-        },
-        {
-          issueId: "SCRUM-2",
-          commits: scrum2Commits.map((commit) => ({
-            ...commit,
-            jira: extractJiraIssue(commit.mapped.subject, projectKey),
-          })),
-        },
-        {
-          commits: commitsWithNoJiraIssues.map((commit) => ({
-            ...commit,
-            jira: extractJiraIssue(commit.mapped.subject, projectKey),
-          })),
-        },
-      ]);
+      expect(actual).toEqual(expectedJiraIssues);
     });
   });
 });

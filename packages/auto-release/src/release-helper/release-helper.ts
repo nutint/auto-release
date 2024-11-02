@@ -5,7 +5,10 @@ import {
 } from "@/conventional-commit-helper/conventional-commit-helper";
 import { processVersionFromVersionFile } from "@/release-helper/process-version-from-version-file";
 import { VersionSourceConfiguration } from "@/release-helper/version-source-configuration";
-import { processVersionFromGitHistory } from "@/release-helper/process-version-from-git-history";
+import {
+  JiraIssueWithCommits,
+  processVersionFromGitHistory,
+} from "@/release-helper/process-version-from-git-history";
 
 export type ConventionalLogConfigParams = {
   scope?: string;
@@ -32,7 +35,7 @@ export const extractReleaseInformation = async (
   versionSourceConfiguration: VersionSourceConfiguration = {},
 ): Promise<ReleaseInformation> => {
   const { gitTagPrefix, scope } = versionSourceConfiguration;
-  const latestGitTag = await processVersionFromGitHistory({
+  const { latestGitTag, jiraIssues } = await processVersionFromGitHistory({
     gitTagPrefix,
     scope,
   });
@@ -49,7 +52,7 @@ export const extractReleaseInformation = async (
       patch: [],
     },
     jira: {
-      issues: ["SCRUM-1", "SCRUM-2"],
+      issues: jiraIssues,
       projectKey: "SCRUM",
     },
   };
@@ -65,7 +68,7 @@ export type ReleaseInformation = {
     patch: string[];
   };
   jira: {
-    issues: string[];
+    issues: JiraIssueWithCommits[];
     projectKey: string;
   };
 };

@@ -1,14 +1,5 @@
 import { $extractTags } from "@/release-helper/version-helper/get-version-info-from-git-history";
-import {
-  EMPTY,
-  from,
-  lastValueFrom,
-  map,
-  Observable,
-  reduce,
-  share,
-  tap,
-} from "rxjs";
+import { lastValueFrom, map, Observable, reduce, share } from "rxjs";
 import { MappedCommit } from "@/git/git-log";
 import { ConventionalCommit } from "@/conventional-commit-helper/conventional-commit-helper";
 import { gitHelper } from "@/git/git-helper";
@@ -35,7 +26,14 @@ export const processVersionFromGitHistory = async ({
     $processVersionFromGitHistory({ gitTagPrefix }),
   );
 
-  return await lastValueFrom($version);
+  const $jiraIssues = $conventionalCommits.pipe(
+    $processJiraIssuesFromGitHistory("SCRUM"),
+  );
+
+  return {
+    latestGitTag: await lastValueFrom($version),
+    jiraIssues: await lastValueFrom($jiraIssues),
+  };
 };
 
 export const $processVersionFromGitHistory =
@@ -53,7 +51,7 @@ type CommitWithJiraIssue = MappedCommit<ConventionalCommit> & {
   jira: ExtractedJiraIssue;
 };
 
-type JiraIssueWithCommits = {
+export type JiraIssueWithCommits = {
   issueId?: string;
   commits: CommitWithJiraIssue[];
 };
