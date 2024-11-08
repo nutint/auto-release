@@ -11,7 +11,7 @@ import {
 } from "@/conventional-commit-helper/conventional-commit-helper";
 import { executeRx } from "@/release-helper/test-helpers/helpers";
 import * as GitHelper from "@/git/git-helper";
-import { from } from "rxjs";
+import { connect, filter, forkJoin, from, lastValueFrom, map } from "rxjs";
 import { extractJiraIssue } from "@/release-helper/process-jira-issues-from-git-history";
 
 describe("ProcessVersionFromGitHistory", () => {

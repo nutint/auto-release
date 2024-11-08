@@ -1,5 +1,15 @@
 import { $extractTags } from "@/release-helper/version-helper/get-version-info-from-git-history";
-import { lastValueFrom, map, Observable, reduce, share } from "rxjs";
+import {
+  connect,
+  EMPTY,
+  forkJoin,
+  lastValueFrom,
+  map,
+  Observable,
+  of,
+  reduce,
+  switchMap,
+} from "rxjs";
 import { MappedCommit } from "@/git/git-log";
 import { ConventionalCommit } from "@/conventional-commit-helper/conventional-commit-helper";
 import { gitHelper } from "@/git/git-helper";
@@ -20,33 +30,25 @@ export const processVersionFromGitHistory = async ({
   scope,
   jiraProjectKey,
 }: ProcessVersionParams) => {
-  const $conventionalCommits = gitHelper()
+  const $result = gitHelper()
     .getLogStream(createLogConfig({ scope }))
-    .pipe(share());
-
-  const $version = $conventionalCommits.pipe(
-    $processVersionFromGitHistory({ gitTagPrefix }),
-  );
-
-  const result = {
-    latestGitTag: await lastValueFrom($version),
-  };
-
-  if (jiraProjectKey) {
-    const $jiraIssues = $conventionalCommits.pipe(
-      $processJiraIssuesFromGitHistory("SCRUM"),
+    .pipe(
+      connect(($conventionalCommits) =>
+        forkJoin({
+          latestGitTag: $conventionalCommits.pipe(
+            $processVersionFromGitHistory({ gitTagPrefix }),
+          ),
+          jiraIssues: $conventionalCommits.pipe(
+            switchMap((commit) =>
+              jiraProjectKey !== undefined ? of(commit) : EMPTY,
+            ),
+            $processJiraIssuesFromGitHistory(<string>jiraProjectKey),
+          ),
+        }),
+      ),
     );
 
-    return {
-      ...result,
-      jiraIssues: await lastValueFrom($jiraIssues),
-    };
-  }
-
-  return {
-    ...result,
-    jiraIssues: [],
-  };
+  return await lastValueFrom($result);
 };
 
 export const $processVersionFromGitHistory =
