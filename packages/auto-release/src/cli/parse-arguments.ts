@@ -14,6 +14,7 @@ export type Arguments = {
   configFile: string;
   logLevel: LogLevel;
   outputFormat: OutputFormat;
+  interactive: boolean;
   command: { command: CommandArgument };
 };
 
@@ -45,6 +46,11 @@ export const parseArguments = (args: string[]): Arguments => {
       .find((parameter) => parameter.startsWith("--output-format"))
       ?.split("--output-format=")[1] as OutputFormat) || "text";
 
+  const interactive = !(
+    parameters.find((parameter) => parameter === "--no-interactive") !==
+    undefined
+  );
+
   if (!validOutputFormats.includes(outputFormat as OutputFormat)) {
     throw new InvalidCommandLineOutputFormat(
       `expect output format one of [${validOutputFormats.join(", ")}]`,
@@ -58,6 +64,7 @@ export const parseArguments = (args: string[]): Arguments => {
     configFile: argConfigurationFile ?? defaultConfigurationFile,
     logLevel: logLevel ?? "error",
     outputFormat,
+    interactive,
     command: { command: CommandArgument.AnalyzeRelease },
   };
 };

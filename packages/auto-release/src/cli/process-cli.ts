@@ -1,13 +1,10 @@
 import { parseArguments } from "@/cli/parse-arguments";
 import { readConfiguration } from "@/cli/read-configuration";
-import {
-  extractReleaseInformation,
-  printReleaseInformation,
-} from "@/release-helper/release-helper";
+import { analyzeRelease } from "@/cli/commands/analyze-release";
 
 export const processCli = async (args: string[]) => {
-  const parsedArgument = parseArguments(args);
-  const { versionSource } = readConfiguration(parsedArgument.configFile);
-  const releaseInformation = await extractReleaseInformation(versionSource);
-  printReleaseInformation(releaseInformation, parsedArgument.outputFormat);
+  const { configFile, outputFormat, interactive } = parseArguments(args);
+  const { versionSource } = readConfiguration(configFile);
+
+  await analyzeRelease(versionSource, { interactive, outputFormat });
 };

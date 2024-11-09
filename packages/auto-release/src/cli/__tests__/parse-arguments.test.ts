@@ -17,6 +17,7 @@ describe("ParseArguments", () => {
       configFile: defaultConfigurationFile,
       logLevel: "error",
       outputFormat: "text",
+      interactive: true,
       command: { command: CommandArgument.AnalyzeRelease },
     };
 
@@ -84,8 +85,15 @@ describe("ParseArguments", () => {
     it("should extract analyzing release command", () => {
       const actual = parseArguments(["analyze"]);
 
+      expect(actual).toEqual(defaultArgument);
+    });
+
+    it("should have interactive as false when --no-interactive flag provided", () => {
+      const actual = parseArguments(["analyze", "--no-interactive"]);
+
       expect(actual).toEqual({
         ...defaultArgument,
+        interactive: false,
       });
     });
   });

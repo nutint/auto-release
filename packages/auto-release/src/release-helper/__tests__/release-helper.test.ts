@@ -153,7 +153,25 @@ describe("ReleaseHelper", () => {
       const message = [
         "Release Information:",
         `  Current version: ${releaseInformation.currentVersion}`,
-        `  Latest tagged version: ${releaseInformation.latestTagVersion === undefined ? "none" : releaseInformation.latestTagVersion}`,
+        `  Latest tagged version: none`,
+        `  Next version: ${releaseInformation.nextVersion}`,
+      ].join("\n");
+      expect(mockedConsoleLog).toHaveBeenCalledWith(message);
+    });
+
+    it("should make latest tag version as version number when latestTagVersion is presented", () => {
+      printReleaseInformation(
+        {
+          ...releaseInformation,
+          latestTagVersion: "1.0.1",
+        },
+        "text",
+      );
+
+      const message = [
+        "Release Information:",
+        `  Current version: ${releaseInformation.currentVersion}`,
+        `  Latest tagged version: 1.0.1`,
         `  Next version: ${releaseInformation.nextVersion}`,
       ].join("\n");
       expect(mockedConsoleLog).toHaveBeenCalledWith(message);

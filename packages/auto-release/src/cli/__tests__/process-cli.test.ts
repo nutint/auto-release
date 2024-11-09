@@ -2,9 +2,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { processCli } from "../process-cli";
 import * as ParseArguments from "@/cli/parse-arguments";
 import * as ReadConfiguration from "@/cli/read-configuration";
-import * as ReleaseHelper from "@/release-helper/release-helper";
 import { Arguments, CommandArgument } from "@/cli/parse-arguments";
-import { ReleaseInformation } from "@/release-helper/release-helper";
+import * as AnalyzeRelease from "@/cli/commands/analyze-release";
 
 vi.mock("@/cli/parse-arguments");
 vi.mock("@/cli/read-configuration");
@@ -15,19 +14,16 @@ describe("processCli", () => {
     ReadConfiguration,
     "readConfiguration",
   );
-  const mockedExtractReleaseInformation = vi.spyOn(
-    ReleaseHelper,
-    "extractReleaseInformation",
-  );
-  const mockedPrintReleaseInformation = vi.spyOn(
-    ReleaseHelper,
-    "printReleaseInformation",
-  );
+  const mockedAnalyzeRelease = vi.spyOn(AnalyzeRelease, "analyzeRelease");
+
+  const interactive = false;
+  const outputFormat = "text";
 
   const parsedArguments: Arguments = {
     configFile: "auto-release.config.json",
     logLevel: "error",
-    outputFormat: "text",
+    outputFormat,
+    interactive,
     command: { command: CommandArgument.AnalyzeRelease },
   };
 
@@ -37,17 +33,13 @@ describe("processCli", () => {
     },
   };
 
-  const releaseInformation = {
-    foo: "bar",
-  } as unknown as ReleaseInformation;
-
   const cliArguments: string[] = [];
 
   beforeEach(() => {
     vi.clearAllMocks();
     mockedParseArguments.mockReturnValue(parsedArguments);
     mockedReadConfiguration.mockReturnValue(configuration);
-    mockedExtractReleaseInformation.mockResolvedValue(releaseInformation);
+    mockedAnalyzeRelease.mockResolvedValue();
   });
 
   it("should parse cliArguments", async () => {
@@ -64,22 +56,12 @@ describe("processCli", () => {
     );
   });
 
-  it("should extract release information when user passed analyze release command", async () => {
-    mockedParseArguments.mockReturnValue(parsedArguments);
-
+  it("should analyze release information with correct parameters", async () => {
     await processCli(cliArguments);
 
-    expect(mockedExtractReleaseInformation).toHaveBeenCalledWith(
+    expect(mockedAnalyzeRelease).toHaveBeenCalledWith(
       configuration.versionSource,
-    );
-  });
-
-  it("should output release information as text format by default", async () => {
-    await processCli(cliArguments);
-
-    expect(mockedPrintReleaseInformation).toHaveBeenCalledWith(
-      releaseInformation,
-      parsedArguments.outputFormat,
+      { interactive, outputFormat },
     );
   });
 });
