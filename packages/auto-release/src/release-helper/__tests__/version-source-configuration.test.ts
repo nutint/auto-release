@@ -8,6 +8,7 @@ describe("VersionSourceConfiguration", () => {
         versionFile: "build.sbt",
         gitTagPrefix: "auto-release",
         scope: "auto-release",
+        jiraProjectKey: "SCRUM",
       };
       const actual = versionSourceSchema.parse(versionSourceConfiguration);
 

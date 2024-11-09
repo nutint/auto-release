@@ -22,6 +22,11 @@ describe("ReleaseHelper", () => {
 
     const latestGitTag = "1.0.0";
     const packageVersion = "1.0.0";
+    const versionSourceConfiguration = {
+      gitTagPrefix: "auto-release",
+      scope: "auto-release",
+      jiraProjectKey: "SCRUM",
+    };
 
     beforeEach(() => {
       vi.clearAllMocks();
@@ -32,16 +37,11 @@ describe("ReleaseHelper", () => {
       });
     });
 
-    it("should processVersionFromGitHistory with gitTagPrefix and Scope", async () => {
-      const gitTagPrefixAndScope = {
-        gitTagPrefix: "auto-release",
-        scope: "auto-release",
-        jiraProjectKey: "SCRUM",
-      };
-      await extractReleaseInformation(gitTagPrefixAndScope);
+    it("should processVersionFromGitHistory with gitTagPrefix and Scope and ProjectKey from versionSourceConfiguration", async () => {
+      await extractReleaseInformation(versionSourceConfiguration);
 
       expect(mockedProcessVersionFromGitHistory).toHaveBeenCalledWith(
-        gitTagPrefixAndScope,
+        versionSourceConfiguration,
       );
     });
 
@@ -60,8 +60,26 @@ describe("ReleaseHelper", () => {
       );
     });
 
-    it("should return correct release information", async () => {
+    it("should return release information with jira attribute as undefined when no jiraProjectKey", async () => {
       const releaseInformation = await extractReleaseInformation();
+
+      expect(releaseInformation).toEqual({
+        currentVersion: packageVersion,
+        latestTagVersion: latestGitTag,
+        nextVersion: "1.0.1",
+        changes: {
+          minor: [],
+          major: [],
+          patch: [],
+        },
+        jira: undefined,
+      });
+    });
+
+    it("should return correct release information with jira attribute when has jiraProjectKey", async () => {
+      const releaseInformation = await extractReleaseInformation(
+        versionSourceConfiguration,
+      );
 
       expect(releaseInformation).toEqual({
         currentVersion: packageVersion,
@@ -74,7 +92,7 @@ describe("ReleaseHelper", () => {
         },
         jira: {
           issues: [],
-          projectKey: "SCRUM",
+          projectKey: versionSourceConfiguration.jiraProjectKey,
         },
       });
     });

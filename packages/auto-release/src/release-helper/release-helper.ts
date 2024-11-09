@@ -34,16 +34,17 @@ export const createLogConfig = ({
 export const extractReleaseInformation = async (
   versionSourceConfiguration: VersionSourceConfiguration = {},
 ): Promise<ReleaseInformation> => {
-  const { gitTagPrefix, scope } = versionSourceConfiguration;
+  const { gitTagPrefix, scope, jiraProjectKey } = versionSourceConfiguration;
   const { latestGitTag, jiraIssues } = await processVersionFromGitHistory({
     gitTagPrefix,
     scope,
-    jiraProjectKey: "SCRUM",
+    jiraProjectKey,
   });
   const packageVersion = await processVersionFromVersionFile(
     versionSourceConfiguration,
   );
-  return {
+
+  const commonReleaseInformation = {
     currentVersion: packageVersion,
     latestTagVersion: latestGitTag,
     nextVersion: "1.0.1",
@@ -52,9 +53,19 @@ export const extractReleaseInformation = async (
       major: [],
       patch: [],
     },
+  };
+
+  if (jiraProjectKey === undefined) {
+    return {
+      ...commonReleaseInformation,
+    };
+  }
+
+  return {
+    ...commonReleaseInformation,
     jira: {
       issues: jiraIssues,
-      projectKey: "SCRUM",
+      projectKey: jiraProjectKey,
     },
   };
 };
@@ -68,7 +79,7 @@ export type ReleaseInformation = {
     major: string[];
     patch: string[];
   };
-  jira: {
+  jira?: {
     issues: JiraIssueWithCommits[];
     projectKey: string;
   };
