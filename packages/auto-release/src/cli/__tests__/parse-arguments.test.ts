@@ -7,6 +7,8 @@ import {
   CommandArgument,
   InvalidCommandlineFormat,
   validCommands,
+  validOutputFormats,
+  InvalidCommandLineOutputFormat,
 } from "../parse-arguments";
 
 describe("ParseArguments", () => {
@@ -14,6 +16,7 @@ describe("ParseArguments", () => {
     const defaultArgument: Arguments = {
       configFile: defaultConfigurationFile,
       logLevel: "error",
+      outputFormat: "text",
       command: { command: CommandArgument.AnalyzeRelease },
     };
 
@@ -35,6 +38,25 @@ describe("ParseArguments", () => {
       const actual = parseArguments(["analyze"]);
 
       expect(actual).toEqual(defaultArgument);
+    });
+
+    it("should throw error when output format is not json and text", () => {
+      expect(() =>
+        parseArguments(["analyze", "--output-format=other"]),
+      ).toThrow(
+        new InvalidCommandLineOutputFormat(
+          `expect output format one of [${validOutputFormats.join(", ")}]`,
+        ),
+      );
+    });
+
+    it("should return outputFormat as Json if specify output format as json", () => {
+      const actual = parseArguments(["analyze", "--output-format=json"]);
+
+      expect(actual).toEqual({
+        ...defaultArgument,
+        outputFormat: "json",
+      });
     });
 
     it("should return override configuration file when specify via command line", () => {

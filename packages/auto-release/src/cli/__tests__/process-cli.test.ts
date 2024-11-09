@@ -23,6 +23,7 @@ describe("processCli", () => {
   const parsedArguments: Arguments = {
     configFile: "auto-release.config.json",
     logLevel: "error",
+    outputFormat: "text",
     command: { command: CommandArgument.AnalyzeRelease },
   };
 

@@ -7,9 +7,13 @@ export const CommandArgument = {
 export type CommandArgument =
   (typeof CommandArgument)[keyof typeof CommandArgument];
 
+type OutputFormat = "json" | "text";
+export const validOutputFormats: OutputFormat[] = ["json", "text"];
+
 export type Arguments = {
   configFile: string;
   logLevel: LogLevel;
+  outputFormat: OutputFormat;
   command: { command: CommandArgument };
 };
 
@@ -36,12 +40,24 @@ export const parseArguments = (args: string[]): Arguments => {
     .find((parameter) => parameter.startsWith("--log-level=warn"))
     ?.split("--log-level=")[1];
 
+  const outputFormat: OutputFormat =
+    (parameters
+      .find((parameter) => parameter.startsWith("--output-format"))
+      ?.split("--output-format=")[1] as OutputFormat) || "text";
+
+  if (!validOutputFormats.includes(outputFormat as OutputFormat)) {
+    throw new InvalidCommandLineOutputFormat(
+      `expect output format one of [${validOutputFormats.join(", ")}]`,
+    );
+  }
+
   const logLevel =
     logLevelInput !== undefined ? mapLogLevel(logLevelInput) : undefined;
 
   return {
     configFile: argConfigurationFile ?? defaultConfigurationFile,
     logLevel: logLevel ?? "error",
+    outputFormat,
     command: { command: CommandArgument.AnalyzeRelease },
   };
 };
@@ -56,5 +72,11 @@ export const mapLogLevel = (inputString: string): LogLevel | undefined => {
 export class InvalidCommandlineFormat extends Error {
   constructor(message: string) {
     super(`InvalidCommandlineFormat: ${message}`);
+  }
+}
+
+export class InvalidCommandLineOutputFormat extends Error {
+  constructor(message: string) {
+    super(`InvalidCommandLineOutputFormat: ${message}`);
   }
 }
