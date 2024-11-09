@@ -5,6 +5,8 @@ import {
   parseArguments,
   mapLogLevel,
   CommandArgument,
+  InvalidCommandlineFormat,
+  validCommands,
 } from "../parse-arguments";
 
 describe("ParseArguments", () => {
@@ -12,11 +14,25 @@ describe("ParseArguments", () => {
     const defaultArgument: Arguments = {
       configFile: defaultConfigurationFile,
       logLevel: "error",
-      commands: [],
+      command: { command: CommandArgument.AnalyzeRelease },
     };
 
-    it("should return default configuration file when no argument", () => {
-      const actual = parseArguments([]);
+    it("should throw error when there is no command specify", () => {
+      expect(() => parseArguments([])).toThrow(
+        new InvalidCommandlineFormat("Missing command"),
+      );
+    });
+
+    it("should throw error when there is invalid command", () => {
+      expect(() => parseArguments(["invalidCommand"])).toThrow(
+        new InvalidCommandlineFormat(
+          `Invalid command, expected one of ${validCommands.join(", ")}`,
+        ),
+      );
+    });
+
+    it("should return default configuration file when config provide", () => {
+      const actual = parseArguments(["analyze"]);
 
       expect(actual).toEqual(defaultArgument);
     });
@@ -24,6 +40,7 @@ describe("ParseArguments", () => {
     it("should return override configuration file when specify via command line", () => {
       const configurationFileWithOtherName = "auto-release-test.config.json";
       const actual = parseArguments([
+        "analyze",
         `--config=${configurationFileWithOtherName}`,
       ]);
 
@@ -34,7 +51,7 @@ describe("ParseArguments", () => {
     });
 
     it("should log at warning level with argument --log-level=warn", () => {
-      const actual = parseArguments(["--log-level=warn"]);
+      const actual = parseArguments(["analyze", "--log-level=warn"]);
 
       expect(actual).toEqual({
         ...defaultArgument,
@@ -43,11 +60,10 @@ describe("ParseArguments", () => {
     });
 
     it("should extract analyzing release command", () => {
-      const actual = parseArguments(["--analyze-release"]);
+      const actual = parseArguments(["analyze"]);
 
       expect(actual).toEqual({
         ...defaultArgument,
-        commands: [{ command: CommandArgument.AnalyzeRelease }],
       });
     });
   });

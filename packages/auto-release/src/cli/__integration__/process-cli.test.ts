@@ -5,7 +5,7 @@ describe("processCli(Integration)", () => {
   it(
     "should able to process cli",
     async () => {
-      await processCli(["--analyze-release"]);
+      await processCli(["analyze"]);
     },
     { timeout: 9999999 },
   );

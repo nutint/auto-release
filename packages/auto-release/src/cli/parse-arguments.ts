@@ -10,23 +10,31 @@ export type CommandArgument =
 export type Arguments = {
   configFile: string;
   logLevel: LogLevel;
-  commands: { command: CommandArgument }[];
+  command: { command: CommandArgument };
 };
 
 export const defaultConfigurationFile = "auto-release.config.json";
 
+export type ValidCommand = "analyze";
+export const validCommands: ValidCommand[] = ["analyze"];
+
 export const parseArguments = (args: string[]): Arguments => {
-  const argConfigurationFile = args
-    .find((arg) => arg.startsWith("--config="))
+  const [command, ...parameters] = args;
+  if (command === undefined) {
+    throw new InvalidCommandlineFormat("Missing command");
+  }
+  if (!validCommands.includes(command as ValidCommand)) {
+    throw new InvalidCommandlineFormat(
+      `Invalid command, expected one of ${validCommands.join(", ")}`,
+    );
+  }
+  const argConfigurationFile = parameters
+    .find((parameter) => parameter.startsWith("--config="))
     ?.split("=")[1];
 
-  const logLevelInput = args
-    .find((arg) => arg.startsWith("--log-level=warn"))
+  const logLevelInput = parameters
+    .find((parameter) => parameter.startsWith("--log-level=warn"))
     ?.split("--log-level=")[1];
-
-  const analyzeReleaseCommand = args.find((arg) =>
-    arg.startsWith("--analyze-release"),
-  );
 
   const logLevel =
     logLevelInput !== undefined ? mapLogLevel(logLevelInput) : undefined;
@@ -34,11 +42,7 @@ export const parseArguments = (args: string[]): Arguments => {
   return {
     configFile: argConfigurationFile ?? defaultConfigurationFile,
     logLevel: logLevel ?? "error",
-    commands: [
-      ...(analyzeReleaseCommand !== undefined
-        ? [{ command: CommandArgument.AnalyzeRelease }]
-        : []),
-    ],
+    command: { command: CommandArgument.AnalyzeRelease },
   };
 };
 
@@ -48,3 +52,9 @@ export const mapLogLevel = (inputString: string): LogLevel | undefined => {
   }
   return undefined;
 };
+
+export class InvalidCommandlineFormat extends Error {
+  constructor(message: string) {
+    super(`InvalidCommandlineFormat: ${message}`);
+  }
+}

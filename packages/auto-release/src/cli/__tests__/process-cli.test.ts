@@ -23,7 +23,7 @@ describe("processCli", () => {
   const parsedArguments: Arguments = {
     configFile: "auto-release.config.json",
     logLevel: "error",
-    commands: [],
+    command: { command: CommandArgument.AnalyzeRelease },
   };
 
   const configuration = {
@@ -36,6 +36,8 @@ describe("processCli", () => {
     foo: "bar",
   } as unknown as ReleaseInformation;
 
+  const cliArguments: string[] = [];
+
   beforeEach(() => {
     vi.clearAllMocks();
     mockedParseArguments.mockReturnValue(parsedArguments);
@@ -43,14 +45,14 @@ describe("processCli", () => {
     mockedExtractReleaseInformation.mockResolvedValue(releaseInformation);
   });
 
-  it("should parse arguments", async () => {
-    await processCli([]);
+  it("should parse cliArguments", async () => {
+    await processCli(cliArguments);
 
-    expect(mockedParseArguments).toHaveBeenCalledWith([]);
+    expect(mockedParseArguments).toHaveBeenCalledWith(cliArguments);
   });
 
   it("should read configuration file", async () => {
-    await processCli([]);
+    await processCli(cliArguments);
 
     expect(mockedReadConfiguration).toHaveBeenCalledWith(
       parsedArguments.configFile,
@@ -58,21 +60,12 @@ describe("processCli", () => {
   });
 
   it("should extract release information when user passed analyze release command", async () => {
-    mockedParseArguments.mockReturnValue({
-      ...parsedArguments,
-      commands: [{ command: CommandArgument.AnalyzeRelease }],
-    });
+    mockedParseArguments.mockReturnValue(parsedArguments);
 
-    await processCli(["--analyze-release"]);
+    await processCli(cliArguments);
 
     expect(mockedExtractReleaseInformation).toHaveBeenCalledWith(
       configuration.versionSource,
     );
-  });
-
-  it("should not extract release information when user not pass analyze release command", async () => {
-    await processCli(["--analyze-release"]);
-
-    expect(mockedExtractReleaseInformation).not.toHaveBeenCalled();
   });
 });
