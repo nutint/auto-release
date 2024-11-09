@@ -7,7 +7,7 @@ export const CommandArgument = {
 export type CommandArgument =
   (typeof CommandArgument)[keyof typeof CommandArgument];
 
-type OutputFormat = "json" | "text";
+export type OutputFormat = "json" | "text";
 export const validOutputFormats: OutputFormat[] = ["json", "text"];
 
 export type Arguments = {

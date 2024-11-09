@@ -19,6 +19,10 @@ describe("processCli", () => {
     ReleaseHelper,
     "extractReleaseInformation",
   );
+  const mockedPrintReleaseInformation = vi.spyOn(
+    ReleaseHelper,
+    "printReleaseInformation",
+  );
 
   const parsedArguments: Arguments = {
     configFile: "auto-release.config.json",
@@ -67,6 +71,15 @@ describe("processCli", () => {
 
     expect(mockedExtractReleaseInformation).toHaveBeenCalledWith(
       configuration.versionSource,
+    );
+  });
+
+  it("should output release information as text format by default", async () => {
+    await processCli(cliArguments);
+
+    expect(mockedPrintReleaseInformation).toHaveBeenCalledWith(
+      releaseInformation,
+      parsedArguments.outputFormat,
     );
   });
 });

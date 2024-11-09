@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createLogConfig,
   extractReleaseInformation,
+  printReleaseInformation,
+  ReleaseInformation,
 } from "@/release-helper/release-helper";
 import * as CheckVersion from "../process-version-from-version-file";
 import * as ProcessVersionFromGitHistory from "../process-version-from-git-history";
@@ -116,6 +118,45 @@ describe("ReleaseHelper", () => {
       const { predicate } = createLogConfig();
 
       expect(predicate).toBeUndefined();
+    });
+  });
+
+  describe("printReleaseInformation", () => {
+    const releaseInformation: ReleaseInformation = {
+      currentVersion: "0.0.0",
+      latestTagVersion: undefined,
+      nextVersion: "0.0.1",
+      changes: {
+        minor: [],
+        major: [],
+        patch: [],
+      },
+    };
+
+    const mockedConsoleLog = vi.spyOn(console, "log");
+
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it("should print release information as Json when output format as Json", () => {
+      printReleaseInformation(releaseInformation, "json");
+
+      expect(mockedConsoleLog).toHaveBeenCalledWith(
+        JSON.stringify(releaseInformation),
+      );
+    });
+
+    it("should print release information as Text when output format as Text", () => {
+      printReleaseInformation(releaseInformation, "text");
+
+      const message = [
+        "Release Information:",
+        `  Current version: ${releaseInformation.currentVersion}`,
+        `  Latest tagged version: ${releaseInformation.latestTagVersion === undefined ? "none" : releaseInformation.latestTagVersion}`,
+        `  Next version: ${releaseInformation.nextVersion}`,
+      ].join("\n");
+      expect(mockedConsoleLog).toHaveBeenCalledWith(message);
     });
   });
 });

@@ -9,6 +9,7 @@ import {
   JiraIssueWithCommits,
   processVersionFromGitHistory,
 } from "@/release-helper/process-version-from-git-history";
+import { OutputFormat } from "@/cli/parse-arguments";
 
 export type ConventionalLogConfigParams = {
   scope?: string;
@@ -83,4 +84,21 @@ export type ReleaseInformation = {
     issues: JiraIssueWithCommits[];
     projectKey: string;
   };
+};
+
+export const printReleaseInformation = (
+  releaseInformation: ReleaseInformation,
+  outputFormat: OutputFormat,
+) => {
+  if (outputFormat === "json") {
+    console.log(JSON.stringify(releaseInformation));
+  } else {
+    const message = [
+      "Release Information:",
+      `  Current version: ${releaseInformation.currentVersion}`,
+      `  Latest tagged version: ${releaseInformation.latestTagVersion === undefined ? "none" : releaseInformation.latestTagVersion}`,
+      `  Next version: ${releaseInformation.nextVersion}`,
+    ].join("\n");
+    console.log(message);
+  }
 };
