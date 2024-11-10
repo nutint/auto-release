@@ -5,7 +5,7 @@ import { readConfiguration } from "@/cli/read-configuration";
 
 describe("JiraClient", () => {
   it("should get the project", async () => {
-    const parsedArgument = parseArguments([]);
+    const parsedArgument = parseArguments(["analyze"]);
     const configuration = readConfiguration(parsedArgument.configFile);
     const { jiraConfiguration } = configuration;
     if (jiraConfiguration) {
@@ -13,8 +13,8 @@ describe("JiraClient", () => {
       try {
         const project = await jiraClient.getProject("SCRUM");
         if (project) {
-          const createdVersion = await project.createVersion({ name: "1.0.2" });
-          console.log({ createdVersion });
+          const versions = await project.getVersions();
+          console.log({ versions });
         }
       } catch (e) {
         console.log(e);

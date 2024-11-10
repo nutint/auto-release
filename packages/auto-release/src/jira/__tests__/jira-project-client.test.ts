@@ -13,6 +13,7 @@ describe("JiraProjectClient", () => {
     },
     projectVersions: {
       createVersion: vi.fn(),
+      getProjectVersions: vi.fn(),
     },
   };
 
@@ -21,9 +22,8 @@ describe("JiraProjectClient", () => {
     id: "1234",
     jiraJsClient,
   } as unknown as JiraProjectClientParams<Version3Client>;
-  const { createIssue, getIssue, createVersion } = JiraProjectClient(
-    jiraProjectClientInfo,
-  );
+  const { createIssue, getIssue, createVersion, getVersions } =
+    JiraProjectClient(jiraProjectClientInfo);
 
   const generatedIssueId = {
     id: "issueId",
@@ -124,12 +124,10 @@ describe("JiraProjectClient", () => {
     it("should create version", async () => {
       await createVersion(input);
 
-      expect(
-        jiraJsClient.projectVersions.createVersion({
-          name: versionName,
-          projectId: parseInt(jiraProjectClientInfo.id),
-        }),
-      );
+      expect(jiraJsClient.projectVersions.createVersion).toHaveBeenCalledWith({
+        name: versionName,
+        projectId: parseInt(jiraProjectClientInfo.id),
+      });
     });
 
     it("should return version information", async () => {
@@ -140,6 +138,57 @@ describe("JiraProjectClient", () => {
         id: versionId,
         description,
         name: input.name,
+      });
+
+      expect(createdVersion.name).toEqual(input.name);
+      expect(createdVersion.url).toEqual(versionUrl);
+      expect(createdVersion.id).toEqual(versionId);
+      expect(createdVersion.description).toEqual(description);
+    });
+
+    describe("getVersions", () => {
+      const jiraVersion = {
+        name: "name",
+        self: "self",
+        id: "id",
+        description: "description",
+      };
+      const jiraJsResponse = [jiraVersion];
+
+      beforeEach(() => {
+        vi.clearAllMocks();
+        jiraJsClient.projectVersions.getProjectVersions.mockResolvedValue(
+          jiraJsResponse,
+        );
+      });
+
+      it("should get version", async () => {
+        await getVersions();
+
+        expect(
+          jiraJsClient.projectVersions.getProjectVersions,
+        ).toHaveBeenCalledWith({
+          projectIdOrKey: jiraProjectClientInfo.key,
+        });
+      });
+
+      it("should response mapped object", async () => {
+        const actual = await getVersions();
+
+        expect(actual[0]!.name).toEqual("name");
+        expect(actual[0]!.url).toEqual("self");
+        expect(actual[0]!.id).toEqual("id");
+        expect(actual[0]!.description).toEqual("description");
+      });
+
+      it("should response name as empty string if version name is undefined", async () => {
+        jiraJsClient.projectVersions.getProjectVersions.mockResolvedValue([
+          { ...jiraVersion, name: undefined },
+        ]);
+
+        const actual = await getVersions();
+
+        expect(actual[0]!.name).toEqual("");
       });
     });
   });
