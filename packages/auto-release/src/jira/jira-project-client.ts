@@ -76,8 +76,9 @@ export const JiraProjectClient = ({
     return JiraVersionClient({
       name: input.name,
       url: createdVersion.self,
-      id: createdVersion.id,
+      id: createdVersion.id!,
       description: createdVersion.description,
+      _client: jiraJsClient,
     });
   },
   getVersions: async () => {
@@ -88,8 +89,9 @@ export const JiraProjectClient = ({
       JiraVersionClient({
         name: name || "",
         url: self,
-        id,
+        id: id!,
         description,
+        _client: jiraJsClient,
       }),
     );
   },

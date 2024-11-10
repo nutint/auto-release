@@ -13,8 +13,17 @@ describe("JiraClient", () => {
       try {
         const project = await jiraClient.getProject("SCRUM");
         if (project) {
+          const createdVersion = await project.createVersion({ name: "1.2.4" });
+
           const versions = await project.getVersions();
-          console.log({ versions });
+          console.log({ versions: versions.length });
+          const [firstVersion] = versions;
+          await firstVersion!.setRelease(false);
+
+          await createdVersion.delete();
+
+          const versionsAfterDeleted = await project.getVersions();
+          console.log({ versionsAfterDeleted: versionsAfterDeleted.length });
         }
       } catch (e) {
         console.log(e);
