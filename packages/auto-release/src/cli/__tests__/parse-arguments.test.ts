@@ -9,6 +9,7 @@ import {
   validCommands,
   validOutputFormats,
   InvalidCommandLineOutputFormat,
+  InvalidCreateJiraReleaseCommand,
 } from "../parse-arguments";
 
 describe("ParseArguments", () => {
@@ -82,18 +83,51 @@ describe("ParseArguments", () => {
       });
     });
 
-    it("should extract analyzing release command", () => {
-      const actual = parseArguments(["analyze"]);
+    describe("analyze", () => {
+      it("should extract analyzing release command", () => {
+        const actual = parseArguments(["analyze"]);
 
-      expect(actual).toEqual(defaultArgument);
+        expect(actual).toEqual(defaultArgument);
+      });
+
+      it("should have interactive as false when --no-interactive flag provided", () => {
+        const actual = parseArguments(["analyze", "--no-interactive"]);
+
+        expect(actual).toEqual({
+          ...defaultArgument,
+          interactive: false,
+        });
+      });
     });
 
-    it("should have interactive as false when --no-interactive flag provided", () => {
-      const actual = parseArguments(["analyze", "--no-interactive"]);
+    describe("create-jira-release", () => {
+      it("should throw error when no jira-project-key", () => {
+        expect(() => parseArguments(["create-jira-release"])).toThrow(
+          new InvalidCreateJiraReleaseCommand("--jira-project-key required"),
+        );
+      });
 
-      expect(actual).toEqual({
-        ...defaultArgument,
-        interactive: false,
+      it("should throw error when has jira-project-key but no value specified", () => {
+        expect(() =>
+          parseArguments(["create-jira-release", "--jira-project-key="]),
+        ).toThrow(
+          new InvalidCreateJiraReleaseCommand("missing jira project key value"),
+        );
+      });
+
+      it("should extract create-jira-release command", () => {
+        const actual = parseArguments([
+          "create-jira-release",
+          "--jira-project-key=SCRUM",
+        ]);
+
+        expect(actual).toEqual({
+          ...defaultArgument,
+          command: {
+            command: CommandArgument.CreateJiraRelease,
+            projectKey: "SCRUM",
+          },
+        });
       });
     });
   });

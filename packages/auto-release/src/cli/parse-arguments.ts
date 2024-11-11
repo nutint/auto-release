@@ -2,6 +2,7 @@ export type LogLevel = "error" | "warn" | "info" | "debug";
 
 export const CommandArgument = {
   AnalyzeRelease: "AnalyzeRelease",
+  CreateJiraRelease: "CreateJiraRelease",
 } as const;
 
 export type CommandArgument =
@@ -10,18 +11,29 @@ export type CommandArgument =
 export type OutputFormat = "json" | "text";
 export const validOutputFormats: OutputFormat[] = ["json", "text"];
 
+export type AnalyzeRelease = {
+  command: "AnalyzeRelease";
+};
+
+export type CreateJiraRelease = {
+  command: "CreateJiraRelease";
+  projectKey: string;
+};
+
+export type CommandWithParams = AnalyzeRelease | CreateJiraRelease;
+
 export type Arguments = {
   configFile: string;
   logLevel: LogLevel;
   outputFormat: OutputFormat;
   interactive: boolean;
-  command: { command: CommandArgument };
+  command: CommandWithParams;
 };
 
 export const defaultConfigurationFile = "auto-release.config.json";
 
-export type ValidCommand = "analyze";
-export const validCommands: ValidCommand[] = ["analyze"];
+export type ValidCommand = "analyze" | "create-jira-release";
+export const validCommands: ValidCommand[] = ["analyze", "create-jira-release"];
 
 export const parseArguments = (args: string[]): Arguments => {
   const [command, ...parameters] = args;
@@ -60,12 +72,43 @@ export const parseArguments = (args: string[]): Arguments => {
   const logLevel =
     logLevelInput !== undefined ? mapLogLevel(logLevelInput) : undefined;
 
-  return {
+  const commandArgument =
+    command === "analyze"
+      ? CommandArgument.AnalyzeRelease
+      : CommandArgument.CreateJiraRelease;
+
+  const commonCommandArguments = {
     configFile: argConfigurationFile ?? defaultConfigurationFile,
     logLevel: logLevel ?? "error",
     outputFormat,
     interactive,
-    command: { command: CommandArgument.AnalyzeRelease },
+  };
+
+  if (commandArgument === "CreateJiraRelease") {
+    const jiraProjectKeyParam = args.find((arg) =>
+      arg.startsWith("--jira-project-key="),
+    );
+
+    if (jiraProjectKeyParam === undefined) {
+      throw new InvalidCreateJiraReleaseCommand("--jira-project-key required");
+    }
+
+    const [, jiraProjectKey] = jiraProjectKeyParam.split("--jira-project-key=");
+    if (jiraProjectKey === "") {
+      throw new InvalidCreateJiraReleaseCommand(
+        "missing jira project key value",
+      );
+    }
+
+    return {
+      ...commonCommandArguments,
+      command: { command: "CreateJiraRelease", projectKey: jiraProjectKey! },
+    };
+  }
+
+  return {
+    ...commonCommandArguments,
+    command: { command: "AnalyzeRelease" },
   };
 };
 
@@ -85,5 +128,11 @@ export class InvalidCommandlineFormat extends Error {
 export class InvalidCommandLineOutputFormat extends Error {
   constructor(message: string) {
     super(`InvalidCommandLineOutputFormat: ${message}`);
+  }
+}
+
+export class InvalidCreateJiraReleaseCommand extends Error {
+  constructor(message: string) {
+    super(`InvalidCreateJiraReleaseCommand: ${message}`);
   }
 }
