@@ -111,7 +111,31 @@ describe("ParseArguments", () => {
         expect(() =>
           parseArguments(["create-jira-release", "--jira-project-key="]),
         ).toThrow(
-          new InvalidCreateJiraReleaseCommand("missing jira project key value"),
+          new InvalidCreateJiraReleaseCommand(
+            "missing --jira-project-key value",
+          ),
+        );
+      });
+
+      it("should throw error when has project-key but no version-name specify", () => {
+        expect(() =>
+          parseArguments(["create-jira-release", "--jira-project-key=SCRUM"]),
+        ).toThrow(
+          new InvalidCreateJiraReleaseCommand("missing --jira-version-name"),
+        );
+      });
+
+      it("should throw error when has version name but missing value", () => {
+        expect(() =>
+          parseArguments([
+            "create-jira-release",
+            "--jira-project-key=SCRUM",
+            "--jira-version-name=",
+          ]),
+        ).toThrow(
+          new InvalidCreateJiraReleaseCommand(
+            "missing --jira-version-name value",
+          ),
         );
       });
 
@@ -119,6 +143,7 @@ describe("ParseArguments", () => {
         const actual = parseArguments([
           "create-jira-release",
           "--jira-project-key=SCRUM",
+          "--jira-version-name=1.0.1",
         ]);
 
         expect(actual).toEqual({
@@ -126,6 +151,7 @@ describe("ParseArguments", () => {
           command: {
             command: CommandArgument.CreateJiraRelease,
             projectKey: "SCRUM",
+            versionName: "1.0.1",
           },
         });
       });

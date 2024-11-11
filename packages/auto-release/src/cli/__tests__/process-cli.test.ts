@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { processCli } from "../process-cli";
+import { ConfigurationError, processCli } from "../process-cli";
 import * as ParseArguments from "@/cli/parse-arguments";
 import * as ReadConfiguration from "@/cli/read-configuration";
 import { Arguments, CommandArgument } from "@/cli/parse-arguments";
 import * as AnalyzeRelease from "@/cli/commands/analyze-release";
+import * as CreateJiraRelease from "@/cli/commands/create-jira-release";
 
 vi.mock("@/cli/parse-arguments");
 vi.mock("@/cli/read-configuration");
@@ -27,10 +28,19 @@ describe("processCli", () => {
     command: { command: CommandArgument.AnalyzeRelease },
   };
 
+  const jiraConfiguration = {
+    host: "https://yourdomain.jira.com",
+    authentication: {
+      email: "youremail@email.com",
+      apiToken: "apiToken",
+    },
+  };
+
   const configuration = {
     versionSource: {
       versionFile: "/abc/build.sbt",
     },
+    jiraConfiguration,
   };
 
   const cliArguments: string[] = [];
@@ -56,12 +66,59 @@ describe("processCli", () => {
     );
   });
 
-  it("should analyze release information with correct parameters", async () => {
-    await processCli(cliArguments);
+  describe("analyzeRelease", () => {
+    it("should analyze release information with correct parameters", async () => {
+      await processCli(cliArguments);
 
-    expect(mockedAnalyzeRelease).toHaveBeenCalledWith(
-      configuration.versionSource,
-      { interactive, outputFormat },
+      expect(mockedAnalyzeRelease).toHaveBeenCalledWith(
+        configuration.versionSource,
+        { interactive, outputFormat },
+      );
+    });
+  });
+
+  describe("createJiraRelease", () => {
+    const mockedCreateJiraRelease = vi.spyOn(
+      CreateJiraRelease,
+      "createJiraRelease",
     );
+
+    const projectKey = "SCRUM";
+    const versionName = "1.0.1";
+
+    beforeEach(() => {
+      vi.clearAllMocks();
+      mockedParseArguments.mockReturnValue({
+        ...parsedArguments,
+        command: {
+          command: "CreateJiraRelease",
+          projectKey,
+          versionName,
+        },
+      });
+      mockedCreateJiraRelease.mockResolvedValue();
+    });
+
+    it("should throw error when there is no jira configuration", async () => {
+      mockedReadConfiguration.mockReturnValue({
+        ...configuration,
+        jiraConfiguration: undefined,
+      });
+
+      await expect(() => processCli(cliArguments)).rejects.toEqual(
+        new ConfigurationError("missing jiraConfiguration"),
+      );
+    });
+
+    it("should create jira release with correct parameters", async () => {
+      await processCli(cliArguments);
+
+      expect(mockedCreateJiraRelease).toHaveBeenCalledWith(
+        jiraConfiguration,
+        projectKey,
+        versionName,
+        [],
+      );
+    });
   });
 });

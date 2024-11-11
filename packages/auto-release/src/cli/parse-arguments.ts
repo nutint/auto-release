@@ -18,6 +18,7 @@ export type AnalyzeRelease = {
 export type CreateJiraRelease = {
   command: "CreateJiraRelease";
   projectKey: string;
+  versionName: string;
 };
 
 export type CommandWithParams = AnalyzeRelease | CreateJiraRelease;
@@ -96,13 +97,32 @@ export const parseArguments = (args: string[]): Arguments => {
     const [, jiraProjectKey] = jiraProjectKeyParam.split("--jira-project-key=");
     if (jiraProjectKey === "") {
       throw new InvalidCreateJiraReleaseCommand(
-        "missing jira project key value",
+        "missing --jira-project-key value",
+      );
+    }
+
+    const jiraVersionNameParam = args.find((arg) =>
+      arg.startsWith("--jira-version-name="),
+    );
+    if (jiraVersionNameParam === undefined) {
+      throw new InvalidCreateJiraReleaseCommand("missing --jira-version-name");
+    }
+    const [, jiraVersionName] = jiraVersionNameParam.split(
+      "--jira-version-name=",
+    );
+    if (jiraVersionName === "") {
+      throw new InvalidCreateJiraReleaseCommand(
+        "missing --jira-version-name value",
       );
     }
 
     return {
       ...commonCommandArguments,
-      command: { command: "CreateJiraRelease", projectKey: jiraProjectKey! },
+      command: {
+        command: "CreateJiraRelease",
+        projectKey: jiraProjectKey!,
+        versionName: jiraVersionName!,
+      },
     };
   }
 

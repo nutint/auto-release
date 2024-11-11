@@ -13,6 +13,7 @@ describe("processCli(Integration)", () => {
       await processCli([
         "create-jira-release",
         "--jira-project-key=SCRUM",
+        "--jira-version-name=2.0.1",
         "--jira-issues=SCRUM-1,SCRUM-2",
       ]);
     },
