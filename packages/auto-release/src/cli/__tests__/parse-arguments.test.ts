@@ -10,6 +10,7 @@ import {
   validOutputFormats,
   InvalidCommandLineOutputFormat,
   InvalidCreateJiraReleaseCommand,
+  parseCommonArguments,
 } from "../parse-arguments";
 
 describe("ParseArguments", () => {
@@ -36,67 +37,11 @@ describe("ParseArguments", () => {
       );
     });
 
-    it("should return default configuration file when config provide", () => {
-      const actual = parseArguments(["analyze"]);
-
-      expect(actual).toEqual(defaultArgument);
-    });
-
-    it("should throw error when output format is not json and text", () => {
-      expect(() =>
-        parseArguments(["analyze", "--output-format=other"]),
-      ).toThrow(
-        new InvalidCommandLineOutputFormat(
-          `expect output format one of [${validOutputFormats.join(", ")}]`,
-        ),
-      );
-    });
-
-    it("should return outputFormat as Json if specify output format as json", () => {
-      const actual = parseArguments(["analyze", "--output-format=json"]);
-
-      expect(actual).toEqual({
-        ...defaultArgument,
-        outputFormat: "json",
-      });
-    });
-
-    it("should return override configuration file when specify via command line", () => {
-      const configurationFileWithOtherName = "auto-release-test.config.json";
-      const actual = parseArguments([
-        "analyze",
-        `--config=${configurationFileWithOtherName}`,
-      ]);
-
-      expect(actual).toEqual({
-        ...defaultArgument,
-        configFile: configurationFileWithOtherName,
-      });
-    });
-
-    it("should log at warning level with argument --log-level=warn", () => {
-      const actual = parseArguments(["analyze", "--log-level=warn"]);
-
-      expect(actual).toEqual({
-        ...defaultArgument,
-        logLevel: "warn",
-      });
-    });
-
     describe("analyze", () => {
       it("should extract analyzing release command", () => {
         const actual = parseArguments(["analyze"]);
 
         expect(actual).toEqual(defaultArgument);
-      });
-
-      it("should have interactive as false when --no-interactive flag provided", () => {
-        const actual = parseArguments(["analyze", "--no-interactive"]);
-
-        expect(actual).toEqual({
-          ...defaultArgument,
-          interactive: false,
-        });
       });
     });
 
@@ -232,6 +177,60 @@ describe("ParseArguments", () => {
       const actual = mapLogLevel(input);
 
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("parseCommonArguments", () => {
+    it("should return default configuration file when no config provide", () => {
+      const actual = parseCommonArguments([]);
+
+      expect(actual.configFile).toEqual(defaultConfigurationFile);
+    });
+
+    it("should return override configuration file when specify via command line", () => {
+      const configurationFileWithOtherName = "auto-release-test.config.json";
+      const actual = parseCommonArguments([
+        `--config=${configurationFileWithOtherName}`,
+      ]);
+
+      expect(actual.configFile).toEqual(configurationFileWithOtherName);
+    });
+
+    it("should throw error when output format is not json and text", () => {
+      expect(() => parseCommonArguments(["--output-format=other"])).toThrow(
+        new InvalidCommandLineOutputFormat(
+          `expect output format one of [${validOutputFormats.join(", ")}]`,
+        ),
+      );
+    });
+
+    it("should return outputFormat as Json if specify output format as json", () => {
+      const actual = parseCommonArguments(["--output-format=json"]);
+
+      expect(actual.outputFormat).toEqual("json");
+    });
+
+    it("should log at warning level with argument --log-level=warn", () => {
+      const actual = parseCommonArguments(["--log-level=warn"]);
+
+      expect(actual.logLevel).toEqual("warn");
+    });
+
+    it("should have interactive as false when --no-interactive flag provided", () => {
+      const actual = parseCommonArguments(["analyze", "--no-interactive"]);
+
+      expect(actual.interactive).toEqual(false);
+    });
+
+    it("should have valid default value when nothing provided", () => {
+      const actual = parseCommonArguments([]);
+
+      expect(actual).toEqual({
+        configFile: defaultConfigurationFile,
+        logLevel: "error",
+        outputFormat: "text",
+        interactive: true,
+      });
     });
   });
 });

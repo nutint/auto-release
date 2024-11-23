@@ -24,11 +24,14 @@ export type CreateJiraRelease = {
 
 export type CommandWithParams = AnalyzeRelease | CreateJiraRelease;
 
-export type Arguments = {
+export type CommonArguments = {
   configFile: string;
   logLevel: LogLevel;
   outputFormat: OutputFormat;
   interactive: boolean;
+};
+
+export type Arguments = CommonArguments & {
   command: CommandWithParams;
 };
 
@@ -37,31 +40,24 @@ export const defaultConfigurationFile = "auto-release.config.json";
 export type ValidCommand = "analyze" | "create-jira-release";
 export const validCommands: ValidCommand[] = ["analyze", "create-jira-release"];
 
-export const parseArguments = (args: string[]): Arguments => {
-  const [command, ...parameters] = args;
-  if (command === undefined) {
-    throw new InvalidCommandlineFormat("Missing command");
-  }
-  if (!validCommands.includes(command as ValidCommand)) {
-    throw new InvalidCommandlineFormat(
-      `Invalid command, expected one of ${validCommands.join(", ")}`,
-    );
-  }
-  const argConfigurationFile = parameters
+export const parseCommonArguments = (
+  commonArguments: string[],
+): CommonArguments => {
+  const argConfigurationFile = commonArguments
     .find((parameter) => parameter.startsWith("--config="))
     ?.split("=")[1];
 
-  const logLevelInput = parameters
+  const logLevelInput = commonArguments
     .find((parameter) => parameter.startsWith("--log-level=warn"))
     ?.split("--log-level=")[1];
 
   const outputFormat: OutputFormat =
-    (parameters
+    (commonArguments
       .find((parameter) => parameter.startsWith("--output-format"))
       ?.split("--output-format=")[1] as OutputFormat) || "text";
 
   const interactive = !(
-    parameters.find((parameter) => parameter === "--no-interactive") !==
+    commonArguments.find((parameter) => parameter === "--no-interactive") !==
     undefined
   );
 
@@ -74,17 +70,31 @@ export const parseArguments = (args: string[]): Arguments => {
   const logLevel =
     logLevelInput !== undefined ? mapLogLevel(logLevelInput) : undefined;
 
-  const commandArgument =
-    command === "analyze"
-      ? CommandArgument.AnalyzeRelease
-      : CommandArgument.CreateJiraRelease;
-
-  const commonCommandArguments = {
+  return {
     configFile: argConfigurationFile ?? defaultConfigurationFile,
     logLevel: logLevel ?? "error",
     outputFormat,
     interactive,
   };
+};
+
+export const parseArguments = (args: string[]): Arguments => {
+  const [command, ...parameters] = args;
+  if (command === undefined) {
+    throw new InvalidCommandlineFormat("Missing command");
+  }
+  if (!validCommands.includes(command as ValidCommand)) {
+    throw new InvalidCommandlineFormat(
+      `Invalid command, expected one of ${validCommands.join(", ")}`,
+    );
+  }
+
+  const commonCommandArguments = parseCommonArguments(parameters);
+
+  const commandArgument =
+    command === "analyze"
+      ? CommandArgument.AnalyzeRelease
+      : CommandArgument.CreateJiraRelease;
 
   if (commandArgument === "CreateJiraRelease") {
     const jiraProjectKeyParam = args.find((arg) =>
