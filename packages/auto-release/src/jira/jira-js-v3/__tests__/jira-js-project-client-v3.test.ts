@@ -168,6 +168,7 @@ describe("JiraJsProjectClientV3", () => {
     const versionUrl = "https://abc.atlassian.com/versions?id=xxx";
     const versionId = "123456";
     const description = "nothing";
+    const released = false;
 
     beforeEach(() => {
       vi.clearAllMocks();
@@ -175,6 +176,7 @@ describe("JiraJsProjectClientV3", () => {
         self: versionUrl,
         id: versionId,
         description,
+        released,
       });
     });
 
@@ -191,7 +193,7 @@ describe("JiraJsProjectClientV3", () => {
       const createdVersion = await createVersion(input);
 
       expect(createdVersion.name).toEqual(input.name);
-      expect(createdVersion.url).toEqual(versionUrl);
+      expect(createdVersion.released).toEqual(released);
       expect(createdVersion.id).toEqual(versionId);
       expect(createdVersion.description).toEqual(description);
     });
@@ -202,6 +204,7 @@ describe("JiraJsProjectClientV3", () => {
         self: "self",
         id: "id",
         description: "description",
+        released: false,
       };
       const jiraJsResponse = [jiraVersion];
 
@@ -226,7 +229,7 @@ describe("JiraJsProjectClientV3", () => {
         const actual = await getVersions();
 
         expect(actual[0]!.name).toEqual("name");
-        expect(actual[0]!.url).toEqual("self");
+        expect(actual[0]!.released).toEqual(false);
         expect(actual[0]!.id).toEqual("id");
         expect(actual[0]!.description).toEqual("description");
       });

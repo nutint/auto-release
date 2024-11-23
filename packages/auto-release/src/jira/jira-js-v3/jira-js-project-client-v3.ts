@@ -82,9 +82,9 @@ export const JiraJsProjectClientV3 = ({
 
     return JiraJsVersionClientV3({
       name: input.name,
-      url: createdVersion.self,
       id: createdVersion.id!,
       description: createdVersion.description,
+      released: createdVersion.released!,
       config: jiraJsClient,
     });
   },
@@ -92,10 +92,10 @@ export const JiraJsProjectClientV3 = ({
     const versions = await jiraJsClient.projectVersions.getProjectVersions({
       projectIdOrKey: projectKey,
     });
-    return versions.map(({ name, self, id, description }) =>
+    return versions.map(({ name, id, description, released }) =>
       JiraJsVersionClientV3({
         name: name || "",
-        url: self,
+        released: released!,
         id: id!,
         description,
         config: jiraJsClient,

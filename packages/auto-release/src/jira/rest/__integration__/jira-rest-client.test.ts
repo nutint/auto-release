@@ -4,7 +4,7 @@ import { JiraRestClient } from "@/jira/rest/jira-rest-client";
 import { defaultConfigurationFile } from "@/cli/arguments/common-arguments";
 import { logger } from "@/logger/logger";
 
-describe("JiraServerClient", () => {
+describe("JiraRestClient", () => {
   const configuration = readConfiguration(defaultConfigurationFile);
   const jiraConfiguration = configuration.jiraConfiguration!;
 

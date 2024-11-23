@@ -10,7 +10,7 @@ export const JiraJsVersionClientV3 = (
   const { config: _client } = jiraVersion;
   return {
     name: jiraVersion.name,
-    url: jiraVersion.url,
+    released: jiraVersion.released,
     id: jiraVersion.id,
     description: jiraVersion.description,
     config: _client,
