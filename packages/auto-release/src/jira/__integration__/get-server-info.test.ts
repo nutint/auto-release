@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readConfiguration } from "@/cli/read-configuration";
 import { getServerInfo } from "@/jira/get-server.info";
-import { defaultConfigurationFile } from "@/cli/arguments/parse-common-arguments";
+import { defaultConfigurationFile } from "@/cli/arguments/common-arguments";
 
 describe("GetServerInfo", () => {
   const configuration = readConfiguration(defaultConfigurationFile);

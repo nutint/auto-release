@@ -1,6 +1,6 @@
 {
   "name": "@nutint/auto-release",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A Toolkit to simplify release process",
   "main": "bin/auto-release.js",
   "bin": {

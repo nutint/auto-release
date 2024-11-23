@@ -11,6 +11,7 @@ export const JiraJsVersionClientV3 = (
   return {
     name: jiraVersion.name,
     released: jiraVersion.released,
+    projectKey: jiraVersion.projectKey,
     id: jiraVersion.id,
     description: jiraVersion.description,
     config: _client,

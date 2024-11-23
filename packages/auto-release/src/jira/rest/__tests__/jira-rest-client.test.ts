@@ -5,7 +5,7 @@ import {
 } from "@/jira/rest/jira-rest-client";
 import axios from "axios";
 import { getUserAgent } from "@/jira/get-server.info";
-import * as JiraProjectRestClient from "@/jira/rest/jira-project-rest-client";
+import * as JiraProjectRestClient from "@/jira/rest/jira-rest-project-client";
 import { IJiraProjectClient } from "@/jira/jira-project-client";
 import { JiraRestClientConfig } from "@/jira/rest/jira-rest-client-config";
 
@@ -13,7 +13,7 @@ describe("JiraRestClient", () => {
   const mockedAxiosGet = vi.spyOn(axios, "get");
   const mockedJiraProjectRestClient = vi.spyOn(
     JiraProjectRestClient,
-    "JiraProjectRestClient",
+    "JiraRestProjectClient",
   );
 
   const host = "https://host.domain.com";

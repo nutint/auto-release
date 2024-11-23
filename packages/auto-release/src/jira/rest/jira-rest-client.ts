@@ -3,7 +3,7 @@ import axios from "axios";
 import { getUserAgent } from "@/jira/get-server.info";
 import { IJiraClient } from "@/jira/jira-client";
 import { IJiraProjectClient } from "@/jira/jira-project-client";
-import { JiraProjectRestClient } from "@/jira/rest/jira-project-rest-client";
+import { JiraRestProjectClient } from "@/jira/rest/jira-rest-project-client";
 import { JiraRestClientConfig } from "@/jira/rest/jira-rest-client-config";
 
 export const mapToAuthorizationHeader = (authentication: Authentication) =>
@@ -38,7 +38,7 @@ export const JiraRestClient = (
         config.axiosRequestConfig,
       );
       const { key, id } = result.data;
-      return JiraProjectRestClient({ key, id, config });
+      return JiraRestProjectClient({ key, id, config });
     },
     config,
   };

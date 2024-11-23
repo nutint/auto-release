@@ -10,6 +10,7 @@ export type JiraVersionInput = {
 
 export type JiraVersion = {
   id: string;
+  projectKey: string;
   name: string;
   description?: string;
   released: boolean;

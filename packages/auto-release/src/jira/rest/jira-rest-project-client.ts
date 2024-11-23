@@ -18,7 +18,7 @@ import { JiraRestVersionClient } from "@/jira/rest/jira-rest-version-client";
 import { jiraVersionSchema } from "@/jira/rest/jira-version-schema";
 import { logger } from "@/logger/logger";
 
-export const JiraProjectRestClient = ({
+export const JiraRestProjectClient = ({
   key: projectKey,
   id: projectId,
   config,
@@ -45,6 +45,7 @@ export const JiraProjectRestClient = ({
           fixVersions: fixVersions.map((version) => ({
             id: version.id,
             name: version.name,
+            projectKey: projectKey,
             description: version.description,
             released: version.released,
           })),
@@ -83,6 +84,7 @@ export const JiraProjectRestClient = ({
           id,
           name,
           description,
+          projectKey,
           released,
           config,
         });
@@ -105,6 +107,7 @@ export const JiraProjectRestClient = ({
           JiraRestVersionClient({
             id: version.id,
             name: version.name,
+            projectKey: projectKey,
             description: version.description,
             released: version.released,
             config,

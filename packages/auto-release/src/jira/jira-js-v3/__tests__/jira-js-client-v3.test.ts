@@ -31,7 +31,14 @@ describe("JiraJsClientV3", () => {
   it("should create Version3Client with personalAccessToken when authentication has personal access token", () => {
     JiraJsClientV3(configuration);
 
-    expect(mockedCreateVersion3Client).toHaveBeenCalledWith(configuration);
+    expect(mockedCreateVersion3Client).toHaveBeenCalledWith({
+      ...configuration,
+      baseRequestConfig: {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    });
   });
 
   it("should create Version3Client with email, and apiToken when authentication has email and apiToken", () => {
@@ -51,6 +58,11 @@ describe("JiraJsClientV3", () => {
         basic: {
           email,
           apiToken,
+        },
+      },
+      baseRequestConfig: {
+        headers: {
+          "Content-Type": "application/json",
         },
       },
     });

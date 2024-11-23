@@ -19,6 +19,11 @@ export const JiraJsClientV3 = (
               apiToken: authentication.apiToken,
             },
           },
+    baseRequestConfig: {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
   });
   return {
     getProject: async (

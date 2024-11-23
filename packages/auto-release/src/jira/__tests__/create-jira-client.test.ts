@@ -4,9 +4,9 @@ import { Version3Client } from "jira.js";
 import * as GetServerInfo from "@/jira/get-server.info";
 import { JiraServerInfo } from "@/jira/get-server.info";
 import * as JiraRestClient from "@/jira/rest/jira-rest-client";
-import { Axios } from "axios";
 import { IJiraClient } from "@/jira/jira-client";
 import * as JiraJsClientV3 from "@/jira/jira-js-v3/jira-js-client-v3";
+import { JiraRestClientConfig } from "@/jira/rest/jira-rest-client-config";
 
 describe("CreateJiraClient", () => {
   const mockedGetServerInfo = vi.spyOn(GetServerInfo, "getServerInfo");
@@ -24,7 +24,7 @@ describe("CreateJiraClient", () => {
       jiraJsClientV3 as unknown as IJiraClient<Version3Client>,
     );
     mockedJiraRestClient.mockReturnValue(
-      jiraRestClient as unknown as IJiraClient<Axios>,
+      jiraRestClient as unknown as IJiraClient<JiraRestClientConfig>,
     );
   });
 
@@ -53,7 +53,7 @@ describe("CreateJiraClient", () => {
 
       await createJiraClient(configuration);
 
-      expect(mockedJiraRestClient).toHaveBeenCalledWith(configuration);
+      expect(mockedJiraJsClientV3).toHaveBeenCalledWith(configuration);
     });
 
     it("should return JiraRestClient when server's deployment type is Server", async () => {
@@ -63,7 +63,7 @@ describe("CreateJiraClient", () => {
 
       const actual = await createJiraClient(configuration);
 
-      expect(actual).toEqual(jiraRestClient);
+      expect(actual).toEqual(jiraJsClientV3);
     });
 
     it("should create JiraJsClientV3 when server's deployment type is Cloud", async () => {

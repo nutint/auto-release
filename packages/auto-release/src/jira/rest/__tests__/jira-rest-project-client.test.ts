@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { JiraProjectRestClient } from "@/jira/rest/jira-project-rest-client";
+import { JiraRestProjectClient } from "@/jira/rest/jira-rest-project-client";
 import axios, { AxiosError } from "axios";
 import { getUserAgent } from "@/jira/get-server.info";
 import { JiraIssueOperationError } from "@/jira/jira-issue-models";
@@ -21,7 +21,7 @@ describe("JiraProjectRestClient", () => {
   };
 
   it("should return key, id, and config", () => {
-    const actual = JiraProjectRestClient({
+    const actual = JiraRestProjectClient({
       key,
       id,
       config,
@@ -33,7 +33,7 @@ describe("JiraProjectRestClient", () => {
   });
 
   const { getIssue, createIssue, createVersion, getVersions } =
-    JiraProjectRestClient({
+    JiraRestProjectClient({
       key,
       id,
       config,
@@ -129,6 +129,7 @@ describe("JiraProjectRestClient", () => {
         {
           id: "23456",
           name: "1.0.1",
+          projectKey: "SCRUM",
           description: "description",
           released: false,
         },
