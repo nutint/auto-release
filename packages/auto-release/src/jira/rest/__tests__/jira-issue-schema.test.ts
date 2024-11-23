@@ -4,6 +4,7 @@ import { jiraIssueSchema } from "@/jira/rest/jira-issue.schema";
 describe("JiraIssueSchema", () => {
   const validJiraIssue = {
     id: "12345",
+    key: "SCRUM-1",
     fields: {
       summary: "This is summary",
       fixVersions: [

@@ -11,7 +11,9 @@ describe("JiraServerClient", () => {
     const jiraClient = JiraRestClient(jiraConfiguration);
 
     const project = await jiraClient.getProject("PJ");
-    const issue = await project?.getIssue("PJ-52");
-    console.log(issue);
+    if (project) {
+      const issue = await project.getIssue("PJ-52");
+      console.log(issue);
+    }
   });
 });

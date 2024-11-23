@@ -38,6 +38,7 @@ describe("JiraProjectRestClient", () => {
     const getProjectAxiosResponse = {
       data: {
         id: "12345",
+        key: "SCRUM-1",
         fields: {
           summary: "This is summary",
           fixVersions: [
