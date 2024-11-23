@@ -19,6 +19,7 @@ export type CreateJiraRelease = {
   command: "CreateJiraRelease";
   projectKey: string;
   versionName: string;
+  issues: string[];
 };
 
 export type CommandWithParams = AnalyzeRelease | CreateJiraRelease;
@@ -116,12 +117,44 @@ export const parseArguments = (args: string[]): Arguments => {
       );
     }
 
+    const jiraIssueIdsParam = args.find((arg) =>
+      arg.startsWith("--jira-issues="),
+    );
+
+    if (jiraIssueIdsParam === undefined) {
+      return {
+        ...commonCommandArguments,
+        command: {
+          command: "CreateJiraRelease",
+          projectKey: jiraProjectKey!,
+          versionName: jiraVersionName!,
+          issues: [],
+        },
+      };
+    }
+
+    const [, jiraIssueIdsString] = jiraIssueIdsParam.split("--jira-issues=");
+    if (jiraIssueIdsString == "") {
+      return {
+        ...commonCommandArguments,
+        command: {
+          command: "CreateJiraRelease",
+          projectKey: jiraProjectKey!,
+          versionName: jiraVersionName!,
+          issues: [],
+        },
+      };
+    }
+
     return {
       ...commonCommandArguments,
       command: {
         command: "CreateJiraRelease",
         projectKey: jiraProjectKey!,
         versionName: jiraVersionName!,
+        issues: jiraIssueIdsString!
+          .split(",")
+          .filter((issue) => issue.startsWith(`${jiraProjectKey}-`)),
       },
     };
   }

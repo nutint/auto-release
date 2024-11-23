@@ -16,7 +16,7 @@ export const processCli = async (args: string[]) => {
       jiraConfiguration,
       command.projectKey,
       command.versionName,
-      [],
+      command.issues,
     );
     return;
   }

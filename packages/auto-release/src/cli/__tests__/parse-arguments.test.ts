@@ -152,6 +152,64 @@ describe("ParseArguments", () => {
             command: CommandArgument.CreateJiraRelease,
             projectKey: "SCRUM",
             versionName: "1.0.1",
+            issues: [],
+          },
+        });
+      });
+
+      it("should extract create-jira-release command with issues with no issue when no issue specified", () => {
+        const actual = parseArguments([
+          "create-jira-release",
+          "--jira-project-key=SCRUM",
+          "--jira-version-name=1.0.1",
+          "--jira-issues=",
+        ]);
+
+        expect(actual).toEqual({
+          ...defaultArgument,
+          command: {
+            command: CommandArgument.CreateJiraRelease,
+            projectKey: "SCRUM",
+            versionName: "1.0.1",
+            issues: [],
+          },
+        });
+      });
+
+      it("should extract create-jira-release command with issues", () => {
+        const actual = parseArguments([
+          "create-jira-release",
+          "--jira-project-key=SCRUM",
+          "--jira-version-name=1.0.1",
+          "--jira-issues=SCRUM-1,SCRUM-2",
+        ]);
+
+        expect(actual).toEqual({
+          ...defaultArgument,
+          command: {
+            command: CommandArgument.CreateJiraRelease,
+            projectKey: "SCRUM",
+            versionName: "1.0.1",
+            issues: ["SCRUM-1", "SCRUM-2"],
+          },
+        });
+      });
+
+      it("should filter issue under the same project key", () => {
+        const actual = parseArguments([
+          "create-jira-release",
+          "--jira-project-key=SCRUM",
+          "--jira-version-name=1.0.1",
+          "--jira-issues=SCRUM-1,SCRUM-2,OTHER-1",
+        ]);
+
+        expect(actual).toEqual({
+          ...defaultArgument,
+          command: {
+            command: CommandArgument.CreateJiraRelease,
+            projectKey: "SCRUM",
+            versionName: "1.0.1",
+            issues: ["SCRUM-1", "SCRUM-2"],
           },
         });
       });

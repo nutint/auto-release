@@ -94,6 +94,7 @@ describe("processCli", () => {
           command: "CreateJiraRelease",
           projectKey,
           versionName,
+          issues: ["ABC-123"],
         },
       });
       mockedCreateJiraRelease.mockResolvedValue();
@@ -117,7 +118,7 @@ describe("processCli", () => {
         jiraConfiguration,
         projectKey,
         versionName,
-        [],
+        ["ABC-123"],
       );
     });
   });
