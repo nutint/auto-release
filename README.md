@@ -16,12 +16,30 @@ auto-release is a tool designed to simplify and automate the release process acr
 - **Jira Integration**: Tags Jira issues with the release version and automatically creates Jira release versions.
 - **Cross-Language Support**: Works with various project types (e.g., Node.js, Scala, C#, etc.).
 
-## Installation
+## Usage
 
-### 1. Using the CLI
-
-You can install the auto-release as a global CLI tool using `npm`:
-
-```bash
+1. Installing CLI
+```shell
 npm install -g @nutint/auto-release
+```
+2. Set up configuration file at your project's root directory `your-project-root-dir/auto-release.config.json`
+```json
+{
+  "jiraConfiguration": {
+    "host": "https://yourdomain.jira.com",
+    "authentication": {
+      "email": "your@email.com",
+      "apiToken": "your-jira-api-token"
+    }
+  }
+}
+```
+3. Try create jira release version and tag issues with the version
+```shell
+# your-project-root-dir
+npx auto-release \
+    create-jira-release \
+    --jira-project-key=PROJ \
+    --jira-version-name=1.0.1 \
+    --jira-issues=PROJ-1,PROJ-2,PROJ-3
 ```
