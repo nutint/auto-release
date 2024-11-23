@@ -1,30 +1,9 @@
 import { HttpException, Version3Client } from "jira.js";
 import { from, lastValueFrom, mergeMap, toArray } from "rxjs";
+import { JiraVersion, TagIssueResult } from "@/jira/jira-version-models";
+import { IJiraVersionClient } from "@/jira/jira-version-client";
 
-export type JiraVersionInput = {
-  name: string;
-};
-
-export type JiraVersion = JiraVersionInput & {
-  url?: string;
-  id: string;
-  description?: string;
-};
-
-type TagIssueResult = {
-  issueId: string;
-  result: string;
-  reason?: string;
-};
-
-export type IJiraVersionClient<T> = JiraVersion & {
-  _client: T;
-  setRelease: (release: boolean) => Promise<void>;
-  delete: () => Promise<void>;
-  tagIssuesFixVersion: (issueIds: string[]) => Promise<TagIssueResult[]>;
-};
-
-export const JiraVersionClient = (
+export const JiraJsVersionClientV3 = (
   jiraVersion: JiraVersion & { _client: Version3Client },
 ): IJiraVersionClient<Version3Client> => {
   const { _client } = jiraVersion;

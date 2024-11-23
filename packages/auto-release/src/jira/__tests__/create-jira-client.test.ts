@@ -5,8 +5,8 @@ import { Version3Client } from "jira.js";
 import * as GetServerInfo from "@/jira/get-server.info";
 import { JiraServerInfo } from "@/jira/get-server.info";
 import * as JiraRestClient from "@/jira/rest/jira-rest-client";
-import { IJiraClient } from "@/jira/jira-js-v3/jira-client";
 import { Axios } from "axios";
+import { IJiraClient } from "@/jira/jira-client";
 
 vi.mock("jira.js");
 

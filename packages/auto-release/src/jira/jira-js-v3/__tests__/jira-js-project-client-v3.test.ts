@@ -1,11 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import {
-  JiraProjectClient,
-  JiraProjectClientParams,
-} from "@/jira/jira-js-v3/jira-project-client";
+import { JiraJsProjectClientV3 } from "@/jira/jira-js-v3/jira-js-project-client-v3";
 import { Version3Client } from "jira.js";
+import { JiraProjectClientParams } from "@/jira/jira-project-client";
 
-describe("JiraProjectClient", () => {
+describe("JiraJsProjectClientV3", () => {
   const jiraJsClient = {
     issues: {
       createIssue: vi.fn(),
@@ -23,7 +21,7 @@ describe("JiraProjectClient", () => {
     jiraJsClient,
   } as unknown as JiraProjectClientParams<Version3Client>;
   const { createIssue, getIssue, createVersion, getVersions } =
-    JiraProjectClient(jiraProjectClientInfo);
+    JiraJsProjectClientV3(jiraProjectClientInfo);
 
   const generatedIssueId = {
     id: "issueId",

@@ -1,34 +1,13 @@
 import { Version3Client } from "jira.js";
+import { JiraJsVersionClientV3 } from "@/jira/jira-js-v3/jira-js-version-client-v3";
+import { JiraVersionInput } from "@/jira/jira-version-models";
+import { JiraIssueInput } from "@/jira/jira-issue-models";
 import {
-  IJiraVersionClient,
-  JiraVersionClient,
-  JiraVersionInput,
-} from "@/jira/jira-js-v3/jira-version-client";
+  IJiraProjectClient,
+  JiraProjectClientParams,
+} from "@/jira/jira-project-client";
 
-type JiraIssueInput = {
-  summary: string;
-  issueType?: string;
-};
-
-type JiraIssue = JiraIssueInput & { id: string; key: string };
-
-export type IJiraProjectClient<T> = {
-  key: string;
-  id: string;
-  _client: T;
-  createIssue: (input: JiraIssueInput) => Promise<JiraIssue>;
-  getIssue: (issueKey: string) => Promise<JiraIssue>;
-  createVersion: (input: JiraVersionInput) => Promise<IJiraVersionClient<T>>;
-  getVersions: () => Promise<IJiraVersionClient<T>[]>;
-};
-
-export type JiraProjectClientParams<T> = {
-  key: string;
-  id: string;
-  jiraJsClient: T;
-};
-
-export const JiraProjectClient = ({
+export const JiraJsProjectClientV3 = ({
   key: projectKey,
   id: projectId,
   jiraJsClient,
@@ -73,7 +52,7 @@ export const JiraProjectClient = ({
       projectId: parseInt(projectId),
     });
 
-    return JiraVersionClient({
+    return JiraJsVersionClientV3({
       name: input.name,
       url: createdVersion.self,
       id: createdVersion.id!,
@@ -86,7 +65,7 @@ export const JiraProjectClient = ({
       projectIdOrKey: projectKey,
     });
     return versions.map(({ name, self, id, description }) =>
-      JiraVersionClient({
+      JiraJsVersionClientV3({
         name: name || "",
         url: self,
         id: id!,

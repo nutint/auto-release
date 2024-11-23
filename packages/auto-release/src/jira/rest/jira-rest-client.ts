@@ -1,8 +1,8 @@
 import { Authentication, JiraConfiguration } from "@/jira/jira-configuration";
-import { IJiraClient } from "@/jira/jira-js-v3/jira-client";
 import axios, { Axios } from "axios";
-import { IJiraProjectClient } from "@/jira/jira-js-v3/jira-project-client";
 import { getUserAgent } from "@/jira/get-server.info";
+import { IJiraClient } from "@/jira/jira-client";
+import { IJiraProjectClient } from "@/jira/jira-project-client";
 
 export const mapToAuthorizationHeader = (authentication: Authentication) =>
   "personalAccessToken" in authentication

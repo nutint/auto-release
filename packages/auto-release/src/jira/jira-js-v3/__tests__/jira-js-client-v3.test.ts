@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { JiraJsV3Client } from "../jira-client";
+import { JiraJsClientV3 } from "../jira-js-client-v3";
 import { HttpException } from "jira.js";
 
-describe("JiraClient", () => {
+describe("JiraJsClientV3", () => {
   const jiraJsClient = {
     projects: {
       getProject: vi.fn(),
     },
   } as any;
-  const jiraClient = JiraJsV3Client(jiraJsClient);
+  const jiraJsClientV3 = JiraJsClientV3(jiraJsClient);
   const projectKey = "SCRUM";
   const jiraJsProjectResponse = { id: "1000", key: projectKey };
 
@@ -19,7 +19,7 @@ describe("JiraClient", () => {
     });
 
     it("should get project with projectKey", async () => {
-      await jiraClient.getProject(projectKey);
+      await jiraJsClientV3.getProject(projectKey);
 
       expect(jiraJsClient.projects.getProject).toHaveBeenCalledWith(projectKey);
     });
@@ -28,7 +28,7 @@ describe("JiraClient", () => {
       jiraJsClient.projects.getProject.mockRejectedValue(
         new HttpException("Request failed with status code 404", 404),
       );
-      const actual = await jiraClient.getProject(projectKey);
+      const actual = await jiraJsClientV3.getProject(projectKey);
 
       expect(actual).toBeUndefined();
     });
@@ -38,7 +38,7 @@ describe("JiraClient", () => {
         new HttpException("Request failed with status code 500", 500),
       );
 
-      await expect(() => jiraClient.getProject(projectKey)).rejects.toEqual(
+      await expect(() => jiraJsClientV3.getProject(projectKey)).rejects.toEqual(
         new Error("Get project failed"),
       );
     });
@@ -48,13 +48,13 @@ describe("JiraClient", () => {
         new Error("Other exception"),
       );
 
-      await expect(() => jiraClient.getProject(projectKey)).rejects.toEqual(
+      await expect(() => jiraJsClientV3.getProject(projectKey)).rejects.toEqual(
         new Error("Get project failed"),
       );
     });
 
     it("should return project info when project is exists", async () => {
-      const actual = await jiraClient.getProject(projectKey);
+      const actual = await jiraJsClientV3.getProject(projectKey);
 
       expect(actual?.id).toEqual(jiraJsProjectResponse.id);
       expect(actual?.key).toEqual(jiraJsProjectResponse.key);

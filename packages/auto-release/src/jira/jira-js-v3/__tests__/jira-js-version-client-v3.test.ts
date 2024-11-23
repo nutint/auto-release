@@ -1,11 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import {
-  JiraVersion,
-  JiraVersionClient,
-} from "@/jira/jira-js-v3/jira-version-client";
+import { JiraJsVersionClientV3 } from "@/jira/jira-js-v3/jira-js-version-client-v3";
 import { HttpException, Version3Client } from "jira.js";
+import { JiraVersion } from "@/jira/jira-version-models";
 
-describe("JiraVersionClient", () => {
+describe("JiraJsVersionClientV3", () => {
   const jiraJsClient = {
     projectVersions: {
       updateVersion: vi.fn(),
@@ -29,7 +27,7 @@ describe("JiraVersionClient", () => {
     setRelease,
     delete: deleteVersion,
     tagIssuesFixVersion,
-  } = JiraVersionClient(jiraVersionWithClient);
+  } = JiraJsVersionClientV3(jiraVersionWithClient);
 
   describe("setRelease", () => {
     beforeEach(() => {

@@ -1,17 +1,9 @@
 import { HttpException, Version3Client } from "jira.js";
-import {
-  IJiraProjectClient,
-  JiraProjectClient,
-} from "@/jira/jira-js-v3/jira-project-client";
+import { JiraJsProjectClientV3 } from "@/jira/jira-js-v3/jira-js-project-client-v3";
+import { IJiraClient } from "@/jira/jira-client";
+import { IJiraProjectClient } from "@/jira/jira-project-client";
 
-export type IJiraClient<T> = {
-  getProject: (
-    projectKey: string,
-  ) => Promise<IJiraProjectClient<T> | undefined>;
-  _client: T;
-};
-
-export const JiraJsV3Client = (
+export const JiraJsClientV3 = (
   jiraJsClient: Version3Client,
 ): IJiraClient<Version3Client> => ({
   getProject: async (
@@ -19,7 +11,7 @@ export const JiraJsV3Client = (
   ): Promise<IJiraProjectClient<Version3Client> | undefined> => {
     try {
       const project = await jiraJsClient.projects.getProject(projectKey);
-      return JiraProjectClient({
+      return JiraJsProjectClientV3({
         key: project.key,
         id: project.id,
         jiraJsClient,
