@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { readConfiguration } from "../read-configuration";
 import path from "path";
-import { defaultConfigurationFile } from "@/cli/parse-arguments";
 import fs from "fs";
 import * as ValidateConfig from "../validate-config";
+import { defaultConfigurationFile } from "@/cli/arguments/common-arguments";
 
 vi.mock("fs");
 

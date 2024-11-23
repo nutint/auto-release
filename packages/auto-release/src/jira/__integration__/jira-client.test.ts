@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 import { createJiraClient } from "@/jira/create-jira-client";
-import { parseArguments } from "@/cli/parse-arguments";
+import { parseArguments } from "@/cli/arguments/parse-arguments";
 import { readConfiguration } from "@/cli/read-configuration";
 
 describe("JiraClient", () => {

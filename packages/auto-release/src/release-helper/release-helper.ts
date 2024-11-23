@@ -9,7 +9,8 @@ import {
   JiraIssueWithCommits,
   processVersionFromGitHistory,
 } from "@/release-helper/process-version-from-git-history";
-import { OutputFormat } from "@/cli/parse-arguments";
+
+import { OutputFormat } from "@/cli/arguments/common-arguments";
 
 export type ConventionalLogConfigParams = {
   scope?: string;

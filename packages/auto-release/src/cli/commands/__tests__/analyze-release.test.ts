@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as ReleaseHelper from "@/release-helper/release-helper";
-import { OutputFormat } from "@/cli/parse-arguments";
 import { analyzeRelease } from "@/cli/commands/analyze-release";
 import { ReleaseInformation } from "@/release-helper/release-helper";
 import * as AnalyzeReleasePrompts from "@/cli/commands/analyze-release-prompts";
 import * as CreateRelease from "@/cli/commands/create-release";
+import { OutputFormat } from "@/cli/arguments/common-arguments";
 
 describe("AnalyzeRelease", () => {
   describe("analyzeRelease", () => {

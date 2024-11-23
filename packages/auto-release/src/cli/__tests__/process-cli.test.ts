@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ConfigurationError, processCli } from "../process-cli";
-import * as ParseArguments from "@/cli/parse-arguments";
+import * as ParseArguments from "@/cli/arguments/parse-arguments";
 import * as ReadConfiguration from "@/cli/read-configuration";
-import { Arguments, CommandArgument } from "@/cli/parse-arguments";
+import { Arguments, CommandArgument } from "@/cli/arguments/parse-arguments";
 import * as AnalyzeRelease from "@/cli/commands/analyze-release";
 import * as CreateJiraRelease from "@/cli/commands/create-jira-release";
 

@@ -1,7 +1,7 @@
 import { describe, it } from "vitest";
 import { readConfiguration } from "@/cli/read-configuration";
-import { defaultConfigurationFile } from "@/cli/parse-arguments";
 import { JiraRestClient } from "@/jira/rest/jira-rest-client";
+import { defaultConfigurationFile } from "@/cli/arguments/parse-common-arguments";
 
 describe("JiraServerClient", () => {
   const configuration = readConfiguration(defaultConfigurationFile);

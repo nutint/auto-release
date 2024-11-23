@@ -1,4 +1,4 @@
-import { parseArguments } from "@/cli/parse-arguments";
+import { parseArguments } from "@/cli/arguments/parse-arguments";
 import { readConfiguration } from "@/cli/read-configuration";
 import { analyzeRelease } from "@/cli/commands/analyze-release";
 import { createJiraRelease } from "@/cli/commands/create-jira-release";

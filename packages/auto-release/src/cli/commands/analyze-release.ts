@@ -1,5 +1,4 @@
 import { VersionSourceConfiguration } from "@/release-helper/version-source-configuration";
-import { OutputFormat } from "@/cli/parse-arguments";
 import {
   extractReleaseInformation,
   printReleaseInformation,
@@ -10,6 +9,7 @@ import {
   promptSetupRelease,
 } from "@/cli/commands/analyze-release-prompts";
 import { createRelease } from "@/cli/commands/create-release";
+import { OutputFormat } from "@/cli/arguments/common-arguments";
 
 type AnalyzeOptions = {
   interactive: boolean;
