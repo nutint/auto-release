@@ -37,6 +37,9 @@ importers:
 
   packages/auto-release:
     dependencies:
+      axios:
+        specifier: ^1.7.7
+        version: 1.7.7
       conventional-commits-parser:
         specifier: ^6.0.0
         version: 6.0.0
