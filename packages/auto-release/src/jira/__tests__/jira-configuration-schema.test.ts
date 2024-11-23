@@ -11,6 +11,13 @@ describe("schema", () => {
     },
   };
 
+  const patConfiguration = {
+    ...defaultConfiguration,
+    authentication: {
+      personalAccessToken: "pat",
+    },
+  };
+
   const extractJiraConfiguration = (
     unvalidatedConfiguration: object,
   ): JiraConfiguration => {
@@ -34,5 +41,11 @@ describe("schema", () => {
     const actual = extractJiraConfiguration(defaultConfiguration);
 
     expect(actual).toEqual(defaultConfiguration);
+  });
+
+  it("should return valid configuration when parse PAT configuration", () => {
+    const actual = extractJiraConfiguration(patConfiguration);
+
+    expect(actual).toEqual(patConfiguration);
   });
 });

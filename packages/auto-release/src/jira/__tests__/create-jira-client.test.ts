@@ -28,7 +28,7 @@ describe("CreateJiraClient", () => {
       },
     };
 
-    it("should create client", () => {
+    it("should create client with email and apiToken", () => {
       createJiraClient(configuration);
 
       expect(mockedCreateVersion3Client).toHaveBeenCalledWith({
@@ -38,6 +38,22 @@ describe("CreateJiraClient", () => {
             email,
             apiToken,
           },
+        },
+      });
+    });
+
+    it("should create client with personalAccessToken", () => {
+      createJiraClient({
+        ...configuration,
+        authentication: {
+          personalAccessToken: "PAT",
+        },
+      });
+
+      expect(mockedCreateVersion3Client).toHaveBeenCalledWith({
+        host,
+        authentication: {
+          personalAccessToken: "PAT",
         },
       });
     });
