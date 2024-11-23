@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { JiraVersion, JiraVersionClient } from "@/jira/jira-version-client";
+import {
+  JiraVersion,
+  JiraVersionClient,
+} from "@/jira/jira-js-v3/jira-version-client";
 import { HttpException, Version3Client } from "jira.js";
 
 describe("JiraVersionClient", () => {

@@ -5,10 +5,10 @@ import {
   createJiraRelease,
   CreateJiraReleaseError,
 } from "@/cli/commands/create-jira-release";
-import { IJiraClient } from "@/jira/jira-client";
+import { IJiraClient } from "@/jira/jira-js-v3/jira-client";
 import { Version3Client } from "jira.js";
-import { IJiraProjectClient } from "@/jira/jira-project-client";
-import { IJiraVersionClient } from "@/jira/jira-version-client";
+import { IJiraProjectClient } from "@/jira/jira-js-v3/jira-project-client";
+import { IJiraVersionClient } from "@/jira/jira-js-v3/jira-version-client";
 
 describe("CreateJiraRelease", () => {
   const mockedCreateJiraClient = vi.spyOn(CreateJiraClient, "createJiraClient");

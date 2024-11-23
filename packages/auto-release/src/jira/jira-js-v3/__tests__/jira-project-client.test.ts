@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   JiraProjectClient,
   JiraProjectClientParams,
-} from "@/jira/jira-project-client";
+} from "@/jira/jira-js-v3/jira-project-client";
 import { Version3Client } from "jira.js";
 
 describe("JiraProjectClient", () => {

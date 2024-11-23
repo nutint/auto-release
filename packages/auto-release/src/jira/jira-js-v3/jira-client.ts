@@ -2,7 +2,7 @@ import { HttpException, Version3Client } from "jira.js";
 import {
   IJiraProjectClient,
   JiraProjectClient,
-} from "@/jira/jira-project-client";
+} from "@/jira/jira-js-v3/jira-project-client";
 
 export type IJiraClient<T> = {
   getProject: (

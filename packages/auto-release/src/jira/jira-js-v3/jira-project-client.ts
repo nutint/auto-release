@@ -3,7 +3,7 @@ import {
   IJiraVersionClient,
   JiraVersionClient,
   JiraVersionInput,
-} from "@/jira/jira-version-client";
+} from "@/jira/jira-js-v3/jira-version-client";
 
 type JiraIssueInput = {
   summary: string;
