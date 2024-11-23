@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { JiraJsVersionClientV3 } from "@/jira/jira-js-v3/jira-js-version-client-v3";
 import { HttpException, Version3Client } from "jira.js";
 import { JiraVersion } from "@/jira/jira-version-models";
+import { JiraClientConfig } from "@/jira/jira-client-config";
 
 describe("JiraJsVersionClientV3", () => {
   const jiraJsClient = {
@@ -20,8 +21,8 @@ describe("JiraJsVersionClientV3", () => {
     name: "1.0.0",
     url: "url",
     description: "description",
-    _client: jiraJsClient,
-  } as unknown as JiraVersion & { _client: Version3Client };
+    config: jiraJsClient,
+  } as unknown as JiraVersion & JiraClientConfig<Version3Client>;
 
   const {
     setRelease,

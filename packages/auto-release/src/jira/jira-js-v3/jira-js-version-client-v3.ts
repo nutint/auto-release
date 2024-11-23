@@ -2,17 +2,18 @@ import { HttpException, Version3Client } from "jira.js";
 import { from, lastValueFrom, mergeMap, toArray } from "rxjs";
 import { JiraVersion, TagIssueResult } from "@/jira/jira-version-models";
 import { IJiraVersionClient } from "@/jira/jira-version-client";
+import { JiraClientConfig } from "@/jira/jira-client-config";
 
 export const JiraJsVersionClientV3 = (
-  jiraVersion: JiraVersion & { _client: Version3Client },
+  jiraVersion: JiraVersion & JiraClientConfig<Version3Client>,
 ): IJiraVersionClient<Version3Client> => {
-  const { _client } = jiraVersion;
+  const { config: _client } = jiraVersion;
   return {
     name: jiraVersion.name,
     url: jiraVersion.url,
     id: jiraVersion.id,
     description: jiraVersion.description,
-    _client,
+    config: _client,
     setRelease: async (release: boolean) => {
       await _client.projectVersions.updateVersion({
         id: jiraVersion.id,

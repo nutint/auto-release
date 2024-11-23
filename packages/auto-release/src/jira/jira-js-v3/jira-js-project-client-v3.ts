@@ -10,11 +10,11 @@ import {
 export const JiraJsProjectClientV3 = ({
   key: projectKey,
   id: projectId,
-  jiraJsClient,
+  config: jiraJsClient,
 }: JiraProjectClientParams<Version3Client>): IJiraProjectClient<Version3Client> => ({
   key: projectKey,
   id: projectId,
-  _client: jiraJsClient,
+  config: jiraJsClient,
   createIssue: async (input: JiraIssueInput) => {
     const { key, id } = await jiraJsClient.issues.createIssue({
       fields: {

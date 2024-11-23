@@ -18,7 +18,7 @@ describe("JiraJsProjectClientV3", () => {
   const jiraProjectClientInfo = {
     key: "PROJKEY",
     id: "1234",
-    jiraJsClient,
+    config: jiraJsClient,
   } as unknown as JiraProjectClientParams<Version3Client>;
   const { createIssue, getIssue, createVersion, getVersions } =
     JiraJsProjectClientV3(jiraProjectClientInfo);
