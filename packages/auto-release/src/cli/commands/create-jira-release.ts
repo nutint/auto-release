@@ -7,7 +7,7 @@ export const createJiraRelease = async (
   version: string,
   jiraIssues: string[],
 ) => {
-  const jiraClient = createJiraClient(jiraConfiguration);
+  const jiraClient = await createJiraClient(jiraConfiguration);
   const jiraProjectClient = await jiraClient.getProject(projectKey);
   if (jiraProjectClient === undefined) {
     throw new CreateJiraReleaseError(`project ${projectKey} not found`);

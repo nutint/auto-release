@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
-  JiraServerClient,
+  JiraRestClient,
   mapToAuthorizationHeader,
-} from "@/jira/rest/jira-server-client";
+} from "@/jira/rest/jira-rest-client";
 import axios from "axios";
 import { getUserAgent } from "@/jira/get-server.info";
 
-describe("JiraServerClient", () => {
+describe("JiraRestClient", () => {
   const mockedAxiosGet = vi.spyOn(axios, "get");
 
   const host = "https://host.domain.com";
@@ -18,7 +18,7 @@ describe("JiraServerClient", () => {
   };
   const projectKey = "SCRUM";
 
-  const { getProject } = JiraServerClient(jiraConfiguration);
+  const { getProject } = JiraRestClient(jiraConfiguration);
 
   describe("getProject", () => {
     beforeEach(() => {

@@ -1,9 +1,15 @@
 import { Config, Version3Client } from "jira.js";
 import { JiraConfiguration } from "@/jira/jira-configuration";
-import { JiraClient } from "@/jira/jira-js-v3/jira-client";
+import { JiraJsV3Client } from "@/jira/jira-js-v3/jira-client";
+import { getServerInfo } from "@/jira/get-server.info";
+import { JiraRestClient } from "@/jira/rest/jira-rest-client";
 
-export const createJiraClient = (configuration: JiraConfiguration) => {
+export const createJiraClient = async (configuration: JiraConfiguration) => {
   const { host, authentication } = configuration;
+  const { deploymentType } = await getServerInfo(host);
+  if (deploymentType === "Server") {
+    return JiraRestClient(configuration);
+  }
   const version3Client = new Version3Client({
     host,
     authentication:
@@ -17,5 +23,5 @@ export const createJiraClient = (configuration: JiraConfiguration) => {
           },
   });
 
-  return JiraClient(version3Client);
+  return JiraJsV3Client(version3Client);
 };

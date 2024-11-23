@@ -11,7 +11,7 @@ export const mapToAuthorizationHeader = (authentication: Authentication) =>
         `${authentication.email}:${authentication.apiToken}`,
       ).toString("base64");
 
-export const JiraServerClient = (
+export const JiraRestClient = (
   jiraConfiguration: JiraConfiguration,
 ): IJiraClient<Axios> => {
   return {

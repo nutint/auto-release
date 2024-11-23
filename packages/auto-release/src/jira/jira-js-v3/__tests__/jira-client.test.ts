@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { JiraClient } from "../jira-client";
+import { JiraJsV3Client } from "../jira-client";
 import { HttpException } from "jira.js";
 
 describe("JiraClient", () => {
@@ -8,7 +8,7 @@ describe("JiraClient", () => {
       getProject: vi.fn(),
     },
   } as any;
-  const jiraClient = JiraClient(jiraJsClient);
+  const jiraClient = JiraJsV3Client(jiraJsClient);
   const projectKey = "SCRUM";
   const jiraJsProjectResponse = { id: "1000", key: projectKey };
 

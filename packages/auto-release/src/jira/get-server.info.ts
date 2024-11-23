@@ -1,6 +1,6 @@
 import axios from "axios";
 
-type JiraServerInfo = {
+export type JiraServerInfo = {
   deploymentType: "Server" | "Cloud";
   version: string;
   buildDate: string;

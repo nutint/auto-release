@@ -37,7 +37,7 @@ describe("CreateJiraRelease", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (mockedCreateJiraClient as any).mockReturnValue(mockedJiraClient);
+    (mockedCreateJiraClient as any).mockResolvedValue(mockedJiraClient);
     (mockedJiraClient as any).getProject.mockResolvedValue(
       mockedJiraProjectClient,
     );

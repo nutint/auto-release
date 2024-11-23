@@ -9,7 +9,7 @@ describe("JiraClient", () => {
     const configuration = readConfiguration(parsedArgument.configFile);
     const { jiraConfiguration } = configuration;
     if (jiraConfiguration) {
-      const jiraClient = createJiraClient(jiraConfiguration);
+      const jiraClient = await createJiraClient(jiraConfiguration);
       try {
         const project = await jiraClient.getProject("SCRUM");
         if (project) {

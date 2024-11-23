@@ -11,7 +11,7 @@ export type IJiraClient<T> = {
   _client: T;
 };
 
-export const JiraClient = (
+export const JiraJsV3Client = (
   jiraJsClient: Version3Client,
 ): IJiraClient<Version3Client> => ({
   getProject: async (
