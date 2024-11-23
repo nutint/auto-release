@@ -1,7 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { JiraJsProjectClientV3 } from "@/jira/jira-js-v3/jira-js-project-client-v3";
-import { Version3Client } from "jira.js";
+import {
+  JiraJsProjectClientV3,
+  mapToJiraIssueModel,
+} from "@/jira/jira-js-v3/jira-js-project-client-v3";
+import { HttpException, Version3Client } from "jira.js";
 import { JiraProjectClientParams } from "@/jira/jira-project-client";
+import { JiraIssueOperationError } from "@/jira/jira-issue-models";
 
 describe("JiraJsProjectClientV3", () => {
   const jiraJsClient = {
@@ -28,6 +32,27 @@ describe("JiraJsProjectClientV3", () => {
     key: "issueKey",
   };
 
+  const createdIssue = {
+    ...generatedIssueId,
+    fields: {
+      issuetype: {
+        name: "Story",
+      },
+      summary: "Test",
+      fixVersions: [
+        {
+          id: "23456",
+          name: "1.0.1",
+          released: false,
+          description: "description",
+        },
+      ],
+      status: {
+        name: "In Progress",
+      },
+    },
+  };
+
   describe("createIssue", () => {
     const issueInfo = {
       summary: "My testing issue",
@@ -36,7 +61,7 @@ describe("JiraJsProjectClientV3", () => {
 
     beforeEach(() => {
       vi.clearAllMocks();
-      jiraJsClient.issues.createIssue.mockResolvedValue(generatedIssueId);
+      jiraJsClient.issues.createIssue.mockResolvedValue(createdIssue);
     });
 
     it("should create issue with correct client parameter", async () => {
@@ -58,44 +83,78 @@ describe("JiraJsProjectClientV3", () => {
     it("should return issue id and issue key after created", async () => {
       const actual = await createIssue(issueInfo);
 
-      expect(actual).toEqual({
-        ...generatedIssueId,
-        ...issueInfo,
-      });
+      expect(actual).toEqual(mapToJiraIssueModel(createdIssue));
     });
   });
 
   describe("getIssue", () => {
-    const createdIssue = {
-      id: generatedIssueId.id,
-      fields: {
-        issuetype: {
-          name: "Story",
-        },
-        summary: "Test",
-      },
-    };
     beforeEach(() => {
       vi.clearAllMocks();
       jiraJsClient.issues.getIssue.mockResolvedValue(createdIssue);
     });
 
     it("should get issue by key", async () => {
-      await getIssue(generatedIssueId.key);
+      await getIssue(createdIssue.key);
 
       expect(jiraJsClient.issues.getIssue).toHaveBeenCalledWith({
-        issueIdOrKey: generatedIssueId.key,
+        issueIdOrKey: createdIssue.key,
       });
     });
 
+    it("should return undefined when get issue throw not found error", async () => {
+      jiraJsClient.issues.getIssue.mockRejectedValue(
+        new HttpException("any", 404),
+      );
+
+      const actual = await getIssue(createdIssue.key);
+
+      expect(actual).toBeUndefined();
+    });
+
+    it("should throw JiraIssueOperation error when other http exception happen", async () => {
+      jiraJsClient.issues.getIssue.mockRejectedValue(
+        new HttpException("Server error", 500),
+      );
+
+      await expect(() => getIssue(createdIssue.key)).rejects.toEqual(
+        new JiraIssueOperationError("Server error"),
+      );
+    });
+
+    it("should throw JiraIssueOperation error with Jira response incompatible when found issue's schema incorrect", async () => {
+      jiraJsClient.issues.getIssue.mockResolvedValue({
+        ...createdIssue,
+        id: undefined,
+      });
+
+      await expect(() => getIssue(createdIssue.key)).rejects.toEqual(
+        new JiraIssueOperationError("Jira response incompatible"),
+      );
+    });
+
+    it("should return other error when uncategorized error happen", async () => {
+      jiraJsClient.issues.getIssue.mockRejectedValue(new Error("Other error"));
+
+      await expect(() => getIssue(createdIssue.key)).rejects.toEqual(
+        new JiraIssueOperationError("Error: Other error"),
+      );
+    });
+
     it("should return mapped fields", async () => {
-      const actual = await getIssue(generatedIssueId.key);
+      const actual = await getIssue(createdIssue.key);
 
       expect(actual).toEqual({
-        key: generatedIssueId.key,
-        id: generatedIssueId.id,
-        issueType: createdIssue.fields.issuetype.name,
+        key: createdIssue.key,
+        id: createdIssue.id,
         summary: createdIssue.fields.summary,
+        fixVersions: createdIssue.fields.fixVersions.map((version) => ({
+          id: version.id,
+          name: version.name,
+          description: version.description,
+          released: version.released,
+        })),
+        status: createdIssue.fields.status.name,
+        issueType: createdIssue.fields.issuetype.name,
       });
     });
   });

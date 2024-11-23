@@ -19,10 +19,13 @@ export const JiraRestClient = (
   const { authentication } = jiraConfiguration;
   const authorization = mapToAuthorizationHeader(authentication);
   const config: JiraRestClientConfig = {
-    headers: {
-      Authorization: authorization,
-      "Content-Type": "application/json",
-      "User-Agent": getUserAgent(),
+    host: jiraConfiguration.host,
+    axiosRequestConfig: {
+      headers: {
+        Authorization: authorization,
+        "Content-Type": "application/json",
+        "User-Agent": getUserAgent(),
+      },
     },
   };
 
@@ -32,7 +35,7 @@ export const JiraRestClient = (
     ): Promise<IJiraProjectClient<JiraRestClientConfig>> => {
       const result = await axios.get(
         `${jiraConfiguration.host}/rest/api/2/project/${projectKey}`,
-        config,
+        config.axiosRequestConfig,
       );
       const { key, id } = result.data;
       return JiraProjectRestClient({ key, id, config });
