@@ -5,9 +5,16 @@ import {
 } from "@/jira/rest/jira-rest-client";
 import axios from "axios";
 import { getUserAgent } from "@/jira/get-server.info";
+import * as JiraProjectRestClient from "@/jira/rest/jira-project-rest-client";
+import { IJiraProjectClient } from "@/jira/jira-project-client";
+import { JiraRestClientConfig } from "@/jira/rest/jira-rest-client-config";
 
 describe("JiraRestClient", () => {
   const mockedAxiosGet = vi.spyOn(axios, "get");
+  const mockedJiraProjectRestClient = vi.spyOn(
+    JiraProjectRestClient,
+    "JiraProjectRestClient",
+  );
 
   const host = "https://host.domain.com";
   const jiraConfiguration = {
@@ -17,6 +24,10 @@ describe("JiraRestClient", () => {
     },
   };
   const projectKey = "SCRUM";
+  const jiraProjectRestClient = {
+    id: "12345",
+    key: "SCRUM",
+  };
 
   const { getProject } = JiraRestClient(jiraConfiguration);
 
@@ -24,6 +35,9 @@ describe("JiraRestClient", () => {
     beforeEach(() => {
       vi.clearAllMocks();
       mockedAxiosGet.mockResolvedValue({ data: { id: "12345", key: "SCRUM" } });
+      mockedJiraProjectRestClient.mockReturnValue(
+        jiraProjectRestClient as unknown as IJiraProjectClient<JiraRestClientConfig>,
+      );
     });
 
     it("should call axios with valid url, and headers", async () => {
