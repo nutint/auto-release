@@ -1,7 +1,8 @@
 import { describe, it } from "vitest";
 import { readConfiguration } from "@/cli/read-configuration";
 import { JiraRestClient } from "@/jira/rest/jira-rest-client";
-import { defaultConfigurationFile } from "@/cli/arguments/parse-common-arguments";
+import { defaultConfigurationFile } from "@/cli/arguments/common-arguments";
+import { logger } from "@/logger/logger";
 
 describe("JiraServerClient", () => {
   const configuration = readConfiguration(defaultConfigurationFile);
@@ -13,7 +14,7 @@ describe("JiraServerClient", () => {
     const project = await jiraClient.getProject("PJ");
     if (project) {
       const issue = await project.getIssue("PJ-52");
-      console.log(issue);
+      logger.info(issue);
     }
   });
 });
