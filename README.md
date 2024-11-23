@@ -22,7 +22,7 @@ auto-release is a tool designed to simplify and automate the release process acr
 ```shell
 npm install -g @nutint/auto-release
 ```
-2. Set up configuration file at your project's root directory `your-project-root-dir/auto-release.config.json`
+2. Set up configuration file at your project's root directory `your-project-root-dir/auto-release.config.json` (get your api token [here](https://id.atlassian.com/manage-profile/security/api-tokens))
 ```json
 {
   "jiraConfiguration": {
