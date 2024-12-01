@@ -1,20 +1,24 @@
 import { FormatElementName } from "@/custom-commit-parser/format-element-name";
-import { FormatElementConventionalCommit } from "@/custom-commit-parser/format-element-conventional-commit";
-import { FormatElementJiraIssueId } from "@/custom-commit-parser/format-element-jira-issue-id";
+import {
+  createFormatElementConventionalCommit,
+  FormatElementConventionalCommit,
+} from "@/custom-commit-parser/format-element-conventional-commit";
+import {
+  createFormatElementJiraIssueId,
+  FormatElementJiraIssueId,
+} from "@/custom-commit-parser/format-element-jira-issue-id";
 
 export const formatSyntaxParser = (commitFormat: string): FormatElement[] => {
   const elements = commitFormat.split(" ");
-  const conventionalCommitFormat = {
-    name: FormatElementName.ConventionalCommit,
-  };
-  const formatElements = elements.map((element) =>
+  const formatElements: FormatElement[] = elements.map((element) =>
     element === "{{conventionalCommit}}"
-      ? conventionalCommitFormat
-      : { name: FormatElementName.JiraIssueId },
+      ? createFormatElementConventionalCommit()
+      : createFormatElementJiraIssueId(),
   );
   if (
     formatElements.length > 1 &&
-    formatElements[formatElements.length - 1] !== conventionalCommitFormat
+    formatElements[formatElements.length - 1]!.name !==
+      FormatElementName.ConventionalCommit
   ) {
     throw new FormatSyntaxError("conventionalCommit must be last element");
   }

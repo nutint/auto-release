@@ -9,7 +9,7 @@ describe("FormatElementJiraIssueId", () => {
       const actual = extract("");
 
       expect(actual).toEqual({
-        jiraIssueId: undefined,
+        value: undefined,
         remainingInput: "",
       });
     });
@@ -18,7 +18,7 @@ describe("FormatElementJiraIssueId", () => {
       const actual = extract("ABC-123 remainingInput");
 
       expect(actual).toEqual({
-        jiraIssueId: "ABC-123",
+        value: "ABC-123",
         remainingInput: "remainingInput",
       });
     });
