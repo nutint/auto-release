@@ -5,9 +5,11 @@ import * as ReadConfiguration from "@/cli/read-configuration";
 import { Arguments, CommandArgument } from "@/cli/arguments/parse-arguments";
 import * as AnalyzeRelease from "@/cli/commands/analyze-release";
 import * as CreateJiraRelease from "@/cli/commands/create-jira-release";
+import { logger } from "@/logger/logger";
 
 vi.mock("@/cli/parse-arguments");
 vi.mock("@/cli/read-configuration");
+vi.mock("@/logger/logger");
 
 describe("processCli", () => {
   const mockedParseArguments = vi.spyOn(ParseArguments, "parseArguments");
@@ -16,6 +18,7 @@ describe("processCli", () => {
     "readConfiguration",
   );
   const mockedAnalyzeRelease = vi.spyOn(AnalyzeRelease, "analyzeRelease");
+  const mockedLogError = vi.spyOn(logger, "error");
 
   const interactive = false;
   const outputFormat = "text";
@@ -100,13 +103,15 @@ describe("processCli", () => {
       mockedCreateJiraRelease.mockResolvedValue();
     });
 
-    it("should throw error when there is no jira configuration", async () => {
+    it("should log error when there is no jira configuration", async () => {
       mockedReadConfiguration.mockReturnValue({
         ...configuration,
         jiraConfiguration: undefined,
       });
 
-      await expect(() => processCli(cliArguments)).rejects.toEqual(
+      await processCli(cliArguments);
+
+      expect(mockedLogError).toHaveBeenCalledWith(
         new ConfigurationError("missing jiraConfiguration"),
       );
     });
