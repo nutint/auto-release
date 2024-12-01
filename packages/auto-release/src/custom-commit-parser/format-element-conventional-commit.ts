@@ -7,12 +7,14 @@ import {
 
 export type FormatElementConventionalCommit = {
   name: FormatElementName.ConventionalCommit;
+  key: "conventionalCommit";
 } & Extractor<ConventionalCommit>;
 
 export const createFormatElementConventionalCommit =
   (): FormatElementConventionalCommit => {
     return {
       name: FormatElementName.ConventionalCommit,
+      key: "conventionalCommit",
       extract: (input: string) => ({
         value: parseConventionalMessage(input),
         remainingInput: "",

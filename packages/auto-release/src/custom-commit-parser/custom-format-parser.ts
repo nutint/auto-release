@@ -1,23 +1,22 @@
-import { parseConventionalMessage } from "@/conventional-commit-helper/conventional-commit-helper";
+import { formatSyntaxParser } from "@/custom-commit-parser/format-syntax-parser";
 
-export const customFormatParser = (format: string, commitMessage: string) => {
-  const [jiraIssueId, ...conventionalMessageComponents] =
-    commitMessage.split(" ");
-
-  if (jiraIssueId === "") {
-    throw new ParseCustomFormatError("missing Jira issue id");
-  }
-
-  return {
-    jiraIssueId,
-    conventionalCommit: parseConventionalMessage(
-      conventionalMessageComponents.join(" "),
-    ),
-  };
-};
-
-export class ParseCustomFormatError extends Error {
-  constructor(message: string) {
-    super(`ParseCustomFormatError: ${message}`);
-  }
-}
+export const customFormatParser = (format: string, commitMessage: string) =>
+  formatSyntaxParser(format).reduce(
+    (acc, currentFormatElement) => {
+      const { parsed, remainingInput } = acc;
+      const { extract, key } = currentFormatElement;
+      const { value, remainingInput: remainingInputAfterExtracted } =
+        extract(remainingInput);
+      return {
+        parsed: {
+          ...parsed,
+          [key]: value,
+        },
+        remainingInput: remainingInputAfterExtracted,
+      };
+    },
+    {
+      parsed: {},
+      remainingInput: commitMessage,
+    },
+  ).parsed;

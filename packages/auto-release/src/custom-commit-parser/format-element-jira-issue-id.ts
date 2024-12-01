@@ -3,11 +3,13 @@ import { Extractor } from "@/custom-commit-parser/extractor";
 
 export type FormatElementJiraIssueId = {
   name: FormatElementName.JiraIssueId;
+  key: "jiraIssueId";
 } & Extractor<string>;
 
 export const createFormatElementJiraIssueId = (): FormatElementJiraIssueId => {
   return {
     name: FormatElementName.JiraIssueId,
+    key: "jiraIssueId",
     extract: (input: string) => {
       const jiraIssueRegex = /^[A-Z]+-\d+/; // Matches Jira issue IDs like "ABC-123"
       const match = input.match(jiraIssueRegex);
