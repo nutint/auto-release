@@ -1,3 +1,7 @@
+import { FormatElementName } from "@/custom-commit-parser/format-element-name";
+import { FormatElementConventionalCommit } from "@/custom-commit-parser/format-element-conventional-commit";
+import { FormatElementJiraIssueId } from "@/custom-commit-parser/format-element-jira-issue-id";
+
 export const formatSyntaxParser = (commitFormat: string): FormatElement[] => {
   const elements = commitFormat.split(" ");
   const conventionalCommitFormat = {
@@ -23,18 +27,5 @@ export class FormatSyntaxError extends Error {
     super(`FormatSyntaxParser: ${message}`);
   }
 }
-
-export enum FormatElementName {
-  ConventionalCommit = "ConventionalCommit",
-  JiraIssueId = "JiraIssueId",
-}
-
-type FormatElementConventionalCommit = {
-  name: FormatElementName.ConventionalCommit;
-};
-
-type FormatElementJiraIssueId = {
-  name: FormatElementName.JiraIssueId;
-};
 
 type FormatElement = FormatElementConventionalCommit | FormatElementJiraIssueId;

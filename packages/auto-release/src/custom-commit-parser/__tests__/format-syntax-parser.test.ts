@@ -1,9 +1,6 @@
 import { describe, it, expect } from "vitest";
-import {
-  FormatElementName,
-  FormatSyntaxError,
-  formatSyntaxParser,
-} from "../format-syntax-parser";
+import { FormatSyntaxError, formatSyntaxParser } from "../format-syntax-parser";
+import { FormatElementName } from "@/custom-commit-parser/format-element-name";
 
 describe("FormatSyntaxParser", () => {
   describe("formatSyntaxParser", () => {
@@ -18,13 +15,17 @@ describe("FormatSyntaxParser", () => {
     it("should return FormatElementConventionalCommit when contains only conventional commits", () => {
       const actual = formatSyntaxParser("{{conventionalCommit}}");
 
-      expect(actual).toEqual([{ name: FormatElementName.ConventionalCommit }]);
+      expect(actual.map(({ name }) => name)).toEqual([
+        FormatElementName.ConventionalCommit,
+      ]);
     });
 
     it("should return only FormatElementJiraIssueId when contains only Jira issue id", () => {
       const actual = formatSyntaxParser("{{jiraIssueId}}");
 
-      expect(actual).toEqual([{ name: FormatElementName.JiraIssueId }]);
+      expect(actual.map(({ name }) => name)).toEqual([
+        FormatElementName.JiraIssueId,
+      ]);
     });
   });
 });
