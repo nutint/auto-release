@@ -40,5 +40,6 @@ export const streamGitLines = ({
       ),
     ),
     map((commitLines) => commitLines.join("\n")),
+    filter((joined) => joined.length > 0),
   );
 };

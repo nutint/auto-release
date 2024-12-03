@@ -3,7 +3,7 @@ import { processCli } from "@/cli/process-cli";
 
 describe("processCli(Integration)", () => {
   it("should able to process cli", { timeout: 9999999 }, async () => {
-    await processCli(["analyze"]);
+    await processCli(["analyze", "--no-interactive"]);
   });
 
   it(

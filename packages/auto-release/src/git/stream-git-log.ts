@@ -5,6 +5,7 @@ import {
   InvalidGitLogCommitFormat,
   parseCommit,
 } from "@/commit-parser/parse-commit";
+import { logger } from "@/logger/logger";
 
 export type ParsedCommit = {
   date: string;
@@ -21,14 +22,13 @@ export const streamGitLog = ({
   return streamGitLines({ start, end }).pipe(
     map((gitLogString) => {
       try {
-        const parsedCommit = parseCommit(gitLogString);
-        return parsedCommit;
+        return parseCommit(gitLogString);
       } catch (e: unknown) {
         if (e instanceof InvalidGitLogCommitFormat) {
-          console.log("WARN: ", e.message);
+          logger.warn(e.message);
           return undefined;
         }
-        console.log("WARN: error during parse commit");
+        logger.warn("error during parse commit");
         return undefined;
       }
     }),
