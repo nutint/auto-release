@@ -12,7 +12,7 @@ type ConventionalCommitExtract = {
   value: ConventionalCommit;
 };
 
-type Extract = JiraIssueExtract | ConventionalCommitExtract;
+export type Extract = JiraIssueExtract | ConventionalCommitExtract;
 
 export const customFormatParser = (
   format: string,
