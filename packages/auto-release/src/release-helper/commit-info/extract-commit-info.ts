@@ -1,12 +1,12 @@
 import { Extract } from "@/custom-commit-parser/custom-format-parser";
 import { FormatElementName } from "@/custom-commit-parser/format-element-name";
 
-type CommitInfo = {
-  type?: string;
+export type CommitInfo = {
+  type: string;
   subject: string;
   scope?: string;
   breakingChange: boolean;
-  jiraIssueId: string;
+  jiraIssueId?: string;
 };
 
 export const extractCommitInfo = (extracts: Extract[]): CommitInfo => {

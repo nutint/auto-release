@@ -1,12 +1,18 @@
 import { filter, firstValueFrom, map, Observable, toArray } from "rxjs";
 import { ParsedCommit, streamGitLog } from "@/git/stream-git-log";
 import { GitCommitRange } from "@/git/stream-git-lines";
+import { CommitInfo } from "@/release-helper/commit-info/extract-commit-info";
 
 export type MappedCommit<T> = ParsedCommit & { mapped: T };
 
 export type GetLogConfig<T> = {
   mapper: (commitMessage: string) => T;
   predicate?: (mappedCommit: MappedCommit<T>) => boolean;
+};
+
+export type GetLogConfigV2<T> = {
+  mapper: (commitMessage: string) => T;
+  predicate?: (commitInfo: CommitInfo) => boolean;
 };
 
 export const getGitLogsStream = <T>(

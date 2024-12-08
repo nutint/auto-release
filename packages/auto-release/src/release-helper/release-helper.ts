@@ -1,4 +1,4 @@
-import { GetLogConfig, MappedCommit } from "@/git/git-log";
+import { GetLogConfig, GetLogConfigV2, MappedCommit } from "@/git/git-log";
 import {
   ConventionalCommit,
   parseConventionalMessage,
@@ -11,6 +11,14 @@ import {
 } from "@/release-helper/process-version-from-git-history";
 
 import { OutputFormat } from "@/cli/arguments/common-arguments";
+import {
+  CommitInfo,
+  extractCommitInfo,
+} from "@/release-helper/commit-info/extract-commit-info";
+import {
+  customFormatParser,
+  defaultCommitFormat,
+} from "@/custom-commit-parser/custom-format-parser";
 
 export type ConventionalLogConfigParams = {
   scope?: string;
@@ -26,6 +34,25 @@ export const createLogConfig = ({
       mapper,
       predicate: (mappedCommit: MappedCommit<ConventionalCommit>) =>
         mappedCommit.mapped.scope === scope,
+    };
+  }
+  return {
+    mapper,
+  };
+};
+
+export const createLogConfigV2 = ({
+  scope,
+}: ConventionalLogConfigParams = {}): GetLogConfigV2<CommitInfo> => {
+  const mapper = (commitMessage: string) => {
+    const extracts = customFormatParser(defaultCommitFormat, commitMessage);
+    return extractCommitInfo(extracts);
+  };
+
+  if (scope) {
+    return {
+      predicate: (commitInfo: CommitInfo) => commitInfo.scope === scope,
+      mapper,
     };
   }
   return {

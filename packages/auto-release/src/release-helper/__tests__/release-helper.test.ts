@@ -1,15 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createLogConfig,
+  createLogConfigV2,
   extractReleaseInformation,
   printReleaseInformation,
   ReleaseInformation,
 } from "@/release-helper/release-helper";
 import * as CheckVersion from "../process-version-from-version-file";
 import * as ProcessVersionFromGitHistory from "../process-version-from-git-history";
+import * as CustomFormatParser from "@/custom-commit-parser/custom-format-parser";
+import * as ExtractCommitInfo from "@/release-helper/commit-info/extract-commit-info";
 import { MappedCommit } from "@/git/git-log";
 import { ConventionalCommit } from "@/conventional-commit-helper/conventional-commit-helper";
 import { fail } from "node:assert";
+import { Extract } from "@/custom-commit-parser/custom-format-parser";
 
 describe("ReleaseHelper", () => {
   describe("extractReleaseInformation", () => {
@@ -118,6 +122,94 @@ describe("ReleaseHelper", () => {
       const { predicate } = createLogConfig();
 
       expect(predicate).toBeUndefined();
+    });
+  });
+
+  describe("createLogConfigV2", () => {
+    it("should return predicate that filter scope correctly when provide scope", () => {
+      const { predicate } = createLogConfigV2({ scope: "auto-release" });
+
+      if (!predicate) {
+        fail();
+      }
+
+      expect(
+        predicate({
+          type: "feat",
+          subject: "subject",
+          scope: "auto-release",
+          breakingChange: false,
+        }),
+      ).toBeTruthy();
+
+      expect(
+        predicate({
+          type: "feat",
+          subject: "subject",
+          scope: "other",
+          breakingChange: false,
+        }),
+      ).toBeFalsy();
+    });
+
+    it("should not return predicate with not provide scope", () => {
+      const { predicate } = createLogConfigV2();
+
+      expect(predicate).toBeUndefined();
+    });
+
+    describe("mapper", () => {
+      const mockedCustomFormatParser = vi.spyOn(
+        CustomFormatParser,
+        "customFormatParser",
+      );
+      const mockedExtractCommitInfo = vi.spyOn(
+        ExtractCommitInfo,
+        "extractCommitInfo",
+      );
+
+      const commitMessage = "test commit message";
+      const extracts: Extract[] = [];
+      const extractedCommitInfo = {
+        type: "feat",
+        subject: "subject",
+        scope: "auto-release",
+        breakingChange: false,
+        jiraIssueId: "ABC-123",
+      };
+
+      beforeEach(() => {
+        vi.clearAllMocks();
+        mockedCustomFormatParser.mockReturnValue(extracts);
+        mockedExtractCommitInfo.mockReturnValue(extractedCommitInfo);
+      });
+
+      it("should should call custom format parser with default format when create log config with no commit format provided", () => {
+        const { mapper } = createLogConfigV2();
+
+        mapper(commitMessage);
+
+        expect(mockedCustomFormatParser).toHaveBeenCalledWith(
+          CustomFormatParser.defaultCommitFormat,
+          commitMessage,
+        );
+      });
+
+      it("should extract commit info with result from format parser", () => {
+        const { mapper } = createLogConfigV2();
+
+        mapper(commitMessage);
+
+        expect(mockedExtractCommitInfo).toHaveBeenCalledWith(extracts);
+      });
+
+      it("should return extracted commit info", () => {
+        const { mapper } = createLogConfigV2();
+
+        const actual = mapper(commitMessage);
+
+        expect(actual).toEqual(extractedCommitInfo);
+      });
     });
   });
 

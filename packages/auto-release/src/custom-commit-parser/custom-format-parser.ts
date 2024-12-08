@@ -14,6 +14,8 @@ type ConventionalCommitExtract = {
 
 export type Extract = JiraIssueExtract | ConventionalCommitExtract;
 
+export const defaultCommitFormat = "{{conventionalCommit}}";
+
 export const customFormatParser = (
   format: string,
   commitMessage: string,
