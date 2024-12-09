@@ -5,6 +5,7 @@ export type VersionSourceConfiguration = {
   gitTagPrefix?: string;
   scope?: string;
   jiraProjectKey?: string;
+  commitFormat?: string;
 };
 
 export const versionSourceSchema = z.object({
@@ -12,4 +13,5 @@ export const versionSourceSchema = z.object({
   gitTagPrefix: z.string().optional(),
   scope: z.string().optional(),
   jiraProjectKey: z.string().optional(),
+  commitFormat: z.string().optional(),
 });

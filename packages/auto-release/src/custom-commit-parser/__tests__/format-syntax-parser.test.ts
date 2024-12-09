@@ -4,6 +4,13 @@ import { FormatElementName } from "@/custom-commit-parser/format-element-name";
 
 describe("FormatSyntaxParser", () => {
   describe("formatSyntaxParser", () => {
+    it("should throw error when no valid element", () => {
+      const commitFormat = "{{invalidElement}}";
+      expect(() => formatSyntaxParser(commitFormat)).toThrow(
+        new FormatSyntaxError(`invalid commit format (${commitFormat})`),
+      );
+    });
+
     it("should throw error when conventional commits is not the last element", () => {
       expect(() =>
         formatSyntaxParser("{{conventionalCommit}} {{jiraIssueId}}"),

@@ -76,6 +76,6 @@ describe("readConfiguration", () => {
   it("should return valid configuration file", () => {
     const actual = readConfiguration(defaultConfigurationFile);
 
-    expect(actual).toEqual({});
+    expect(actual).toEqual(configuration);
   });
 });

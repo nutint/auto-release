@@ -9,6 +9,7 @@ describe("VersionSourceConfiguration", () => {
         gitTagPrefix: "auto-release",
         scope: "auto-release",
         jiraProjectKey: "SCRUM",
+        commitFormat: "{{conventionalCommit}}",
       };
       const actual = versionSourceSchema.parse(versionSourceConfiguration);
 

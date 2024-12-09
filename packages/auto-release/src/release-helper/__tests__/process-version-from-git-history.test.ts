@@ -4,9 +4,10 @@ import {
   $processVersionFromGitHistory,
   processVersionFromGitHistory,
 } from "@/release-helper/process-version-from-git-history";
-import { MappedCommit } from "@/git/git-log";
+import { GetLogConfigV2, MappedCommit } from "@/git/git-log";
 import { executeRx } from "@/release-helper/test-helpers/helpers";
 import * as GitHelper from "@/git/git-helper";
+import * as ReleaseHelper from "@/release-helper/release-helper";
 import { from } from "rxjs";
 import { extractJiraIssue } from "@/release-helper/process-jira-issues-from-git-history";
 import { CommitInfo } from "@/release-helper/commit-info/extract-commit-info";
@@ -91,8 +92,10 @@ describe("ProcessVersionFromGitHistory", () => {
   describe("processVersionFromGitHistory", () => {
     const mockedGitHelper = vi.spyOn(GitHelper, "gitHelper");
     const mockedGetLogStream = vi.fn();
+    const mockedCreateLogConfig = vi.spyOn(ReleaseHelper, "createLogConfig");
 
     const scope = "auto-release";
+    const logConfig = { logConfig: true };
 
     beforeEach(() => {
       vi.clearAllMocks();
@@ -101,6 +104,9 @@ describe("ProcessVersionFromGitHistory", () => {
         getLogStream: mockedGetLogStream,
       });
       mockedGetLogStream.mockReturnValue(from(commitsV2));
+      mockedCreateLogConfig.mockReturnValue(
+        logConfig as unknown as GetLogConfigV2,
+      );
     });
 
     it("should init gitHelper", async () => {
@@ -109,10 +115,23 @@ describe("ProcessVersionFromGitHistory", () => {
       expect(mockedGitHelper).toHaveBeenCalled();
     });
 
+    it("should createLogConfig with scope, and commitFormat", async () => {
+      const commitFormat = "{{commitFormat}}";
+      await processVersionFromGitHistory({
+        scope,
+        commitFormat,
+      });
+
+      expect(mockedCreateLogConfig).toHaveBeenCalledWith({
+        scope,
+        commitFormat,
+      });
+    });
+
     it("should getLogStream", async () => {
       await processVersionFromGitHistory({ scope });
 
-      expect(mockedGetLogStream).toHaveBeenCalled();
+      expect(mockedGetLogStream).toHaveBeenCalledWith(logConfig);
     });
 
     it("should return latest tag when has latest stable tags", async () => {

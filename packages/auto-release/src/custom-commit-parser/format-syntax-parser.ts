@@ -10,11 +10,20 @@ import {
 
 export const formatSyntaxParser = (commitFormat: string): FormatElement[] => {
   const elements = commitFormat.split(" ");
-  const formatElements: FormatElement[] = elements.map((element) =>
-    element === "{{conventionalCommit}}"
-      ? createFormatElementConventionalCommit()
-      : createFormatElementJiraIssueId(),
-  );
+  const formatElements: FormatElement[] = elements.flatMap((element) => {
+    switch (element) {
+      case "{{conventionalCommit}}":
+        return [createFormatElementConventionalCommit()];
+      case "{{jiraIssueId}}":
+        return [createFormatElementJiraIssueId()];
+      default:
+        return [] as FormatElement[];
+    }
+  });
+
+  if (formatElements.length == 0) {
+    throw new FormatSyntaxError(`invalid commit format (${commitFormat})`);
+  }
   if (
     formatElements.length > 1 &&
     formatElements[formatElements.length - 1]!.name !==

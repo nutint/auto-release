@@ -177,6 +177,17 @@ describe("ReleaseHelper", () => {
         );
       });
 
+      it("should use commit format from parameter when passing commit format", () => {
+        const commitFormat = "{{commitFormat}}";
+        const { mapper } = createLogConfig({ commitFormat });
+
+        mapper(commitMessage);
+        expect(mockedCustomFormatParser).toHaveBeenCalledWith(
+          commitFormat,
+          commitMessage,
+        );
+      });
+
       it("should extract commit info with result from format parser", () => {
         const { mapper } = createLogConfig();
 

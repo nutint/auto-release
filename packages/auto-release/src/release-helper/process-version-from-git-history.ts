@@ -18,20 +18,23 @@ import {
   extractJiraIssue,
 } from "@/release-helper/process-jira-issues-from-git-history";
 import { CommitInfo } from "@/release-helper/commit-info/extract-commit-info";
+import { defaultCommitFormat } from "@/custom-commit-parser/custom-format-parser";
 
 type ProcessVersionParams = {
   gitTagPrefix?: string;
   scope?: string;
   jiraProjectKey?: string;
+  commitFormat?: string;
 };
 
 export const processVersionFromGitHistory = async ({
   gitTagPrefix,
   scope,
   jiraProjectKey,
+  commitFormat,
 }: ProcessVersionParams) => {
   const $result = gitHelper()
-    .getLogStream(createLogConfig({ scope }))
+    .getLogStream(createLogConfig({ scope, commitFormat }))
     .pipe(
       connect(($commitInfos) =>
         forkJoin({

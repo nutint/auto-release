@@ -18,13 +18,16 @@ import {
 
 export type ConventionalLogConfigParams = {
   scope?: string;
+  commitFormat?: string;
 };
 
 export const createLogConfig = ({
   scope,
+  commitFormat: overrideCommitFormat,
 }: ConventionalLogConfigParams = {}): GetLogConfigV2 => {
   const mapper = (commitMessage: string) => {
-    const extracts = customFormatParser(defaultCommitFormat, commitMessage);
+    const commitFormat = overrideCommitFormat ?? defaultCommitFormat;
+    const extracts = customFormatParser(commitFormat, commitMessage);
     return extractCommitInfo(extracts);
   };
 
@@ -43,11 +46,13 @@ export const createLogConfig = ({
 export const extractReleaseInformation = async <T extends { subject: string }>(
   versionSourceConfiguration: VersionSourceConfiguration = {},
 ): Promise<ReleaseInformation> => {
-  const { gitTagPrefix, scope, jiraProjectKey } = versionSourceConfiguration;
+  const { gitTagPrefix, scope, jiraProjectKey, commitFormat } =
+    versionSourceConfiguration;
   const { latestGitTag, jiraIssues } = await processVersionFromGitHistory({
     gitTagPrefix,
     scope,
     jiraProjectKey,
+    commitFormat,
   });
   const packageVersion = await processVersionFromVersionFile(
     versionSourceConfiguration,
