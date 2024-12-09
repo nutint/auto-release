@@ -13,7 +13,7 @@ type IGitHelper = {
     getLogConfig: GetLogConfig<T>,
     gitCommitRange?: GitCommitRange,
   ) => Promise<MappedCommit<T>[]>;
-  getLogStream: <T>(
+  getLogStream: <T extends { subject: string }>(
     getLogConfig: GetLogConfig<T>,
     gitCommitRange?: GitCommitRange,
   ) => Observable<MappedCommit<T>>;
@@ -27,7 +27,7 @@ export const gitHelper = (): IGitHelper => {
     ) => {
       return await getGitLogs<T>(getLogConfig, gitCommitRange);
     },
-    getLogStream: <T>(
+    getLogStream: <T extends { subject: string }>(
       getLogConfig: GetLogConfig<T>,
       gitCommitRange: GitCommitRange = {},
     ) => getGitLogsStream(getLogConfig, gitCommitRange),

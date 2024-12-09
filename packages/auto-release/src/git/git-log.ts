@@ -10,9 +10,9 @@ export type GetLogConfig<T> = {
   predicate?: (mappedCommit: MappedCommit<T>) => boolean;
 };
 
-export type GetLogConfigV2<T> = {
-  mapper: (commitMessage: string) => T;
-  predicate?: (commitInfo: CommitInfo) => boolean;
+export type GetLogConfigV2 = {
+  mapper: (commitMessage: string) => CommitInfo;
+  predicate?: (commitInfo: MappedCommit<CommitInfo>) => boolean;
 };
 
 export const getGitLogsStream = <T>(

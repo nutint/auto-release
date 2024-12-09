@@ -5,76 +5,83 @@ import {
   processVersionFromGitHistory,
 } from "@/release-helper/process-version-from-git-history";
 import { MappedCommit } from "@/git/git-log";
-import {
-  ConventionalCommit,
-  parseConventionalMessage,
-} from "@/conventional-commit-helper/conventional-commit-helper";
 import { executeRx } from "@/release-helper/test-helpers/helpers";
 import * as GitHelper from "@/git/git-helper";
-import { connect, filter, forkJoin, from, lastValueFrom, map } from "rxjs";
+import { from } from "rxjs";
 import { extractJiraIssue } from "@/release-helper/process-jira-issues-from-git-history";
+import { CommitInfo } from "@/release-helper/commit-info/extract-commit-info";
 
 describe("ProcessVersionFromGitHistory", () => {
-  const createCommit = (
+  const createCommitV2 = (
     tags: string[],
     jiraIssue?: string,
     scope: string = "auto-release",
-  ): MappedCommit<ConventionalCommit> => {
+  ): MappedCommit<CommitInfo> => {
     const jiraIssueInMessage = jiraIssue === undefined ? "" : `${jiraIssue} `;
-    const message = `feat(${scope}): ${jiraIssueInMessage} extract latest version tag`;
+    const subject = `${jiraIssueInMessage} extract latest version tag`;
+    const message = `feat(${scope}): ${subject}`;
     return {
       hash: `e79826ae076eb568c33e45f4cc2ca84db8b02e37${tags.join("")}`,
       author: "dev",
       date: "Mon Oct 28 21:47:07 2024 +0700",
       message,
       tags,
-      mapped: parseConventionalMessage(message),
+      mapped: {
+        type: "feat",
+        subject: subject,
+        scope,
+        breakingChange: false,
+        jiraIssueId: jiraIssue,
+      },
     };
   };
 
-  const commitsWithNoJiraIssues: MappedCommit<ConventionalCommit>[] = [
-    createCommit(["auto-release@1.0.0"]),
-    createCommit(["auto-release@1.0.1"]),
-    createCommit(["auto-release@1.0.1-beta"]),
-    createCommit(["0.1.0"]),
-    createCommit(["0.1.0-alpha"]),
-    createCommit(["0.1.0-beta"]),
-    createCommit(["Some-unrelated-tag"]),
+  const tagsWithNoJiraIssues = [
+    "auto-release@1.0.0",
+    "auto-release@1.0.1",
+    "auto-release@1.0.1-beta",
+    "0.1.0",
+    "0.1.0-alpha",
+    "0.1.0-beta",
+    "Some-unrelated-tag",
   ];
+  const tagsWithScum1 = ["1.0.2-beta"];
+  const tagWithScrum2 = ["1.0.0", "1.0.1"];
 
-  const scrum1Commits: MappedCommit<ConventionalCommit>[] = [
-    createCommit(["1.0.2-beta"], "SCRUM-1"),
-  ];
-
-  const scrum2Commits: MappedCommit<ConventionalCommit>[] = [
-    createCommit(["1.0.0"], "SCRUM-2"),
-    createCommit(["1.0.1"], "SCRUM-2"),
-  ];
-
-  const commits: MappedCommit<ConventionalCommit>[] = [
-    ...scrum1Commits,
-    ...scrum2Commits,
-    ...commitsWithNoJiraIssues,
+  const scrum1V2Commits = tagsWithScum1.map((tag) =>
+    createCommitV2([tag], "SCRUM-1"),
+  );
+  const scrum2V2Commits = tagWithScrum2.map((tag) =>
+    createCommitV2([tag], "SCRUM-2"),
+  );
+  const commitV2WithNoJiraIssues = tagsWithNoJiraIssues.map((tag) =>
+    createCommitV2([tag]),
+  );
+  const commitsV2: MappedCommit<CommitInfo>[] = [
+    ...scrum1V2Commits,
+    ...scrum2V2Commits,
+    ...commitV2WithNoJiraIssues,
   ];
 
   const projectKey = "SCRUM";
-  const expectedJiraIssues = [
+
+  const expectedJiraIssuesV2 = [
     {
       issueId: "SCRUM-1",
-      commits: scrum1Commits.map((commit) => ({
+      commits: scrum1V2Commits.map((commit) => ({
         ...commit,
         jira: extractJiraIssue(commit.mapped.subject, projectKey),
       })),
     },
     {
       issueId: "SCRUM-2",
-      commits: scrum2Commits.map((commit) => ({
+      commits: scrum2V2Commits.map((commit) => ({
         ...commit,
         jira: extractJiraIssue(commit.mapped.subject, projectKey),
       })),
     },
     {
-      commits: commitsWithNoJiraIssues.map((commit) => ({
+      commits: commitV2WithNoJiraIssues.map((commit) => ({
         ...commit,
         jira: extractJiraIssue(commit.mapped.subject, projectKey),
       })),
@@ -93,7 +100,7 @@ describe("ProcessVersionFromGitHistory", () => {
         getLogs: vi.fn(),
         getLogStream: mockedGetLogStream,
       });
-      mockedGetLogStream.mockReturnValue(from(commits));
+      mockedGetLogStream.mockReturnValue(from(commitsV2));
     });
 
     it("should init gitHelper", async () => {
@@ -125,14 +132,14 @@ describe("ProcessVersionFromGitHistory", () => {
         jiraProjectKey: "SCRUM",
       });
 
-      expect(actual.jiraIssues).toEqual(expectedJiraIssues);
+      expect(actual.jiraIssues).toEqual(expectedJiraIssuesV2);
     });
   });
 
   describe("$processVersionFromGitHistory", () => {
     it("should process latest tags based on sorted tags", async () => {
       const actual = await executeRx(
-        commits,
+        commitsV2,
         $processVersionFromGitHistory({ gitTagPrefix: "auto-release" }),
       );
 
@@ -143,11 +150,11 @@ describe("ProcessVersionFromGitHistory", () => {
   describe("$processJiraIssuesFromGitHistory", () => {
     it("should get Jira issues as array", async () => {
       const actual = await executeRx(
-        commits,
+        commitsV2,
         $processJiraIssuesFromGitHistory(projectKey),
       );
 
-      expect(actual).toEqual(expectedJiraIssues);
+      expect(actual).toEqual(expectedJiraIssuesV2);
     });
   });
 });

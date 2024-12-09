@@ -11,13 +11,13 @@ import {
   switchMap,
 } from "rxjs";
 import { MappedCommit } from "@/git/git-log";
-import { ConventionalCommit } from "@/conventional-commit-helper/conventional-commit-helper";
 import { gitHelper } from "@/git/git-helper";
 import { createLogConfig } from "@/release-helper/release-helper";
 import {
   ExtractedJiraIssue,
   extractJiraIssue,
 } from "@/release-helper/process-jira-issues-from-git-history";
+import { CommitInfo } from "@/release-helper/commit-info/extract-commit-info";
 
 type ProcessVersionParams = {
   gitTagPrefix?: string;
@@ -33,12 +33,12 @@ export const processVersionFromGitHistory = async ({
   const $result = gitHelper()
     .getLogStream(createLogConfig({ scope }))
     .pipe(
-      connect(($conventionalCommits) =>
+      connect(($commitInfos) =>
         forkJoin({
-          latestGitTag: $conventionalCommits.pipe(
+          latestGitTag: $commitInfos.pipe(
             $processVersionFromGitHistory({ gitTagPrefix }),
           ),
-          jiraIssues: $conventionalCommits.pipe(
+          jiraIssues: $commitInfos.pipe(
             switchMap((commit) =>
               jiraProjectKey !== undefined ? of(commit) : EMPTY,
             ),
@@ -53,7 +53,7 @@ export const processVersionFromGitHistory = async ({
 
 export const $processVersionFromGitHistory =
   ({ gitTagPrefix }: ProcessVersionParams) =>
-  ($conventionalCommits: Observable<MappedCommit<ConventionalCommit>>) =>
+  <T>($conventionalCommits: Observable<MappedCommit<T>>) =>
     $conventionalCommits.pipe(
       $extractTags(gitTagPrefix),
       map(
@@ -62,26 +62,29 @@ export const $processVersionFromGitHistory =
       ),
     );
 
-type CommitWithJiraIssue = MappedCommit<ConventionalCommit> & {
+type CommitWithJiraIssue<T> = MappedCommit<T> & {
   jira: ExtractedJiraIssue;
 };
 
-export type JiraIssueWithCommits = {
+export type JiraIssueWithCommits<T> = {
   issueId?: string;
-  commits: CommitWithJiraIssue[];
+  commits: CommitWithJiraIssue<T>[];
 };
 
 export const $processJiraIssuesFromGitHistory =
   (projectKey: string) =>
   (
-    $conventionalCommits: Observable<MappedCommit<ConventionalCommit>>,
-  ): Observable<JiraIssueWithCommits[]> => {
-    return $conventionalCommits.pipe(
+    $commitInfos: Observable<MappedCommit<CommitInfo>>,
+  ): Observable<JiraIssueWithCommits<CommitInfo>[]> => {
+    return $commitInfos.pipe(
       map((commit) => ({
         ...commit,
         jira: extractJiraIssue(commit.mapped.subject, projectKey),
       })),
-      reduce<CommitWithJiraIssue, JiraIssueWithCommits[]>((issues, current) => {
+      reduce<
+        CommitWithJiraIssue<CommitInfo>,
+        JiraIssueWithCommits<CommitInfo>[]
+      >((issues, current) => {
         if (current.jira.issueId === undefined) {
           if (
             issues.find((issue) => issue.issueId === undefined) === undefined

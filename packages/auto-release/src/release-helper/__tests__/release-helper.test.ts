@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createLogConfig,
-  createLogConfigV2,
   extractReleaseInformation,
   printReleaseInformation,
   ReleaseInformation,
@@ -11,9 +10,9 @@ import * as ProcessVersionFromGitHistory from "../process-version-from-git-histo
 import * as CustomFormatParser from "@/custom-commit-parser/custom-format-parser";
 import * as ExtractCommitInfo from "@/release-helper/commit-info/extract-commit-info";
 import { MappedCommit } from "@/git/git-log";
-import { ConventionalCommit } from "@/conventional-commit-helper/conventional-commit-helper";
 import { fail } from "node:assert";
 import { Extract } from "@/custom-commit-parser/custom-format-parser";
+import { CommitInfo } from "@/release-helper/commit-info/extract-commit-info";
 
 describe("ReleaseHelper", () => {
   describe("extractReleaseInformation", () => {
@@ -105,55 +104,38 @@ describe("ReleaseHelper", () => {
   });
 
   describe("createLogConfig", () => {
-    it("should return predicate when provide scope", () => {
+    it("should return predicate that filter scope correctly when provide scope", () => {
       const { predicate } = createLogConfig({ scope: "auto-release" });
 
       if (!predicate) {
         fail();
       }
-      expect(
-        predicate({
-          mapped: { scope: "auto-release" },
-        } as MappedCommit<ConventionalCommit>),
-      ).toBeTruthy();
-    });
-
-    it("should not return predicate when not provide scope", () => {
-      const { predicate } = createLogConfig();
-
-      expect(predicate).toBeUndefined();
-    });
-  });
-
-  describe("createLogConfigV2", () => {
-    it("should return predicate that filter scope correctly when provide scope", () => {
-      const { predicate } = createLogConfigV2({ scope: "auto-release" });
-
-      if (!predicate) {
-        fail();
-      }
 
       expect(
         predicate({
-          type: "feat",
-          subject: "subject",
-          scope: "auto-release",
-          breakingChange: false,
-        }),
+          mapped: {
+            type: "feat",
+            subject: "subject",
+            scope: "auto-release",
+            breakingChange: false,
+          },
+        } as unknown as MappedCommit<CommitInfo>),
       ).toBeTruthy();
 
       expect(
         predicate({
-          type: "feat",
-          subject: "subject",
-          scope: "other",
-          breakingChange: false,
-        }),
+          mapped: {
+            type: "feat",
+            subject: "subject",
+            scope: "other",
+            breakingChange: false,
+          },
+        } as unknown as MappedCommit<CommitInfo>),
       ).toBeFalsy();
     });
 
     it("should not return predicate with not provide scope", () => {
-      const { predicate } = createLogConfigV2();
+      const { predicate } = createLogConfig();
 
       expect(predicate).toBeUndefined();
     });
@@ -185,7 +167,7 @@ describe("ReleaseHelper", () => {
       });
 
       it("should should call custom format parser with default format when create log config with no commit format provided", () => {
-        const { mapper } = createLogConfigV2();
+        const { mapper } = createLogConfig();
 
         mapper(commitMessage);
 
@@ -196,7 +178,7 @@ describe("ReleaseHelper", () => {
       });
 
       it("should extract commit info with result from format parser", () => {
-        const { mapper } = createLogConfigV2();
+        const { mapper } = createLogConfig();
 
         mapper(commitMessage);
 
@@ -204,7 +186,7 @@ describe("ReleaseHelper", () => {
       });
 
       it("should return extracted commit info", () => {
-        const { mapper } = createLogConfigV2();
+        const { mapper } = createLogConfig();
 
         const actual = mapper(commitMessage);
 

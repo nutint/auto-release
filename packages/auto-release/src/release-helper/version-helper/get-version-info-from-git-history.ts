@@ -1,7 +1,6 @@
 import { filter, map, mergeMap, Observable, toArray } from "rxjs";
 import * as semver from "semver";
 import { MappedCommit } from "@/git/git-log";
-import { ConventionalCommit } from "@/conventional-commit-helper/conventional-commit-helper";
 
 export type VersionInfo = {
   latestTags: string[];
@@ -10,8 +9,8 @@ export type VersionInfo = {
 
 export const $extractTags =
   (gitTagPrefix?: string) =>
-  (
-    $conventionalCommits: Observable<MappedCommit<ConventionalCommit>>,
+  <T>(
+    $conventionalCommits: Observable<MappedCommit<T>>,
   ): Observable<VersionInfo> => {
     const prefixString = `${gitTagPrefix}@`;
     return $conventionalCommits.pipe(

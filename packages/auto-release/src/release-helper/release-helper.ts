@@ -1,8 +1,4 @@
-import { GetLogConfig, GetLogConfigV2, MappedCommit } from "@/git/git-log";
-import {
-  ConventionalCommit,
-  parseConventionalMessage,
-} from "@/conventional-commit-helper/conventional-commit-helper";
+import { GetLogConfigV2, MappedCommit } from "@/git/git-log";
 import { processVersionFromVersionFile } from "@/release-helper/process-version-from-version-file";
 import { VersionSourceConfiguration } from "@/release-helper/version-source-configuration";
 import {
@@ -26,24 +22,7 @@ export type ConventionalLogConfigParams = {
 
 export const createLogConfig = ({
   scope,
-}: ConventionalLogConfigParams = {}): GetLogConfig<ConventionalCommit> => {
-  const mapper = (commitMessage: string): ConventionalCommit =>
-    parseConventionalMessage(commitMessage);
-  if (scope) {
-    return {
-      mapper,
-      predicate: (mappedCommit: MappedCommit<ConventionalCommit>) =>
-        mappedCommit.mapped.scope === scope,
-    };
-  }
-  return {
-    mapper,
-  };
-};
-
-export const createLogConfigV2 = ({
-  scope,
-}: ConventionalLogConfigParams = {}): GetLogConfigV2<CommitInfo> => {
+}: ConventionalLogConfigParams = {}): GetLogConfigV2 => {
   const mapper = (commitMessage: string) => {
     const extracts = customFormatParser(defaultCommitFormat, commitMessage);
     return extractCommitInfo(extracts);
@@ -51,7 +30,8 @@ export const createLogConfigV2 = ({
 
   if (scope) {
     return {
-      predicate: (commitInfo: CommitInfo) => commitInfo.scope === scope,
+      predicate: (commitInfo: MappedCommit<CommitInfo>) =>
+        commitInfo.mapped.scope === scope,
       mapper,
     };
   }
@@ -60,7 +40,7 @@ export const createLogConfigV2 = ({
   };
 };
 
-export const extractReleaseInformation = async (
+export const extractReleaseInformation = async <T extends { subject: string }>(
   versionSourceConfiguration: VersionSourceConfiguration = {},
 ): Promise<ReleaseInformation> => {
   const { gitTagPrefix, scope, jiraProjectKey } = versionSourceConfiguration;
@@ -109,12 +89,12 @@ export type ReleaseInformation = {
     patch: string[];
   };
   jira?: {
-    issues: JiraIssueWithCommits[];
+    issues: JiraIssueWithCommits<CommitInfo>[];
     projectKey: string;
   };
 };
 
-export const printReleaseInformation = (
+export const printReleaseInformation = <T extends { subject: string }>(
   releaseInformation: ReleaseInformation,
   outputFormat: OutputFormat,
 ) => {

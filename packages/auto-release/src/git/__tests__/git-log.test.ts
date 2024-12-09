@@ -3,8 +3,8 @@ import { getGitLogs, getGitLogsStream, MappedCommit } from "@/git/git-log";
 import { createLogConfig } from "@/release-helper/release-helper";
 import * as StreamGitLog from "@/git/stream-git-log";
 import { from, lastValueFrom, toArray } from "rxjs";
-import { ConventionalCommit } from "@/conventional-commit-helper/conventional-commit-helper";
 import { ParsedCommit } from "@/git/stream-git-log";
+import { CommitInfo } from "@/release-helper/commit-info/extract-commit-info";
 
 describe("GitLogs", () => {
   const mockedStreamGitLog = vi.spyOn(StreamGitLog, "streamGitLog");
@@ -23,29 +23,23 @@ describe("GitLogs", () => {
     tags: [],
   };
 
-  const mappedCommit1: MappedCommit<ConventionalCommit> = {
+  const mappedCommit1: MappedCommit<CommitInfo> = {
     ...parsedCommit1,
     mapped: {
-      body: undefined,
-      footer: undefined,
-      header: "feat(auto-release): test",
-      notes: [],
-      type: "feat",
+      breakingChange: false,
       scope: "auto-release",
       subject: "test",
+      type: "feat",
     },
   };
 
-  const mappedCommit2: MappedCommit<ConventionalCommit> = {
+  const mappedCommit2: MappedCommit<CommitInfo> = {
     ...parsedCommit2,
     mapped: {
-      body: undefined,
-      footer: undefined,
-      header: "feat(something-else): test",
-      notes: [],
-      type: "feat",
+      breakingChange: false,
       scope: "something-else",
       subject: "test",
+      type: "feat",
     },
   };
   const parsedCommits = [parsedCommit1, parsedCommit2];
