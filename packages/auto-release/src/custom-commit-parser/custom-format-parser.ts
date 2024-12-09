@@ -1,4 +1,7 @@
-import { formatSyntaxParser } from "@/custom-commit-parser/format-syntax-parser";
+import {
+  FormatElement,
+  formatSyntaxParser,
+} from "@/custom-commit-parser/format-syntax-parser";
 import { FormatElementName } from "@/custom-commit-parser/format-element-name";
 import { ConventionalCommit } from "@/conventional-commit-helper/conventional-commit-helper";
 
@@ -17,10 +20,10 @@ export type Extract = JiraIssueExtract | ConventionalCommitExtract;
 export const defaultCommitFormat = "{{conventionalCommit}}";
 
 export const customFormatParser = (
-  format: string,
+  formatElements: FormatElement[],
   commitMessage: string,
 ): Extract[] =>
-  formatSyntaxParser(format).reduce(
+  formatElements.reduce(
     (acc, currentFormatElement) => {
       const { extracts, remainingInput } = acc;
       const { extract, name } = currentFormatElement;

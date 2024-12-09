@@ -41,4 +41,6 @@ export class FormatSyntaxError extends Error {
   }
 }
 
-type FormatElement = FormatElementConventionalCommit | FormatElementJiraIssueId;
+export type FormatElement =
+  | FormatElementConventionalCommit
+  | FormatElementJiraIssueId;

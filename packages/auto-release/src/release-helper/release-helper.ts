@@ -15,6 +15,7 @@ import {
   customFormatParser,
   defaultCommitFormat,
 } from "@/custom-commit-parser/custom-format-parser";
+import { formatSyntaxParser } from "@/custom-commit-parser/format-syntax-parser";
 
 export type ConventionalLogConfigParams = {
   scope?: string;
@@ -25,9 +26,10 @@ export const createLogConfig = ({
   scope,
   commitFormat: overrideCommitFormat,
 }: ConventionalLogConfigParams = {}): GetLogConfigV2 => {
+  const commitFormat = overrideCommitFormat ?? defaultCommitFormat;
+  const formatElements = formatSyntaxParser(commitFormat);
   const mapper = (commitMessage: string) => {
-    const commitFormat = overrideCommitFormat ?? defaultCommitFormat;
-    const extracts = customFormatParser(commitFormat, commitMessage);
+    const extracts = customFormatParser(formatElements, commitMessage);
     return extractCommitInfo(extracts);
   };
 

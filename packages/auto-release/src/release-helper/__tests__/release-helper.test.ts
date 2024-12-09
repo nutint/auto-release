@@ -13,6 +13,8 @@ import { MappedCommit } from "@/git/git-log";
 import { fail } from "node:assert";
 import { Extract } from "@/custom-commit-parser/custom-format-parser";
 import { CommitInfo } from "@/release-helper/commit-info/extract-commit-info";
+import * as FormatSyntaxParser from "@/custom-commit-parser/format-syntax-parser";
+import { FormatElement } from "@/custom-commit-parser/format-syntax-parser";
 
 describe("ReleaseHelper", () => {
   describe("extractReleaseInformation", () => {
@@ -149,8 +151,13 @@ describe("ReleaseHelper", () => {
         ExtractCommitInfo,
         "extractCommitInfo",
       );
+      const mockedFormatSyntaxParser = vi.spyOn(
+        FormatSyntaxParser,
+        "formatSyntaxParser",
+      );
 
       const commitMessage = "test commit message";
+      const formatElements = [{ foo: "bar" }] as unknown as FormatElement[];
       const extracts: Extract[] = [];
       const extractedCommitInfo = {
         type: "feat",
@@ -162,6 +169,7 @@ describe("ReleaseHelper", () => {
 
       beforeEach(() => {
         vi.clearAllMocks();
+        mockedFormatSyntaxParser.mockReturnValue(formatElements);
         mockedCustomFormatParser.mockReturnValue(extracts);
         mockedExtractCommitInfo.mockReturnValue(extractedCommitInfo);
       });
@@ -172,7 +180,7 @@ describe("ReleaseHelper", () => {
         mapper(commitMessage);
 
         expect(mockedCustomFormatParser).toHaveBeenCalledWith(
-          CustomFormatParser.defaultCommitFormat,
+          formatElements,
           commitMessage,
         );
       });
@@ -182,8 +190,9 @@ describe("ReleaseHelper", () => {
         const { mapper } = createLogConfig({ commitFormat });
 
         mapper(commitMessage);
+
         expect(mockedCustomFormatParser).toHaveBeenCalledWith(
-          commitFormat,
+          formatElements,
           commitMessage,
         );
       });
