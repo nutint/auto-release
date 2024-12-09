@@ -3,6 +3,7 @@ import { readConfiguration } from "@/cli/read-configuration";
 import { analyzeRelease } from "@/cli/commands/analyze-release";
 import { createJiraRelease } from "@/cli/commands/create-jira-release";
 import { logger } from "@/logger/logger";
+import { release } from "@/cli/commands/release";
 
 export const processCli = async (args: string[]) => {
   try {
@@ -10,20 +11,24 @@ export const processCli = async (args: string[]) => {
       parseArguments(args);
     const { versionSource, jiraConfiguration } = readConfiguration(configFile);
 
-    if (command.command === "CreateJiraRelease") {
-      if (jiraConfiguration === undefined) {
-        throw new ConfigurationError("missing jiraConfiguration");
-      }
-      await createJiraRelease(
-        jiraConfiguration,
-        command.projectKey,
-        command.versionName,
-        command.issues,
-      );
-      return;
+    switch (command.command) {
+      case "CreateJiraRelease":
+        if (jiraConfiguration === undefined) {
+          throw new ConfigurationError("missing jiraConfiguration");
+        }
+        await createJiraRelease(
+          jiraConfiguration,
+          command.projectKey,
+          command.versionName,
+          command.issues,
+        );
+        return;
+      case "Release":
+        await release(versionSource);
+        return;
+      default:
+        await analyzeRelease(versionSource, { interactive, outputFormat });
     }
-
-    await analyzeRelease(versionSource, { interactive, outputFormat });
   } catch (e) {
     logger.error(e);
   }

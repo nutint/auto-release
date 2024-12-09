@@ -4,6 +4,7 @@ import * as ParseArguments from "@/cli/arguments/parse-arguments";
 import * as ReadConfiguration from "@/cli/read-configuration";
 import { Arguments, CommandArgument } from "@/cli/arguments/parse-arguments";
 import * as AnalyzeRelease from "@/cli/commands/analyze-release";
+import * as Release from "@/cli/commands/release";
 import * as CreateJiraRelease from "@/cli/commands/create-jira-release";
 import { logger } from "@/logger/logger";
 
@@ -18,6 +19,7 @@ describe("processCli", () => {
     "readConfiguration",
   );
   const mockedAnalyzeRelease = vi.spyOn(AnalyzeRelease, "analyzeRelease");
+  const mockedRelease = vi.spyOn(Release, "release");
   const mockedLogError = vi.spyOn(logger, "error");
 
   const interactive = false;
@@ -53,6 +55,7 @@ describe("processCli", () => {
     mockedParseArguments.mockReturnValue(parsedArguments);
     mockedReadConfiguration.mockReturnValue(configuration);
     mockedAnalyzeRelease.mockResolvedValue();
+    mockedRelease.mockResolvedValue();
   });
 
   it("should parse cliArguments", async () => {
@@ -77,6 +80,24 @@ describe("processCli", () => {
         configuration.versionSource,
         { interactive, outputFormat },
       );
+    });
+  });
+
+  describe("release", () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+      mockedParseArguments.mockReturnValue({
+        ...parsedArguments,
+        command: {
+          command: "Release",
+        },
+      });
+      mockedRelease.mockResolvedValue();
+    });
+    it("should release with correct parameters", async () => {
+      await processCli(cliArguments);
+
+      expect(mockedRelease).toHaveBeenCalled();
     });
   });
 

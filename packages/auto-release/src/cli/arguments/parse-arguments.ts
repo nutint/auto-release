@@ -10,6 +10,7 @@ import {
   AnalyzeRelease,
   parseAnalyzeReleaseCommand,
 } from "@/cli/arguments/analyze-release-command";
+import { Release } from "@/cli/arguments/release-command";
 
 export const CommandArgument = {
   AnalyzeRelease: "AnalyzeRelease",
@@ -19,7 +20,7 @@ export const CommandArgument = {
 export type CommandArgument =
   (typeof CommandArgument)[keyof typeof CommandArgument];
 
-export type CommandWithParams = AnalyzeRelease | CreateJiraRelease;
+export type CommandWithParams = AnalyzeRelease | CreateJiraRelease | Release;
 
 export type Arguments = CommonArguments & {
   command: CommandWithParams;

@@ -45,7 +45,7 @@ export const createLogConfig = ({
   };
 };
 
-export const extractReleaseInformation = async <T extends { subject: string }>(
+export const extractReleaseInformation = async (
   versionSourceConfiguration: VersionSourceConfiguration = {},
 ): Promise<ReleaseInformation> => {
   const { gitTagPrefix, scope, jiraProjectKey, commitFormat } =
