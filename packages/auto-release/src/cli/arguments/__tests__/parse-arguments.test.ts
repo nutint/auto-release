@@ -155,5 +155,16 @@ describe("ParseArguments", () => {
         });
       });
     });
+
+    describe("release", () => {
+      it("should extract release command", () => {
+        const actual = parseArguments(["release"]);
+
+        expect(actual).toEqual({
+          ...defaultArgument,
+          command: { command: "Release" },
+        });
+      });
+    });
   });
 });

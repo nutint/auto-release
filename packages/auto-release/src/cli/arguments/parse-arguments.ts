@@ -26,8 +26,12 @@ export type Arguments = CommonArguments & {
   command: CommandWithParams;
 };
 
-export type ValidCommand = "analyze" | "create-jira-release";
-export const validCommands: ValidCommand[] = ["analyze", "create-jira-release"];
+export type ValidCommand = "analyze" | "create-jira-release" | "release";
+export const validCommands: ValidCommand[] = [
+  "analyze",
+  "create-jira-release",
+  "release",
+];
 
 export const parseArguments = (args: string[]): Arguments => {
   const [command, ...parameters] = args;
@@ -42,23 +46,23 @@ export const parseArguments = (args: string[]): Arguments => {
 
   const commonArguments = parseCommonArguments(parameters);
 
-  const commandArgument =
-    command === "analyze"
-      ? CommandArgument.AnalyzeRelease
-      : CommandArgument.CreateJiraRelease;
-
-  if (commandArgument === "CreateJiraRelease") {
-    const createReleaseCommand = parseCreateJiraReleaseCommand(args);
-    return {
-      ...commonArguments,
-      command: createReleaseCommand,
-    };
+  switch (command) {
+    case "create-jira-release":
+      return {
+        ...commonArguments,
+        command: parseCreateJiraReleaseCommand(args),
+      };
+    case "release":
+      return {
+        ...commonArguments,
+        command: { command: "Release" },
+      };
+    default:
+      return {
+        ...commonArguments,
+        command: parseAnalyzeReleaseCommand(),
+      };
   }
-
-  return {
-    ...commonArguments,
-    command: parseAnalyzeReleaseCommand(),
-  };
 };
 
 export class InvalidCommandlineFormat extends Error {
