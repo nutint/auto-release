@@ -1,4 +1,4 @@
-import { parseArguments } from "@/cli/arguments/parse-arguments";
+import { parseArgumentsV2 } from "@/cli/arguments/parse-arguments";
 import { readConfiguration } from "@/cli/read-configuration";
 import { analyzeRelease } from "@/cli/commands/analyze-release";
 import { createJiraRelease } from "@/cli/commands/create-jira-release";
@@ -7,28 +7,30 @@ import { release } from "@/cli/commands/release";
 
 export const processCli = async (args: string[]) => {
   try {
-    const { configFile, outputFormat, interactive, command } =
-      parseArguments(args);
-    const { versionSource, jiraConfiguration } = readConfiguration(configFile);
+    const { commonArguments, command: commandString } = parseArgumentsV2(args);
+    const { outputFormat, interactive, configFile } = commonArguments;
+    const configuration = readConfiguration(configFile);
 
-    switch (command.command) {
-      case "CreateJiraRelease":
-        if (jiraConfiguration === undefined) {
-          throw new ConfigurationError("missing jiraConfiguration");
-        }
-        await createJiraRelease(
-          jiraConfiguration,
-          command.projectKey,
-          command.versionName,
-          command.issues,
-        );
-        return;
-      case "Release":
-        await release(versionSource);
-        return;
-      default:
-        await analyzeRelease(versionSource, { interactive, outputFormat });
-    }
+    const foundCommand = [
+      {
+        validCommand: "create-jira-release",
+        processor: async () => await createJiraRelease(configuration, args),
+      },
+      {
+        validCommand: "release",
+        processor: async () => await release(configuration),
+      },
+      {
+        validCommand: "analyze",
+        processor: async () =>
+          await analyzeRelease(configuration.versionSource, {
+            interactive,
+            outputFormat,
+          }),
+      },
+    ].find((operations) => operations.validCommand === commandString);
+
+    return await foundCommand!.processor();
   } catch (e) {
     logger.error(e);
   }

@@ -1,7 +1,9 @@
 import { JiraConfiguration } from "@/jira/jira-configuration";
 import { createJiraClient } from "@/jira/create-jira-client";
+import { Configuration } from "@/cli/configuration";
+import { parseCreateJiraReleaseCommand } from "@/cli/arguments/create-jira-release-command";
 
-export const createJiraRelease = async (
+export const createJiraReleaseWithParams = async (
   jiraConfiguration: JiraConfiguration,
   projectKey: string,
   version: string,
@@ -25,3 +27,22 @@ export class CreateJiraReleaseError extends Error {
     super(`CreateJiraReleaseError: ${message}`);
   }
 }
+
+export const createJiraRelease = async (
+  configuration: Configuration,
+  args: string[],
+) => {
+  const { jiraConfiguration } = configuration;
+  if (jiraConfiguration === undefined) {
+    throw new CreateJiraReleaseError("missing Jira configuration");
+  }
+
+  const { projectKey, versionName, issues } =
+    parseCreateJiraReleaseCommand(args);
+  await createJiraReleaseWithParams(
+    jiraConfiguration,
+    projectKey,
+    versionName,
+    issues,
+  );
+};

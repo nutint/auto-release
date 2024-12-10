@@ -1,12 +1,9 @@
-import { VersionSourceConfiguration } from "@/release-helper/version-source-configuration";
 import { extractReleaseInformation } from "@/release-helper/release-helper";
 import { addChangeLog } from "@/changelog/changelog";
+import { Configuration } from "@/cli/configuration";
 
-export const release = async (
-  versionSourceConfiguration: VersionSourceConfiguration = {},
-) => {
-  const releaseInformation = await extractReleaseInformation(
-    versionSourceConfiguration,
-  );
+export const release = async (configuration: Configuration) => {
+  const { versionSource } = configuration;
+  const releaseInformation = await extractReleaseInformation(versionSource);
   await addChangeLog(releaseInformation);
 };

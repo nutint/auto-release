@@ -2,18 +2,19 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ConfigurationError, processCli } from "../process-cli";
 import * as ParseArguments from "@/cli/arguments/parse-arguments";
 import * as ReadConfiguration from "@/cli/read-configuration";
-import { Arguments, CommandArgument } from "@/cli/arguments/parse-arguments";
+import { ValidCommand } from "@/cli/arguments/parse-arguments";
 import * as AnalyzeRelease from "@/cli/commands/analyze-release";
 import * as Release from "@/cli/commands/release";
 import * as CreateJiraRelease from "@/cli/commands/create-jira-release";
 import { logger } from "@/logger/logger";
+import { LogLevel, OutputFormat } from "@/cli/arguments/common-arguments";
 
 vi.mock("@/cli/parse-arguments");
 vi.mock("@/cli/read-configuration");
 vi.mock("@/logger/logger");
 
 describe("processCli", () => {
-  const mockedParseArguments = vi.spyOn(ParseArguments, "parseArguments");
+  const mockedParseArgumentsV2 = vi.spyOn(ParseArguments, "parseArgumentsV2");
   const mockedReadConfiguration = vi.spyOn(
     ReadConfiguration,
     "readConfiguration",
@@ -23,15 +24,15 @@ describe("processCli", () => {
   const mockedLogError = vi.spyOn(logger, "error");
 
   const interactive = false;
-  const outputFormat = "text";
+  const outputFormat: OutputFormat = "text";
 
-  const parsedArguments: Arguments = {
+  const commonArguments = {
     configFile: "auto-release.config.json",
-    logLevel: "error",
+    logLevel: "error" as LogLevel,
     outputFormat,
     interactive,
-    command: { command: CommandArgument.AnalyzeRelease },
   };
+  const command: ValidCommand = "analyze";
 
   const jiraConfiguration = {
     host: "https://yourdomain.jira.com",
@@ -52,23 +53,26 @@ describe("processCli", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockedParseArguments.mockReturnValue(parsedArguments);
+    mockedParseArgumentsV2.mockReturnValue({
+      command,
+      commonArguments,
+    });
     mockedReadConfiguration.mockReturnValue(configuration);
     mockedAnalyzeRelease.mockResolvedValue();
     mockedRelease.mockResolvedValue();
   });
 
-  it("should parse cliArguments", async () => {
+  it("should parseArgumentsV2", async () => {
     await processCli(cliArguments);
 
-    expect(mockedParseArguments).toHaveBeenCalledWith(cliArguments);
+    expect(mockedParseArgumentsV2).toHaveBeenCalledWith(cliArguments);
   });
 
   it("should read configuration file", async () => {
     await processCli(cliArguments);
 
     expect(mockedReadConfiguration).toHaveBeenCalledWith(
-      parsedArguments.configFile,
+      commonArguments.configFile,
     );
   });
 
@@ -86,18 +90,16 @@ describe("processCli", () => {
   describe("release", () => {
     beforeEach(() => {
       vi.clearAllMocks();
-      mockedParseArguments.mockReturnValue({
-        ...parsedArguments,
-        command: {
-          command: "Release",
-        },
+      mockedParseArgumentsV2.mockReturnValue({
+        commonArguments,
+        command: "release",
       });
       mockedRelease.mockResolvedValue();
     });
     it("should release with correct parameters", async () => {
       await processCli(cliArguments);
 
-      expect(mockedRelease).toHaveBeenCalled();
+      expect(mockedRelease).toHaveBeenCalledWith(configuration);
     });
   });
 
@@ -107,28 +109,19 @@ describe("processCli", () => {
       "createJiraRelease",
     );
 
-    const projectKey = "SCRUM";
-    const versionName = "1.0.1";
-
     beforeEach(() => {
       vi.clearAllMocks();
-      mockedParseArguments.mockReturnValue({
-        ...parsedArguments,
-        command: {
-          command: "CreateJiraRelease",
-          projectKey,
-          versionName,
-          issues: ["ABC-123"],
-        },
+      mockedParseArgumentsV2.mockReturnValue({
+        commonArguments,
+        command: "create-jira-release",
       });
       mockedCreateJiraRelease.mockResolvedValue();
     });
 
     it("should log error when there is no jira configuration", async () => {
-      mockedReadConfiguration.mockReturnValue({
-        ...configuration,
-        jiraConfiguration: undefined,
-      });
+      mockedCreateJiraRelease.mockRejectedValue(
+        new ConfigurationError("missing jiraConfiguration"),
+      );
 
       await processCli(cliArguments);
 
@@ -141,10 +134,8 @@ describe("processCli", () => {
       await processCli(cliArguments);
 
       expect(mockedCreateJiraRelease).toHaveBeenCalledWith(
-        jiraConfiguration,
-        projectKey,
-        versionName,
-        ["ABC-123"],
+        configuration,
+        cliArguments,
       );
     });
   });

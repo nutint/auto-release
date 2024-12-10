@@ -1,5 +1,4 @@
-export type CreateJiraRelease = {
-  command: "CreateJiraRelease";
+type CreateJiraRelease = {
   projectKey: string;
   versionName: string;
   issues: string[];
@@ -44,7 +43,6 @@ export const parseCreateJiraReleaseCommand = (
 
   if (jiraIssueIdsParam === undefined) {
     return {
-      command: "CreateJiraRelease",
       projectKey: jiraProjectKey!,
       versionName: jiraVersionName!,
       issues: [],
@@ -54,7 +52,6 @@ export const parseCreateJiraReleaseCommand = (
   const [, jiraIssueIdsString] = jiraIssueIdsParam.split("--jira-issues=");
   if (jiraIssueIdsString == "") {
     return {
-      command: "CreateJiraRelease",
       projectKey: jiraProjectKey!,
       versionName: jiraVersionName!,
       issues: [],
@@ -62,7 +59,6 @@ export const parseCreateJiraReleaseCommand = (
   }
 
   return {
-    command: "CreateJiraRelease",
     projectKey: jiraProjectKey!,
     versionName: jiraVersionName!,
     issues: jiraIssueIdsString!

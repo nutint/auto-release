@@ -1,12 +1,11 @@
 import { describe, it } from "vitest";
 import { createJiraClient } from "@/jira/create-jira-client";
-import { parseArguments } from "@/cli/arguments/parse-arguments";
 import { readConfiguration } from "@/cli/read-configuration";
+import { defaultConfigurationFile } from "@/cli/arguments/common-arguments";
 
 describe("JiraClient", () => {
   it("should get the project", async () => {
-    const parsedArgument = parseArguments(["analyze"]);
-    const configuration = readConfiguration(parsedArgument.configFile);
+    const configuration = readConfiguration(defaultConfigurationFile);
     const { jiraConfiguration } = configuration;
     if (jiraConfiguration) {
       const jiraClient = await createJiraClient(jiraConfiguration);

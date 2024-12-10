@@ -2,29 +2,6 @@ import {
   CommonArguments,
   parseCommonArguments,
 } from "@/cli/arguments/common-arguments";
-import {
-  CreateJiraRelease,
-  parseCreateJiraReleaseCommand,
-} from "@/cli/arguments/create-jira-release-command";
-import {
-  AnalyzeRelease,
-  parseAnalyzeReleaseCommand,
-} from "@/cli/arguments/analyze-release-command";
-import { Release } from "@/cli/arguments/release-command";
-
-export const CommandArgument = {
-  AnalyzeRelease: "AnalyzeRelease",
-  CreateJiraRelease: "CreateJiraRelease",
-} as const;
-
-export type CommandArgument =
-  (typeof CommandArgument)[keyof typeof CommandArgument];
-
-export type CommandWithParams = AnalyzeRelease | CreateJiraRelease | Release;
-
-export type Arguments = CommonArguments & {
-  command: CommandWithParams;
-};
 
 export type ValidCommand = "analyze" | "create-jira-release" | "release";
 export const validCommands: ValidCommand[] = [
@@ -33,7 +10,9 @@ export const validCommands: ValidCommand[] = [
   "release",
 ];
 
-export const parseArguments = (args: string[]): Arguments => {
+export const parseArgumentsV2 = (
+  args: string[],
+): { commonArguments: CommonArguments; command: ValidCommand } => {
   const [command, ...parameters] = args;
   if (command === undefined) {
     throw new InvalidCommandlineFormat("Missing command");
@@ -45,24 +24,7 @@ export const parseArguments = (args: string[]): Arguments => {
   }
 
   const commonArguments = parseCommonArguments(parameters);
-
-  switch (command) {
-    case "create-jira-release":
-      return {
-        ...commonArguments,
-        command: parseCreateJiraReleaseCommand(args),
-      };
-    case "release":
-      return {
-        ...commonArguments,
-        command: { command: "Release" },
-      };
-    default:
-      return {
-        ...commonArguments,
-        command: parseAnalyzeReleaseCommand(),
-      };
-  }
+  return { commonArguments, command: command as ValidCommand };
 };
 
 export class InvalidCommandlineFormat extends Error {

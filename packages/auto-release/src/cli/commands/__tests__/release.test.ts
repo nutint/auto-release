@@ -15,6 +15,9 @@ describe("Release", () => {
     );
     const mockedAddChangeLog = vi.spyOn(ChangeLog, "addChangeLog");
     const versionSourceConfiguration = { versionFile: "package.json" };
+    const configuration = {
+      versionSource: versionSourceConfiguration,
+    };
     const releaseInformation: ReleaseInformation = {
       foo: "bar",
     } as unknown as ReleaseInformation;
@@ -25,14 +28,17 @@ describe("Release", () => {
       mockedAddChangeLog.mockResolvedValue();
     });
 
-    it("should extract release information with empty versionSourceConfiguration when pass no parameter", async () => {
-      await release();
+    it("should extract release information when configuration has no versionSource configuration", async () => {
+      await release({
+        ...configuration,
+        versionSource: undefined,
+      });
 
       expect(extractReleaseInformation({}));
     });
 
     it("should extract release information with versionSourceConfiguration", async () => {
-      await release(versionSourceConfiguration);
+      await release(configuration);
 
       expect(mockedExtractReleaseInformation).toHaveBeenCalledWith(
         versionSourceConfiguration,
@@ -40,7 +46,7 @@ describe("Release", () => {
     });
 
     it("should add changelog with release release information", async () => {
-      await release(versionSourceConfiguration);
+      await release(configuration);
 
       expect(mockedAddChangeLog).toHaveBeenCalledWith(releaseInformation);
     });

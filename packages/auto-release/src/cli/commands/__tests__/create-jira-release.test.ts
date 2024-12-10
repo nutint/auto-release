@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as CreateJiraClient from "@/jira/create-jira-client";
+import * as CreateJiraReleaseCommand from "@/cli/arguments/create-jira-release-command";
 import { JiraConfiguration } from "@/jira/jira-configuration";
 import {
-  createJiraRelease,
   CreateJiraReleaseError,
+  createJiraRelease,
 } from "@/cli/commands/create-jira-release";
 import { Version3Client } from "jira.js";
 import { IJiraClient } from "@/jira/jira-client";
@@ -48,24 +49,43 @@ describe("CreateJiraRelease", () => {
   });
 
   describe("createJiraRelease", () => {
-    it("should create jira client with jiraConfiguration", async () => {
-      await createJiraRelease(
-        jiraConfiguration,
-        jiraProjectKey,
-        jiraVersion,
-        jiraIssues,
+    const mockedParsedCreateJiraReleaseCommand = vi.spyOn(
+      CreateJiraReleaseCommand,
+      "parseCreateJiraReleaseCommand",
+    );
+    const args: string[] = [];
+
+    const parsedCommand = {
+      projectKey: jiraProjectKey,
+      versionName: jiraVersion,
+      issues: jiraIssues,
+    };
+
+    beforeEach(() => {
+      vi.clearAllMocks();
+      mockedParsedCreateJiraReleaseCommand.mockReturnValue(parsedCommand);
+    });
+
+    it("should throw error when no jiraConfiguration from configuration", async () => {
+      await expect(() => createJiraRelease({}, args)).rejects.toEqual(
+        new CreateJiraReleaseError("missing Jira configuration"),
       );
+    });
+
+    it("should parseCreateJiraReleaseCommand with arguments", async () => {
+      await createJiraRelease({ jiraConfiguration }, args);
+
+      expect(mockedParsedCreateJiraReleaseCommand).toHaveBeenCalledWith(args);
+    });
+
+    it("should create jira client", async () => {
+      await createJiraRelease({ jiraConfiguration }, args);
 
       expect(mockedCreateJiraClient).toHaveBeenCalledWith(jiraConfiguration);
     });
 
     it("should get project by id", async () => {
-      await createJiraRelease(
-        jiraConfiguration,
-        jiraProjectKey,
-        jiraVersion,
-        jiraIssues,
-      );
+      await createJiraRelease({ jiraConfiguration }, args);
 
       expect(mockedJiraClient.getProject).toHaveBeenCalledWith(jiraProjectKey);
     });
@@ -74,24 +94,14 @@ describe("CreateJiraRelease", () => {
       (mockedJiraClient.getProject as any).mockResolvedValue(undefined);
 
       await expect(() =>
-        createJiraRelease(
-          jiraConfiguration,
-          jiraProjectKey,
-          jiraVersion,
-          jiraIssues,
-        ),
+        createJiraRelease({ jiraConfiguration }, args),
       ).rejects.toEqual(
         new CreateJiraReleaseError(`project ${jiraProjectKey} not found`),
       );
     });
 
     it("should get versions", async () => {
-      await createJiraRelease(
-        jiraConfiguration,
-        jiraProjectKey,
-        jiraVersion,
-        jiraIssues,
-      );
+      await createJiraRelease({ jiraConfiguration }, args);
 
       expect(mockedJiraProjectClient.getVersions).toHaveBeenCalled();
     });
@@ -102,24 +112,14 @@ describe("CreateJiraRelease", () => {
       ]);
 
       await expect(() =>
-        createJiraRelease(
-          jiraConfiguration,
-          jiraProjectKey,
-          jiraVersion,
-          jiraIssues,
-        ),
+        createJiraRelease({ jiraConfiguration }, args),
       ).rejects.toEqual(
         new CreateJiraReleaseError(`version ${jiraVersion} is already existed`),
       );
     });
 
     it("should create version when there is no duplication", async () => {
-      await createJiraRelease(
-        jiraConfiguration,
-        jiraProjectKey,
-        jiraVersion,
-        jiraIssues,
-      );
+      await createJiraRelease({ jiraConfiguration }, args);
 
       expect(mockedJiraProjectClient.createVersion).toHaveBeenCalledWith({
         name: jiraVersion,
@@ -127,12 +127,7 @@ describe("CreateJiraRelease", () => {
     });
 
     it("should tag jira tickets with created version", async () => {
-      await createJiraRelease(
-        jiraConfiguration,
-        jiraProjectKey,
-        jiraVersion,
-        jiraIssues,
-      );
+      await createJiraRelease({ jiraConfiguration }, args);
 
       expect(mockedJiraVersionClient.tagIssuesFixVersion).toHaveBeenCalledWith(
         jiraIssues,
