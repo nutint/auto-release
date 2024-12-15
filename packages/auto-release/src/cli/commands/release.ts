@@ -5,5 +5,5 @@ import { Configuration } from "@/cli/configuration";
 export const release = async (configuration: Configuration) => {
   const { versionSource } = configuration;
   const releaseInformation = await extractReleaseInformation(versionSource);
-  await addChangeLog(releaseInformation);
+  await addChangeLog("CHANGELOG.md", releaseInformation);
 };

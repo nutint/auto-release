@@ -39,7 +39,7 @@ describe("ChangeLog", () => {
 
     it("should throw error as no change when no change", async () => {
       await expect(() =>
-        addChangeLog({
+        addChangeLog(changelogFile, {
           ...releaseInformation,
           changes: {
             minor: [],
@@ -51,7 +51,7 @@ describe("ChangeLog", () => {
     });
 
     it("should ensure that the file is existed", async () => {
-      await addChangeLog(releaseInformation);
+      await addChangeLog(changelogFile, releaseInformation);
 
       expect(mockedEnsureFile).toHaveBeenCalledWith(changelogFile);
     });
@@ -59,7 +59,7 @@ describe("ChangeLog", () => {
     it("should create new CHANGELOG.md with new content when the file does not existed", async () => {
       mockedEnsureFile.mockRejectedValue(new Error());
 
-      await addChangeLog(releaseInformation);
+      await addChangeLog(changelogFile, releaseInformation);
 
       expect(mockedLogInfo).toHaveBeenCalledWith(
         `directory created for ${changelogFile}`,
@@ -69,7 +69,7 @@ describe("ChangeLog", () => {
     it("should init file content if file content is empty", async () => {
       mockedReadFile.mockReturnValue("");
 
-      await addChangeLog(releaseInformation);
+      await addChangeLog(changelogFile, releaseInformation);
 
       expect(mockedWriteFile).toHaveBeenCalledWith(
         changelogFile,
@@ -79,7 +79,7 @@ describe("ChangeLog", () => {
     });
 
     it("should modify file content if the file already existed", async () => {
-      await addChangeLog(releaseInformation);
+      await addChangeLog(changelogFile, releaseInformation);
 
       expect(mockedWriteFile).toHaveBeenCalledWith(
         changelogFile,

@@ -3,7 +3,10 @@ import fs from "fs-extra";
 import dayjs from "dayjs";
 import { logger } from "@/logger/logger";
 
-export const addChangeLog = async (releaseInformation: ReleaseInformation) => {
+export const addChangeLog = async (
+  changelogFile: string,
+  releaseInformation: ReleaseInformation,
+) => {
   const {
     changes: { minor, major, patch },
     nextVersion,
@@ -12,7 +15,6 @@ export const addChangeLog = async (releaseInformation: ReleaseInformation) => {
   if (minor.length + major.length + patch.length === 0) {
     throw new ChangeLogException(`no change for version ${nextVersion}`);
   }
-  const changelogFile = "CHANGELOG.md";
   try {
     await fs.ensureFile(changelogFile);
   } catch (e) {

@@ -48,7 +48,10 @@ describe("Release", () => {
     it("should add changelog with release release information", async () => {
       await release(configuration);
 
-      expect(mockedAddChangeLog).toHaveBeenCalledWith(releaseInformation);
+      expect(mockedAddChangeLog).toHaveBeenCalledWith(
+        "CHANGELOG.md",
+        releaseInformation,
+      );
     });
   });
 });
