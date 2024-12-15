@@ -11,6 +11,7 @@ import fs from "fs-extra";
 import dayjs from "dayjs";
 import { logger } from "@/logger/logger";
 import { createCommit } from "@/release-helper/test-helpers/helpers";
+import { release } from "@/cli/commands/release";
 
 describe("ChangeLog", () => {
   const releaseInformation: ReleaseInformation = {
@@ -121,6 +122,26 @@ ${minor.map((change) => `- ${change.mapped.subject}`).join("\n")}
 
 ### 🛠️ Fixes
 ${patch.map((change) => `- ${change.mapped.subject}`).join("\n")}
+`);
+    });
+  });
+
+  describe("calculateChangeString", () => {
+    it("should have only major change if other changes is empty", () => {
+      const actual = calculateChangeString({
+        ...releaseInformation,
+        changes: {
+          ...releaseInformation.changes,
+          minor: [],
+          patch: [],
+        },
+      });
+
+      expect(actual)
+        .toEqual(`## [Version ${releaseInformation.nextVersion}] - ${dayjs().format("YYYY-MM-DD")}
+
+### 🎉 Major Changes
+${releaseInformation.changes.major.map((change) => `- ${change.mapped.subject}`).join("\n")}
 `);
     });
   });

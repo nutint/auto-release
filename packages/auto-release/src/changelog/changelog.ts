@@ -2,6 +2,8 @@ import { ReleaseInformation } from "@/release-helper/release-helper";
 import fs from "fs-extra";
 import dayjs from "dayjs";
 import { logger } from "@/logger/logger";
+import { MappedCommit } from "@/git/git-log";
+import { CommitInfo } from "@/release-helper/commit-info/extract-commit-info";
 
 export const addChangeLog = async (
   changelogFile: string,
@@ -37,22 +39,29 @@ export const appendChangeLog = (content: string, newContent: string) => {
   return content.replace(heading, `${heading}${newContent}\n\n`);
 };
 
+const renderChanges = (heading: string, changes: MappedCommit<CommitInfo>[]) =>
+  `${heading}\n${changes.map((change) => `- ${change.mapped.subject}`).join("\n")}`;
+
 export const calculateChangeString = (
   releaseInformation: ReleaseInformation,
 ): string => {
   const {
+    nextVersion,
     changes: { major, minor, patch },
   } = releaseInformation;
-  return `## [Version 0.0.1] - ${dayjs().format("YYYY-MM-DD")}
 
-### 🎉 Major Changes
-${major.map((change) => `- ${change.mapped.subject}`).join("\n")}
+  const changeString = [
+    { heading: "### 🎉 Major Changes", changes: major },
+    { heading: "### 🚀 Features", changes: minor },
+    { heading: "### 🛠️ Fixes", changes: patch },
+  ]
+    .filter(({ changes }) => changes.length > 0)
+    .map(({ heading, changes }) => renderChanges(heading, changes))
+    .join("\n\n");
 
-### 🚀 Features
-${minor.map((change) => `- ${change.mapped.subject}`).join("\n")}
+  return `## [Version ${nextVersion}] - ${dayjs().format("YYYY-MM-DD")}
 
-### 🛠️ Fixes
-${patch.map((change) => `- ${change.mapped.subject}`).join("\n")}
+${changeString}
 `;
 };
 
