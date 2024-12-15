@@ -16,6 +16,7 @@ import {
   defaultCommitFormat,
 } from "@/custom-commit-parser/custom-format-parser";
 import { formatSyntaxParser } from "@/custom-commit-parser/format-syntax-parser";
+import { Changes } from "@/release-helper/process-changes-from-git-history";
 
 export type ConventionalLogConfigParams = {
   scope?: string;
@@ -50,12 +51,13 @@ export const extractReleaseInformation = async (
 ): Promise<ReleaseInformation> => {
   const { gitTagPrefix, scope, jiraProjectKey, commitFormat } =
     versionSourceConfiguration;
-  const { latestGitTag, jiraIssues } = await processVersionFromGitHistory({
-    gitTagPrefix,
-    scope,
-    jiraProjectKey,
-    commitFormat,
-  });
+  const { latestGitTag, jiraIssues, changes } =
+    await processVersionFromGitHistory({
+      gitTagPrefix,
+      scope,
+      jiraProjectKey,
+      commitFormat,
+    });
   const packageVersion = await processVersionFromVersionFile(
     versionSourceConfiguration,
   );
@@ -64,11 +66,7 @@ export const extractReleaseInformation = async (
     currentVersion: packageVersion,
     latestTagVersion: latestGitTag,
     nextVersion: "1.0.1",
-    changes: {
-      minor: [],
-      major: [],
-      patch: [],
-    },
+    changes,
   };
 
   if (jiraProjectKey === undefined) {
@@ -90,11 +88,7 @@ export type ReleaseInformation = {
   currentVersion: string;
   latestTagVersion?: string;
   nextVersion: string;
-  changes: {
-    minor: string[];
-    major: string[];
-    patch: string[];
-  };
+  changes: Changes;
   jira?: {
     issues: JiraIssueWithCommits<CommitInfo>[];
     projectKey: string;

@@ -153,6 +153,18 @@ describe("ProcessVersionFromGitHistory", () => {
 
       expect(actual.jiraIssues).toEqual(expectedJiraIssuesV2);
     });
+
+    it("should returns changes", async () => {
+      const actual = await processVersionFromGitHistory({
+        jiraProjectKey: "SCRUM",
+      });
+
+      expect(actual.changes).toEqual({
+        major: [],
+        minor: commitsV2,
+        patch: [],
+      });
+    });
   });
 
   describe("$processVersionFromGitHistory", () => {

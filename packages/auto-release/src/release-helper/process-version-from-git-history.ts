@@ -18,7 +18,10 @@ import {
   extractJiraIssue,
 } from "@/release-helper/process-jira-issues-from-git-history";
 import { CommitInfo } from "@/release-helper/commit-info/extract-commit-info";
-import { defaultCommitFormat } from "@/custom-commit-parser/custom-format-parser";
+import {
+  $processChangesFromGitHistory,
+  Changes,
+} from "@/release-helper/process-changes-from-git-history";
 
 type ProcessVersionParams = {
   gitTagPrefix?: string;
@@ -47,6 +50,7 @@ export const processVersionFromGitHistory = async ({
             ),
             $processJiraIssuesFromGitHistory(<string>jiraProjectKey),
           ),
+          changes: $commitInfos.pipe($processChangesFromGitHistory()),
         }),
       ),
     );

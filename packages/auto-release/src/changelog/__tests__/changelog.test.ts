@@ -10,6 +10,7 @@ import { ReleaseInformation } from "@/release-helper/release-helper";
 import fs from "fs-extra";
 import dayjs from "dayjs";
 import { logger } from "@/logger/logger";
+import { createCommit } from "@/release-helper/test-helpers/helpers";
 
 describe("ChangeLog", () => {
   const releaseInformation: ReleaseInformation = {
@@ -17,9 +18,9 @@ describe("ChangeLog", () => {
     latestTagVersion: undefined,
     nextVersion: "0.0.1",
     changes: {
-      minor: ["minor change 1"],
-      major: ["major change 1"],
-      patch: ["patch change 1"],
+      minor: [createCommit("feat", "minor change 1")],
+      major: [createCommit("feat", "breaking change 1", undefined, true)],
+      patch: [createCommit("fix", "patch change 1")],
     },
   };
   const changelogFile = "CHANGELOG.md";
@@ -113,13 +114,13 @@ describe("ChangeLog", () => {
 ## [Version 0.0.1] - ${dayjs().format("YYYY-MM-DD")}
 
 ### 🎉 Major Changes
-${major.map((change) => `- ${change}`)}
+${major.map((change) => `- ${change.mapped.subject}`).join("\n")}
 
 ### 🚀 Features
-${minor.map((change) => `- ${change}`)}
+${minor.map((change) => `- ${change.mapped.subject}`).join("\n")}
 
 ### 🛠️ Fixes
-${patch.map((change) => `- ${change}`)}
+${patch.map((change) => `- ${change.mapped.subject}`).join("\n")}
 `);
     });
   });

@@ -46,13 +46,13 @@ export const calculateChangeString = (
   return `## [Version 0.0.1] - ${dayjs().format("YYYY-MM-DD")}
 
 ### 🎉 Major Changes
-${major.map((change) => `- ${change}`)}
+${major.map((change) => `- ${change.mapped.subject}`).join("\n")}
 
 ### 🚀 Features
-${minor.map((change) => `- ${change}`)}
+${minor.map((change) => `- ${change.mapped.subject}`).join("\n")}
 
 ### 🛠️ Fixes
-${patch.map((change) => `- ${change}`)}
+${patch.map((change) => `- ${change.mapped.subject}`).join("\n")}
 `;
 };
 

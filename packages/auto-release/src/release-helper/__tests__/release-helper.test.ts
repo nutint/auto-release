@@ -41,6 +41,11 @@ describe("ReleaseHelper", () => {
       mockedProcessVersionFromGitHistory.mockResolvedValue({
         latestGitTag,
         jiraIssues: [],
+        changes: {
+          major: [],
+          minor: [],
+          patch: [],
+        },
       });
     });
 
