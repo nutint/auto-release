@@ -13,6 +13,13 @@ export const createPackageJsonHelper = (
     if (version) {
       return {
         getVersion: () => version,
+        setVersion: (newVersion: string) => {
+          const updatedPackageJsonContent = content.replace(
+            /"version":\s*"[\d.]+"/,
+            `"version": "${newVersion}"`,
+          );
+          fs.writeFileSync(versionFile, updatedPackageJsonContent, "utf-8");
+        },
         versionFileType: "package.json",
       };
     }

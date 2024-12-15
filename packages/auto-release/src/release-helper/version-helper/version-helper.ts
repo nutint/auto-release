@@ -1,5 +1,6 @@
 export type IVersionHelper = {
   getVersion: () => string;
+  setVersion: (newVersion: string) => void;
   versionFileType: SupportVersionFile;
 };
 
