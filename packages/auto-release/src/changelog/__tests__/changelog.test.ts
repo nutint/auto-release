@@ -17,8 +17,8 @@ describe("ChangeLog", () => {
     latestTagVersion: undefined,
     nextVersion: "0.0.1",
     changes: {
-      minor: ["major change 1"],
-      major: ["minor change 1"],
+      minor: ["minor change 1"],
+      major: ["major change 1"],
       patch: ["patch change 1"],
     },
   };
@@ -104,13 +104,16 @@ describe("ChangeLog", () => {
   describe("initChangelog", () => {
     it("should return formatted CHANGELOG.md", () => {
       const {
-        changes: { minor, patch },
+        changes: { major, minor, patch },
       } = releaseInformation;
       const actual = initChangelog(releaseInformation);
 
       expect(actual).toEqual(`# Changelog
 
 ## [Version 0.0.1] - ${dayjs().format("YYYY-MM-DD")}
+
+### 🎉 Major Changes
+${major.map((change) => `- ${change}`)}
 
 ### 🚀 Features
 ${minor.map((change) => `- ${change}`)}

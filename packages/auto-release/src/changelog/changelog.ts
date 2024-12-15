@@ -39,9 +39,12 @@ export const calculateChangeString = (
   releaseInformation: ReleaseInformation,
 ): string => {
   const {
-    changes: { minor, patch },
+    changes: { major, minor, patch },
   } = releaseInformation;
   return `## [Version 0.0.1] - ${dayjs().format("YYYY-MM-DD")}
+
+### 🎉 Major Changes
+${major.map((change) => `- ${change}`)}
 
 ### 🚀 Features
 ${minor.map((change) => `- ${change}`)}
