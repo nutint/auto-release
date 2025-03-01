@@ -2,7 +2,7 @@
 
 import { processCli } from "@/cli/process-cli";
 
-export const hello = () => console.log("hello");
+export const hello = () => console.log("hello world");
 export const addFunction = (a: number, b: number) => a + b;
 
 (async () => {
